@@ -1,0 +1,38 @@
+import { SidebarProvider, useSidebar } from "../../contexts/SidebarContext";
+import { Outlet } from "react-router";
+// import AppHeader from "./AppHeader";
+import Backdrop from "./BackDrop";
+import AppSidebar from "./AppSidebar";
+import Navbar from "../common/Navbar";
+
+const LayoutContent: React.FC = () => {
+  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+
+  return (
+    <div className="min-h-screen dark:bg-black xl:flex">
+      <AppSidebar />
+      <Backdrop />
+      <div
+        className={`flex-1 transition-all duration-300 ease-in-out ${
+          isExpanded || isHovered ? "xl:ml-[290px]" : "xl:ml-[90px]"
+        } ${isMobileOpen ? "ml-0" : ""}`}
+      >
+        {/* <AppHeader /> */}
+        <Navbar />
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AppLayout: React.FC = () => {
+  return (
+    <SidebarProvider>
+      <LayoutContent />
+    </SidebarProvider>
+  );
+};
+
+export default AppLayout;
