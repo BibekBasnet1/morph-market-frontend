@@ -12,165 +12,143 @@ import {
   Table,
   FileText,
   PieChart,
-  Box,
-  Plug,
   MessageCircle,
-  Mail,
   ChevronDown,
   Ellipsis,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
+import type { RoleName } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
+
+type NavSubItem = {
+  name: string;
+  path: string;
+  pro?: boolean;
+  roles: RoleName[];
+};
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; }[];
+  roles: RoleName[];
+  subItems?: NavSubItem[];
 };
-
 const navItems: NavItem[] = [
   {
     icon: <LayoutDashboard size={20} />,
     name: "Dashboard",
-    subItems: [
-      { name: "Ecommerce", path: "/" },
-      { name: "Analytics", path: "/analytics" },
-      { name: "Marketing", path: "/marketing" },
-      { name: "CRM", path: "/crm" },
-      { name: "Stocks", path: "/stocks" },
-      { name: "SaaS", path: "/saas", },
-      { name: "Logistics", path: "/logistics", },
-    ],
+    roles: ["admin", "seller","buyer"],
+    path: "/dashboard",
+  },
+    {
+    icon: <List size={20} />,
+    name: "Buyers List",
+    roles: ["admin", "seller","buyer"],
+    path: "/buyers",
+  },
+      {
+    icon: <List size={20} />,
+    name: "Sellers List",
+    roles: ["admin", "seller","buyer"],
+    path: "/sellers",
   },
   {
     name: "AI Assistant",
     icon: <Sparkles size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "Text Generator", path: "/text-generator" },
-      { name: "Image Generator", path: "/image-generator" },
-      { name: "Code Generator", path: "/code-generator" },
-      { name: "Video Generator", path: "/video-generator" },
+      { name: "Text Generator", path: "/text-generator", roles: ["admin", "seller"] },
+      { name: "Image Generator", path: "/image-generator", roles: ["admin", "seller"] },
+      { name: "Code Generator", path: "/code-generator", roles: ["admin", "seller"] },
+      { name: "Video Generator", path: "/video-generator", roles: ["admin", "seller"] },
     ],
   },
   {
     name: "E-commerce",
     icon: <ShoppingCart size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "Products", path: "/products-list" },
-      { name: "Add Product", path: "/add-product" },
-      { name: "Billing", path: "/billing" },
-      { name: "Invoices", path: "/invoices" },
-      { name: "Single Invoice", path: "/single-invoice" },
-      { name: "Create Invoice", path: "/create-invoice" },
-      { name: "Transactions", path: "/transactions" },
-      { name: "Single Transaction", path: "/single-transaction" },
+      { name: "Products", path: "/products-list", roles: ["seller"] },
+      { name: "Add Product", path: "/add-product", roles: ["seller"] },
+      { name: "Billing", path: "/billing", roles: ["admin", "seller"] },
+      { name: "Invoices", path: "/invoices", roles: ["admin", "seller"] },
+      { name: "Single Invoice", path: "/single-invoice", roles: ["admin", "seller"] },
+      { name: "Create Invoice", path: "/create-invoice", roles: ["admin", "seller"] },
+      { name: "Transactions", path: "/transactions", roles: ["admin", "seller"] },
+      { name: "Single Transaction", path: "/single-transaction", roles: ["admin", "seller"] },
     ],
   },
   {
     icon: <Calendar size={20} />,
     name: "Calendar",
     path: "/calendar",
+    roles: ["admin", "seller", "buyer"],
   },
   {
     icon: <User size={20} />,
     name: "User Profile",
     path: "/profile",
+    roles: ["admin", "seller", "buyer"],
   },
   {
     name: "Task",
     icon: <CheckSquare size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "List", path: "/task-list", pro: true },
-      { name: "Kanban", path: "/task-kanban", pro: true },
+      { name: "List", path: "/task-list", roles: ["admin", "seller"], pro: true },
+      { name: "Kanban", path: "/task-kanban", roles: ["admin", "seller"], pro: true },
     ],
   },
   {
     name: "Forms",
     icon: <FileText size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "Form Elements", path: "/form-elements", pro: false },
-      { name: "Form Layout", path: "/form-layout", pro: true },
+      { name: "Form Elements", path: "/form-elements", roles: ["admin", "seller"], pro: false },
+      { name: "Form Layout", path: "/form-layout", roles: ["admin", "seller"], pro: true },
     ],
   },
   {
     name: "Tables",
     icon: <Table size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "Basic Tables", path: "/basic-tables", pro: false },
-      { name: "Data Tables", path: "/data-tables", pro: true },
+      { name: "Basic Tables", path: "/basic-tables", roles: ["admin", "seller"], pro: false },
+      { name: "Data Tables", path: "/data-tables", roles: ["admin", "seller"], pro: true },
     ],
   },
   {
     name: "Pages",
     icon: <FileText size={20} />,
+    roles: ["admin", "seller"],
     subItems: [
-      { name: "File Manager", path: "/file-manager" },
-      { name: "Pricing Tables", path: "/pricing-tables" },
-      { name: "FAQ", path: "/faq" },
-      { name: "API Keys", path: "/api-keys", },
-      { name: "Integrations", path: "/integrations", },
-      { name: "Blank Page", path: "/blank" },
-      { name: "404 Error", path: "/error-404" },
-      { name: "500 Error", path: "/error-500" },
-      { name: "503 Error", path: "/error-503" },
-      { name: "Coming Soon", path: "/coming-soon" },
-      { name: "Maintenance", path: "/maintenance" },
-      { name: "Success", path: "/success" },
+      { name: "File Manager", path: "/file-manager", roles: ["admin", "seller"] },
+      { name: "Pricing Tables", path: "/pricing-tables", roles: ["admin", "seller"] },
+      { name: "FAQ", path: "/faq", roles: ["admin", "seller", "buyer"] },
+      { name: "API Keys", path: "/api-keys", roles: ["admin"] },
+      { name: "Integrations", path: "/integrations", roles: ["admin", "seller"] },
+      { name: "Blank Page", path: "/blank", roles: ["admin", "seller"] },
+      { name: "404 Error", path: "/error-404", roles: ["admin", "seller", "buyer"] },
+      { name: "500 Error", path: "/error-500", roles: ["admin", "seller"] },
+      { name: "503 Error", path: "/error-503", roles: ["admin", "seller"] },
+      { name: "Coming Soon", path: "/coming-soon", roles: ["admin", "seller", "buyer"] },
+      { name: "Maintenance", path: "/maintenance", roles: ["admin", "seller"] },
+      { name: "Success", path: "/success", roles: ["admin", "seller", "buyer"] },
     ],
   },
 ];
+
 
 const othersItems: NavItem[] = [
   {
     icon: <PieChart size={20} />,
     name: "Charts",
+    roles:["admin"],
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: true },
-      { name: "Bar Chart", path: "/bar-chart", pro: true },
-      { name: "Pie Chart", path: "/pie-chart", pro: true },
-    ],
-  },
-  {
-    icon: <Box size={20} />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Breadcrumb", path: "/breadcrumb", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Buttons Group", path: "/buttons-group", pro: false },
-      { name: "Cards", path: "/cards", pro: false },
-      { name: "Carousel", path: "/carousel", pro: false },
-      { name: "Dropdowns", path: "/dropdowns", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Links", path: "/links", pro: false },
-      { name: "List", path: "/list", pro: false },
-      { name: "Modals", path: "/modals", pro: false },
-      { name: "Notification", path: "/notifications", pro: false },
-      { name: "Pagination", path: "/pagination", pro: false },
-      { name: "Popovers", path: "/popovers", pro: false },
-      { name: "Progressbar", path: "/progress-bar", pro: false },
-      { name: "Ribbons", path: "/ribbons", pro: false },
-      { name: "Spinners", path: "/spinners", pro: false },
-      { name: "Tabs", path: "/tabs", pro: false },
-      { name: "Tooltips", path: "/tooltips", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  {
-    icon: <Plug size={20} />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-      { name: "Reset Password", path: "/reset-password", pro: false },
-      {
-        name: "Two Step Verification",
-        path: "/two-step-verification",
-        pro: false,
-      },
+      { name: "Line Chart", path: "/line-chart", roles:['admin'],pro: true },
+      { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
     ],
   },
 ];
@@ -178,28 +156,16 @@ const othersItems: NavItem[] = [
 const supportItems: NavItem[] = [
   {
     icon: <MessageCircle size={20} />,
+    roles:['admin'],
     name: "Chat",
     path: "/chat",
   },
-  {
-    icon: <List size={20} />,
-    name: "Support Ticket",
-    subItems: [
-      { name: "Ticket List", path: "/support-tickets" },
-      { name: "Ticket Reply", path: "/support-ticket-reply" },
-    ],
-  },
-  {
-    icon: <Mail size={20} />,
-    name: "Email",
-    subItems: [
-      { name: "Inbox", path: "/inbox" },
-      { name: "Details", path: "/inbox-details" },
-    ],
-  },
+ 
 ];
 
 const AppSidebar: React.FC = () => {
+
+  const {user} = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =
     useSidebar();
   const location = useLocation();
@@ -283,125 +249,156 @@ const AppSidebar: React.FC = () => {
     });
   };
 
-  const renderMenuItems = (
-    items: NavItem[],
-    menuType: "main" | "support" | "others"
-  ) => (
-    <ul className="flex flex-col gap-1">
-      {items.map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active text-green-600"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isExpanded && !isHovered
-                  ? "xl:justify-center"
-                  : "xl:justify-start"
-              }`}
-            >
-              <span
-                className={`menu-item-icon-size  ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
-              >
-                {nav.icon}
-              </span>
+  const userRoleNames: RoleName[] =
+  user?.roles?.map((r) => r.name as RoleName) ?? [];
 
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDown
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                to={nav.path}
+const hasAccess = (allowedRoles: RoleName[]) =>
+  allowedRoles.some((role) => userRoleNames.includes(role));
+
+  const renderMenuItems = (
+  items: NavItem[],
+  menuType: "main" | "support" | "others"
+) => (
+  <ul className="flex flex-col gap-1">
+    {items
+      // ✅ filter parent menus by role
+      .filter((nav) => hasAccess(nav.roles))
+      .map((nav, index) => {
+        // ✅ filter sub-items by role
+        const visibleSubItems = nav.subItems
+          ? nav.subItems.filter((sub) => hasAccess(sub.roles))
+          : [];
+
+        // ❌ do not render menu if it has subItems but none are visible
+        if (nav.subItems && visibleSubItems.length === 0) {
+          return null;
+        }
+
+        return (
+          <li key={nav.name}>
+            {nav.subItems ? (
+              <button
+                onClick={() => handleSubmenuToggle(index, menuType)}
                 className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  openSubmenu?.type === menuType &&
+                  openSubmenu?.index === index
+                    ? "menu-item-active text-green-600"
+                    : "menu-item-inactive"
+                } cursor-pointer ${
+                  !isExpanded && !isHovered
+                    ? "xl:justify-center"
+                    : "xl:justify-start"
                 }`}
               >
                 <span
                   className={`menu-item-icon-size ${
-                    isActive(nav.path)
+                    openSubmenu?.type === menuType &&
+                    openSubmenu?.index === index
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
                   }`}
                 >
                   {nav.icon}
                 </span>
+
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className="menu-item-text">{nav.name}</span>
                 )}
-              </Link>
-            )
-          )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px",
-              }}
-            >
-              <ul className="mt-2 space-y-1 ml-9">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-                      <span className="flex items-center gap-1 ml-auto">
-                        {subItem.pro && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-pro-active"
-                                : "menu-dropdown-badge-pro-inactive"
-                            } menu-dropdown-badge-pro`}
-                          >
-                            pro
-                          </span>
-                        )}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
+
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <ChevronDown
+                    className={`ml-auto w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu?.type === menuType &&
+                      openSubmenu?.index === index
+                        ? "rotate-180 text-brand-500"
+                        : ""
+                    }`}
+                  />
+                )}
+              </button>
+            ) : (
+              nav.path && (
+                <Link
+                  to={nav.path}
+                  className={`menu-item group ${
+                    isActive(nav.path)
+                      ? "menu-item-active"
+                      : "menu-item-inactive"
+                  }`}
+                >
+                  <span
+                    className={`menu-item-icon-size ${
+                      isActive(nav.path)
+                        ? "menu-item-icon-active"
+                        : "menu-item-icon-inactive"
+                    }`}
+                  >
+                    {nav.icon}
+                  </span>
+
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span className="menu-item-text">{nav.name}</span>
+                  )}
+                </Link>
+              )
+            )}
+
+            {/* ✅ Render filtered submenus */}
+            {nav.subItems &&
+              visibleSubItems.length > 0 &&
+              (isExpanded || isHovered || isMobileOpen) && (
+                <div
+                  ref={(el) => {
+                    subMenuRefs.current[`${menuType}-${index}`] = el;
+                  }}
+                  className="overflow-hidden transition-all duration-300"
+                  style={{
+                    height:
+                      openSubmenu?.type === menuType &&
+                      openSubmenu?.index === index
+                        ? `${subMenuHeight[`${menuType}-${index}`]}px`
+                        : "0px",
+                  }}
+                >
+                  <ul className="mt-2 space-y-1 ml-9">
+                    {visibleSubItems.map((subItem) => (
+                      <li key={subItem.name}>
+                        <Link
+                          to={subItem.path}
+                          className={`menu-dropdown-item ${
+                            isActive(subItem.path)
+                              ? "menu-dropdown-item-active"
+                              : "menu-dropdown-item-inactive"
+                          }`}
+                        >
+                          {subItem.name}
+
+                          {subItem.pro && (
+                            <span
+                              className={`ml-auto ${
+                                isActive(subItem.path)
+                                  ? "menu-dropdown-badge-pro-active"
+                                  : "menu-dropdown-badge-pro-inactive"
+                              } menu-dropdown-badge-pro`}
+                            >
+                              pro
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+          </li>
+        );
+      })}
+  </ul>
+);
 
   return (
     <aside
-      className={`fixed dark:bg-black flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed dark:bg-black bg-white flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -422,7 +419,7 @@ const AppSidebar: React.FC = () => {
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <img
+              {/* <img
                 className="dark:hidden"
                 src="/images/logo/logo.svg"
                 alt="Logo"
@@ -435,15 +432,15 @@ const AppSidebar: React.FC = () => {
                 alt="Logo"
                 width={150}
                 height={40}
-              />
+              /> */}
+                  
+             <span className="text-2xl">🐍</span>
+             <span className="font-serif text-xl font-bold text-black dark:text-white">
+               SerpentMarket
+             </span>
             </>
           ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
+           <span className="text-2xl">🐍</span>
           )}
         </Link>
       </div>

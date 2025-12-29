@@ -7,6 +7,8 @@ import Cta from '../components/sections/Cta';
 import { Badge } from 'lucide-react';
 import BadgesSection from '../components/sections/BadgesSection';
 import Footer from '../components/common/Footer';
+import AppSidebar from '../components/layout/AppSidebar';
+import Backdrop from '../components/layout/BackDrop';
 // import { 
 //   Search, 
 //   Heart, 
@@ -109,7 +111,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar/>
 
      <HeroSection />
 
@@ -119,8 +120,6 @@ const Index = () => {
 
       {/* cta */}
       <Cta />
-
-     <Footer/>
     </div>
   );
 };

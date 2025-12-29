@@ -1,16 +1,28 @@
 // User roles enum
-export type UserRole = 'superadmin' | 'admin' | 'seller' | 'buyer';
+// export type UserRole = 'superadmin'|'admin' | 'seller' | 'buyer';
 
-// User interface
-export interface User {
-  id: string;
-  email: string;
+export interface UserRole {
+  id: number;
   name: string;
-  role: UserRole;
-  avatar?: string;
-  createdAt: string;
-  status: 'active' | 'inactive' | 'suspended';
 }
+
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  roles: UserRole[]; // now an array
+  avatar?: string | null;
+  phone?: string | null;
+  postal_code?: string | null;
+  birth_date?: string | null;
+  bio?: string | null;
+}
+
+// types/roles.ts
+export type RoleName = 'admin' | 'seller' | 'buyer' | 'superadmin';
+
+
 
 // Auth state
 export interface AuthState {
@@ -118,6 +130,6 @@ export interface RouteConfig {
   path: string;
   label: string;
   icon?: string;
-  roles: UserRole[];
+  roles: RoleName[];
   children?: RouteConfig[];
 }

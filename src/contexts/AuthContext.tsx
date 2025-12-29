@@ -1,117 +1,116 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { User, UserRole } from '../types';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
+import type { RoleName, User, UserRole } from '../types';
 import { hasPermission, isRoleHigherOrEqual } from '../lib/permissions';
+import { json } from 'zod';
+
+interface AuthToken {
+  accessToken: string;
+}
 
 interface AuthContextType {
   user: User | null;
+   roles: RoleName[]; // derived from user.roles
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (userData: User, token: string) => Promise<void>;
   logout: () => void;
   hasPermission: (permission: string) => boolean;
-  isRoleHigherOrEqual: (requiredRole: UserRole) => boolean;
+  isRoleHigherOrEqual: (requiredRole: RoleName) => boolean; 
+  token: AuthToken | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Mock users for development
-const MOCK_USERS: Record<string, User> = {
-  'superadmin@demo.com': {
-    id: '1',
-    email: 'superadmin@demo.com',
-    name: 'Super Admin',
-    role: 'superadmin',
-    createdAt: '2024-01-01',
-    status: 'active',
-  },
-  'admin@demo.com': {
-    id: '2',
-    email: 'admin@demo.com',
-    name: 'Admin User',
-    role: 'admin',
-    createdAt: '2024-01-15',
-    status: 'active',
-  },
-  'seller@demo.com': {
-    id: '3',
-    email: 'seller@demo.com',
-    name: 'Seller User',
-    role: 'seller',
-    createdAt: '2024-02-01',
-    status: 'active',
-  },
-};
-
 const STORAGE_KEY = 'auth-storage';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+const [roles, setRoles] = useState<RoleName[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<AuthToken | null>(null);
 
-  // Load persisted auth state on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const { user: storedUser, isAuthenticated: storedAuth } = JSON.parse(stored);
-        if (storedUser && storedAuth) {
-          setUser(storedUser);
-          setIsAuthenticated(storedAuth);
-        }
-      } catch (e) {
-        localStorage.removeItem(STORAGE_KEY);
+  // Load persisted auth state
+useEffect(() => {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed.user && parsed.token) {
+
+        console.log("aaaaaaa", parsed)
+        setUser(parsed.user);
+        setRoles(parsed.user.roles.map((r: UserRole) => r.name));
+        setToken(parsed.token);
+        setIsAuthenticated(true);
       }
-    }
-    setIsLoading(false);
-  }, []);
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    } 
+  }
+  setIsLoading(false);
+}, []);
 
   // Persist auth state on change
   useEffect(() => {
     if (!isLoading) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, isAuthenticated }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, token }));
     }
-  }, [user, isAuthenticated, isLoading]);
+  }, [user, token, isLoading]);
 
-  const login = useCallback(async (email: string, _password: string): Promise<boolean> => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const foundUser = MOCK_USERS[email.toLowerCase()];
-    
-    if (foundUser) {
-      setUser(foundUser);
-      setIsAuthenticated(true);
-      setIsLoading(false);
-      return true;
-    }
-    
-    setIsLoading(false);
-    return false;
-  }, []);
+  // Login function receives the API response user and token
+// const login = useCallback(async (userData: User, token: string) => {
+//   setUser(userData);
+//   setRoles(userData.roles.map(r => r.name as RoleName));
+//   setToken({ accessToken: token });
+//   setIsAuthenticated(true);
+// }, []);
+const login = useCallback(async (userData: User, token: string) => {
+  setUser(userData);
+  setRoles(userData.roles.map(r => r.name as RoleName));
+  setToken({ accessToken: token });
+  setIsAuthenticated(true);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: { accessToken: token } }));
+}, []);
 
+
+  // Logout clears state
   const logout = useCallback(() => {
     setUser(null);
+    setRoles([]);
+    setToken(null);
     setIsAuthenticated(false);
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const checkPermission = useCallback((permission: string): boolean => {
-    if (!user) return false;
-    return hasPermission(user.role, permission);
-  }, [user]);
+  // Check permission for the user
 
-  const checkRoleHigherOrEqual = useCallback((requiredRole: UserRole): boolean => {
-    if (!user) return false;
-    return isRoleHigherOrEqual(user.role, requiredRole);
-  }, [user]);
+const checkPermission = useCallback(
+  (permission: string) => hasPermission(roles, permission),
+  [roles]
+);
+
+
+
+
+const checkRoleHigherOrEqual = useCallback(
+  (requiredRole: RoleName) =>
+    isRoleHigherOrEqual(roles, requiredRole),
+  [roles]
+);
+
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        roles,
+        token,
         isAuthenticated,
         isLoading,
         login,
@@ -127,8 +126,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

@@ -207,6 +207,7 @@ layer(base);
 
 --accent: #F7E9D8; 
 --accent-foreground: #1F6E49; 
+--gradient-primary-fade: linear-gradient(to right, #259353, #25935380);
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;

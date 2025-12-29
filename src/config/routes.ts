@@ -1,23 +1,24 @@
-import type { RouteConfig, UserRole } from '../types';
+// config/routes.ts
+import type { RouteConfig, RoleName } from '../types';
 
 export const ROUTES: RouteConfig[] = [
   {
     path: '/dashboard',
     label: 'Dashboard',
     icon: 'LayoutDashboard',
-    roles: ['superadmin', 'admin', 'seller'],
+    roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },
   {
     path: '/buyers',
     label: 'Buyers',
     icon: 'Users',
-    roles: ['superadmin', 'admin'],
+    roles: ['admin','buyer'],
   },
   {
     path: '/sellers',
     label: 'Sellers',
     icon: 'Store',
-    roles: ['superadmin', 'admin'],
+    roles: ['admin','buyer'],
   },
   {
     path: '/products',
@@ -29,35 +30,48 @@ export const ROUTES: RouteConfig[] = [
     path: '/orders',
     label: 'Orders',
     icon: 'ShoppingCart',
-    roles: ['superadmin', 'admin', 'seller'],
+    roles: ['admin', 'seller'],
   },
   {
     path: '/analytics',
     label: 'Analytics',
     icon: 'BarChart3',
-    roles: ['superadmin', 'admin', 'seller'],
+    roles: ['admin', 'seller'],
   },
   {
     path: '/settings',
     label: 'Settings',
     icon: 'Settings',
-    roles: ['superadmin'],
+    roles: ['admin'],
   },
 ];
 
-// Get routes for specific role
-export const getRoutesForRole = (role: UserRole): RouteConfig[] => {
-  return ROUTES.filter(route => route.roles.includes(role));
+
+export const getRoutesForRoles = (
+  roles: RoleName[] = []
+): RouteConfig[] => {
+  return ROUTES.filter(
+    route =>
+      route.roles.length === 0 ||
+      route.roles.some(role => roles.includes(role))
+  );
 };
 
-// Get default redirect path for role
-export const getDefaultPathForRole = (role: UserRole): string => {
-  const routes = getRoutesForRole(role);
-  return routes.length > 0 ? routes[0].path : '/';
+export const getDefaultPathForRoles = (
+  roles: RoleName[] = []
+): string => {
+  const routes = getRoutesForRoles(roles);
+  const dashboard = routes.find(r => r.path === '/dashboard');
+  return dashboard?.path ?? routes[0]?.path ?? '/dashboard';
 };
 
-// Check if path is accessible by role
-export const isPathAccessible = (path: string, role: UserRole): boolean => {
+export const isPathAccessible = (
+  path: string,
+  roles: RoleName[] = []
+): boolean => {
   const route = ROUTES.find(r => path.startsWith(r.path));
-  return route ? route.roles.includes(role) : false;
+  if (!route) return false;
+  if (route.roles.length === 0) return true;
+  return route.roles.some(role => roles.includes(role));
 };
+
