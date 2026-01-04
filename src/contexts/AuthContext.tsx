@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import type { RoleName, User, UserRole } from '../types';
 import { hasPermission, isRoleHigherOrEqual } from '../lib/permissions';
-import { json } from 'zod';
 
 interface AuthToken {
   accessToken: string;

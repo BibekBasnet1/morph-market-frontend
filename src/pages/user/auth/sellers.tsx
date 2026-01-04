@@ -60,7 +60,7 @@ const columns: ColumnDef<Seller>[] = [
   },
 ];
 
-const SellersPage = () => {
+const SellersListPage = () => {
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [filteredSellers, setFilteredSellers] = useState<Seller[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -184,4 +184,4 @@ const SellersPage = () => {
   );
 };
 
-export default SellersPage;
+export default SellersListPage;

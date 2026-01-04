@@ -9,8 +9,26 @@ export const ROUTES: RouteConfig[] = [
     roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },
   {
+    path: '/profile',
+    label: 'Profile',
+    icon: 'User',
+    roles: ['admin', 'seller', 'buyer', 'superadmin'],
+  },
+  {
     path: '/buyers',
     label: 'Buyers',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+    {
+    path: '/store',
+    label: 'Store',
+    icon: 'Store',
+    roles: ['admin','buyer'],
+  },
+    {
+    path: '/add-categories',
+    label: 'Add Categories',
     icon: 'Users',
     roles: ['admin','buyer'],
   },
@@ -26,6 +44,7 @@ export const ROUTES: RouteConfig[] = [
     icon: 'Package',
     roles: ['seller'],
   },
+  
   {
     path: '/orders',
     label: 'Orders',

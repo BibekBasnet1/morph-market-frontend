@@ -14,7 +14,7 @@ const LayoutContent: React.FC = () => {
       <Backdrop />
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          isExpanded || isHovered ? "xl:ml-[290px]" : "xl:ml-[90px]"
+          isExpanded || isHovered ? "xl:ml-[260px]" : "xl:ml-[80px]"
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         {/* <AppHeader /> */}

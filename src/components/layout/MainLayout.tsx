@@ -14,8 +14,8 @@ const MainLayout = () => {
   // Compute margin based on sidebar state AND authentication
   const mainMargin = isAuthenticated
     ? isExpanded || isHovered
-      ? "xl:ml-[290px]"
-      : "xl:ml-[90px]"
+      ? "xl:ml-[260px]"
+      : "xl:ml-[80px]"
     : "ml-0"; // full width when not authenticated
 
   return (

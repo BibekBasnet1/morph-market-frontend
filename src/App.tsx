@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -10,17 +9,20 @@ import DashboardPage from "./pages/user/auth/dashboard";
 import MainLayout from "./components/layout/MainLayout";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { RegisterPage } from "./pages/user/auth/register";
-// import { UserProvider } from "./providers/UserProvider";
 import VerifyOtpPage from "./pages/user/auth/verifyOtp";
 import { Toaster } from "react-hot-toast";
-import BuyersPage from "./pages/user/auth/buyers";
-import SellersPage from "./pages/user/auth/sellers";
+import ProfilePage from "./pages/profile/profilePage";
+import AllReptilesPage from "./pages/all";
+import AddCategoriesPage from "./pages/addCategories/addCategories";
+import NotFound from "./pages/not-found/notFound";
+import SellersListPage from "./pages/user/auth/sellers";
+import BuyersListPage from "./pages/user/auth/buyers";
+import StorePage from "./pages/store/store";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    {/* <UserProvider> */}
       <AuthProvider>
         <SidebarProvider>
            <Toaster
@@ -79,6 +81,7 @@ const App = () => (
               {/* Public marketplace */}
               <Route element={<MainLayout />}>
               <Route path="/" element={<Index />} />
+              <Route path="/all" element={<AllReptilesPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verifyOtp" element={<VerifyOtpPage />} />
@@ -97,11 +100,24 @@ const App = () => (
                       <DashboardPage />
                     </ProtectedRoute>
                   }  />
+                      <Route path="/profile" element={
+                    <ProtectedRoute allowedRoles={['superadmin', 'admin','buyer','seller']}>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  }  />
                 <Route 
                   path="/buyers" 
                   element={
                     <ProtectedRoute allowedRoles={['superadmin', 'admin','buyer']}>
-                      <BuyersPage />
+                      <BuyersListPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                  <Route 
+                  path="/store" 
+                  element={
+                    <ProtectedRoute allowedRoles={['superadmin', 'admin','buyer']}>
+                      <StorePage />
                     </ProtectedRoute>
                   } 
                 />
@@ -109,28 +125,20 @@ const App = () => (
                   path="/sellers" 
                   element={
                     <ProtectedRoute allowedRoles={['superadmin', 'admin','buyer']}>
-                      <SellersPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                {/* <Route 
-                  path="/sellers" 
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
-                      <SellersPage />
+                      <SellersListPage />
                     </ProtectedRoute>
                   } 
                 />
                 <Route 
-                  path="/orders" 
+                  path="/add-categories" 
                   element={
-                    <ProtectedRoute allowedRoles={['superadmin', 'admin', 'seller']}>
-                      <OrdersPage />
+                    <ProtectedRoute allowedRoles={['superadmin', 'admin','buyer']}>
+                      <AddCategoriesPage />
                     </ProtectedRoute>
                   } 
-                /> */}
+                />
               </Route>
-              {/* <Route path="*" element={<NotFound />} /> */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
         </SidebarProvider>
 

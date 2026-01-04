@@ -11,6 +11,8 @@ type Permissions = Array<string> | [];
 
 type AuthToken = {
     accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
 };
 
 type UserContextType = {

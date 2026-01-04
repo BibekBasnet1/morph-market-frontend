@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   isPathAccessible,
@@ -16,16 +16,21 @@ export const ProtectedRoute = ({
   allowedRoles,
 }: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading } = useAuth();
-  
-
   const location = useLocation();
+
+  // Show loading spinner while checking auth
   if (isLoading) {
-  return null; // or a spinner
-}
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Not authenticated
-
-  console.log('is auth,user',isAuthenticated,user);
+  // Not authenticated - redirect to login
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

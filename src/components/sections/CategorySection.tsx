@@ -1,4 +1,5 @@
 import { Card } from "../../components/ui/card"
+import { useNavigate } from "react-router-dom"
 
 const categories = [
   {
@@ -24,6 +25,12 @@ const categories = [
 ]
 
 const CategorySection= () =>{
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (categoryName: string) => {
+    navigate(`/all?category=${encodeURIComponent(categoryName)}`);
+  };
+
   return (
     <section className="py-24 bg-muted/30">
       <div className="container mx-auto px-4 lg:px-8">
@@ -41,6 +48,7 @@ const CategorySection= () =>{
             <Card
               key={category.name}
               className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300"
+              onClick={() => handleCategoryClick(category.name)}
             >
               <div className="relative aspect-square overflow-hidden">
                 <img

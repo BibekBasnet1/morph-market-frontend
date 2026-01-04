@@ -15,6 +15,7 @@ import {
   MessageCircle,
   ChevronDown,
   Ellipsis,
+  Store,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -102,15 +103,6 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Forms",
-    icon: <FileText size={20} />,
-    roles: ["admin", "seller"],
-    subItems: [
-      { name: "Form Elements", path: "/form-elements", roles: ["admin", "seller"], pro: false },
-      { name: "Form Layout", path: "/form-layout", roles: ["admin", "seller"], pro: true },
-    ],
-  },
-  {
     name: "Tables",
     icon: <Table size={20} />,
     roles: ["admin", "seller"],
@@ -151,14 +143,22 @@ const othersItems: NavItem[] = [
       { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
     ],
   },
+    {
+    name: "Administration",
+    icon: <FileText size={20} />,
+    roles: ["admin", "seller","buyer"],
+    subItems: [
+      { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
+    ],
+  },
 ];
 
 const supportItems: NavItem[] = [
   {
-    icon: <MessageCircle size={20} />,
-    roles:['admin'],
-    name: "Chat",
-    path: "/chat",
+    icon: <Store />,
+    roles:['admin','seller','buyer'],
+    name: "Store",
+    path: "/store",
   },
  
 ];
@@ -401,10 +401,10 @@ const hasAccess = (allowedRoles: RoleName[]) =>
       className={`fixed dark:bg-black bg-white flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
-            ? "w-[290px]"
+            ? "w-[260px]"
             : isHovered
-            ? "w-[290px]"
-            : "w-[90px]"
+            ? "w-[260px]"
+            : "w-[80px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         xl:translate-x-0`}

@@ -133,3 +133,42 @@ export interface RouteConfig {
   roles: RoleName[];
   children?: RouteConfig[];
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  image?: File | null;
+}
+
+
+// Reptile types
+export interface Reptile {
+  id: number;
+  title: string;
+  category: string;
+  price: number;
+  location: string;
+  image: string;
+  breeder: string;
+  verified: boolean;
+  sex: 'male' | 'female' | 'unknown';
+  weight: number; // in grams
+  traits: string[];
+  description?: string;
+  age?: string;
+  createdAt: string;
+}
+
+export interface ReptileFilters {
+  category?: string;
+  location?: string;
+  priceMin?: number;
+  priceMax?: number;
+  sex?: 'male' | 'female' | 'unknown';
+  weightMin?: number;
+  weightMax?: number;
+  traits?: string[];
+  search?: string;
+}

@@ -293,11 +293,11 @@ const Navbar: React.FC = () => {
         {/* RIGHT */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon">
-            <Heart className="h-5 w-5" />
+            <Heart className="h-5 text-gray-500 hover:text-red-500 w-5" />
           </Button>
 
           <Button variant="ghost" size="icon">
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-5 text-gray-500 hover:text-blue-500 w-5" />
           </Button>
 
           <ThemeToggleButton />

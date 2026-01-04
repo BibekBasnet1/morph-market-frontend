@@ -3,7 +3,7 @@ import { generateMockBuyers, mockApiDelay } from "../../../lib/mockData";
 import type { Buyer, FilterState, PaginationState } from "../../../types";
 import { DataTable } from "../../../components/common/DataTable";
 import { Input } from "../../../components/ui/input";
-import Select from "../../../components/ui/select"; // ✅ your custom Select
+import Select from "../../../components/ui/select";
 import { Badge } from "../../../components/ui/badge";
 import { Search } from "lucide-react";
 import type { ColumnDef } from "../../../components/common/DataTable";
@@ -59,7 +59,7 @@ const columns: ColumnDef<Buyer>[] = [
   },
 ];
 
-const BuyersPage = () => {
+const BuyersListPage = () => {
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [filteredBuyers, setFilteredBuyers] = useState<Buyer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -184,4 +184,4 @@ const BuyersPage = () => {
   );
 };
 
-export default BuyersPage;
+export default BuyersListPage;

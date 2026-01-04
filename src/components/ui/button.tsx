@@ -7,6 +7,7 @@ const button = cva("rounded-md hover:cursor-pointer flex items-center transition
       primary: "bg-blue-600 text-white",
       ghost: "hover:bg-accent hover:text-accent-foreground",
       secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      destructive: "bg-red-600 text-white hover:bg-red-700",
       outline: "border",
     },
     size: {
