@@ -14,6 +14,12 @@ export const ROUTES: RouteConfig[] = [
     icon: 'User',
     roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },
+    {
+    path: '/products',
+    label: 'Products',
+    icon: 'Package',
+    roles: ['admin', 'seller', 'buyer', 'superadmin'],
+  },
   {
     path: '/buyers',
     label: 'Buyers',
@@ -29,6 +35,42 @@ export const ROUTES: RouteConfig[] = [
     {
     path: '/add-categories',
     label: 'Add Categories',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+      {
+    path: '/add-traits',
+    label: 'Add Traits',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+      {
+    path: '/add-tags',
+    label: 'Add Tags',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+        {
+    path: '/add-diet',
+    label: 'Add Diet',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+{
+    path: '/add-maturity',
+    label: 'Add Maturity Level',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+  {
+    path: '/add-origin',
+    label: 'Add Origin',
+    icon: 'Users',
+    roles: ['admin','buyer'],
+  },
+    {
+    path: '/add-gender',
+    label: 'Add Gender',
     icon: 'Users',
     roles: ['admin','buyer'],
   },

@@ -2,7 +2,6 @@ import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -17,23 +16,13 @@ import {
 import { registerSchema, type RegisterSchema } from "../../../validation/RegisterSchema";
 import { useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
+import { AuthService } from "../../../lib/api";
 type ApiErrorResponse = {
   message?: string;
   errors?: Record<string, string[]>;
 };
 
-const registerApi = async (data: RegisterSchema) => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
-    name: data.name,
-    username: data.userName,
-    email: data.email,
-    password: data.password,
-    password_confirmation: data.confirmPassword,
-  });
-  return response.data;
-};
-
-export const RegisterPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -54,7 +43,7 @@ export const RegisterPage = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: registerApi,
+    mutationFn:AuthService.register,
     onSuccess: (_data,variables) => {
       localStorage.setItem("email", variables.email);
     navigate("/verifyOtp");
@@ -190,3 +179,4 @@ useEffect(() => {
     </div>
   );
 };
+export default RegisterPage;

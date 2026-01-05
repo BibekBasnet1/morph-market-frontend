@@ -142,24 +142,80 @@ export interface Category {
   image?: File | null;
 }
 
+export interface Tag extends Category {}
+export interface Trait extends Category {}
+export interface Diet extends Category {}
+export interface Maturity extends Category {}
+export interface Origin extends Category {}
+export interface Gender extends Category {}
 
-// Reptile types
-export interface Reptile {
+
+// export interface Product {
+//   id: number;
+//   title: string;
+//   slug: string;
+//   category_id: number;
+//   category?: Category;
+//   price: number;
+//   location: string;
+//   images: string[];
+//   breeder: string;
+//   verified: boolean;
+//   sex: 'male' | 'female' | 'unknown';
+//   weight: number; // in grams
+//   tag_ids: number[];
+//   tags?: Tag[];
+//   trait_ids: number[];
+//   traits?: Trait[];
+//   diet_id?: number;
+//   diet?: Diet;
+//   maturity_id?: number;
+//   maturity?: Maturity;
+//   origin_id?: number;
+//   origin?: Origin;
+//   description?: string;
+//   age?: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+export interface Product {
   id: number;
-  title: string;
-  category: string;
-  price: number;
-  location: string;
-  image: string;
-  breeder: string;
-  verified: boolean;
-  sex: 'male' | 'female' | 'unknown';
-  weight: number; // in grams
-  traits: string[];
+  name: string;
+  image: string | null;
+  slug: string;
   description?: string;
-  age?: string;
-  createdAt: string;
+  price?: number;
+  location?: string;
+  breeder?: string;
+  weight?: number;
+
+  category?: {
+    id: number;
+    name: string;
+  } | null;
+
+  origin?: {
+    id: number;
+    name: string;
+  } | null;
+
+  diet?: {
+    id: number;
+    name: string;
+  } | null;
+
+  gender?: {
+    id: number;
+    name: string;
+  } | null;
+
+  maturity_level?: {
+    id: number;
+    name: string;
+  } | null;
 }
+
 
 export interface ReptileFilters {
   category?: string;

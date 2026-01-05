@@ -17,10 +17,10 @@ import {
 } from "../../../components/ui/card";
 
 import { loginSchema, type LoginSchema } from "../../../validation/LoginSchema";
-import axios from "axios";
 import { getDefaultPathForRoles } from "../../../config/routes";
+import { AuthService } from "../../../lib/api";
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -35,10 +35,7 @@ export const LoginPage = () => {
   });
 
   const mutation = useMutation({
-  mutationFn: async (data: LoginSchema) => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, data);
-    return response.data;
-  },
+   mutationFn: AuthService.login,
 onSuccess: (data) => {
   login(data.data.user, data.data.token);
   const roles = data.data.user.roles.map((r:any) => r.name);
@@ -116,3 +113,4 @@ onSuccess: (data) => {
     </div>
   );
 };
+export default LoginPage;

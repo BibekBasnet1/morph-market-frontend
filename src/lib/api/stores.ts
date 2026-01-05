@@ -3,21 +3,21 @@ import api from "./client";
 
 export const StoreService = {
   async getAll(): Promise<StoreForm[]> {
-    const res = await api.get("/admin/stores");
+    const res = await api.get("/buyer/stores");
     return res.data.data.data;
   },
 
   create: async (payload: FormData): Promise<StoreForm> => {
-    const res = await api.post("/admin/stores", payload);
+    const res = await api.post("/buyer/stores", payload);
     return res.data.data;
   },
 
   update: async (id: number, payload: FormData): Promise<StoreForm> => {
-    const res = await api.post(`/admin/stores/${id}`, payload);
+    const res = await api.post(`/buyer/stores/${id}`, payload);
     return res.data.data;
   },
 
   remove: async (id: number): Promise<void> => {
-    await api.delete(`/admin/stores/${id}`);
+    await api.delete(`/buyer/stores/${id}`);
   },
 };

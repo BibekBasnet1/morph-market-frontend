@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import type { ReactNode } from "react";
 import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/common/Footer";
 import AppSidebar from "./AppSidebar";
@@ -6,7 +6,11 @@ import Backdrop from "./BackDrop";
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useAuth } from "../../contexts/AuthContext";
 
-const MainLayout = () => {
+interface MainLayoutProps {
+  children: ReactNode;
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
   const { user } = useAuth();
   const isAuthenticated = !!user;
@@ -32,7 +36,7 @@ const MainLayout = () => {
       >
         <Navbar />
         <div className=" mx-auto max-w-(--breakpoint-2xl)">
-          <Outlet />
+          {children}
         </div>
         <Footer />
       </div>

@@ -12,7 +12,6 @@ import {
   Table,
   FileText,
   PieChart,
-  MessageCircle,
   ChevronDown,
   Ellipsis,
   Store,
@@ -46,13 +45,13 @@ const navItems: NavItem[] = [
     {
     icon: <List size={20} />,
     name: "Buyers List",
-    roles: ["admin", "seller","buyer"],
+    roles: ["admin"],
     path: "/buyers",
   },
       {
     icon: <List size={20} />,
     name: "Sellers List",
-    roles: ["admin", "seller","buyer"],
+    roles: ["admin"],
     path: "/sellers",
   },
   {
@@ -67,18 +66,12 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "E-commerce",
+    name: "Products",
     icon: <ShoppingCart size={20} />,
-    roles: ["admin", "seller"],
+    roles: ["seller"],
     subItems: [
-      { name: "Products", path: "/products-list", roles: ["seller"] },
-      { name: "Add Product", path: "/add-product", roles: ["seller"] },
-      { name: "Billing", path: "/billing", roles: ["admin", "seller"] },
-      { name: "Invoices", path: "/invoices", roles: ["admin", "seller"] },
-      { name: "Single Invoice", path: "/single-invoice", roles: ["admin", "seller"] },
-      { name: "Create Invoice", path: "/create-invoice", roles: ["admin", "seller"] },
-      { name: "Transactions", path: "/transactions", roles: ["admin", "seller"] },
-      { name: "Single Transaction", path: "/single-transaction", roles: ["admin", "seller"] },
+      { name: "All Products", path: "/products", roles: ["seller"] },
+      { name: "Add Product", path: "/products/add", roles: ["seller"] },
     ],
   },
   {
@@ -143,14 +136,14 @@ const othersItems: NavItem[] = [
       { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
     ],
   },
-    {
-    name: "Administration",
-    icon: <FileText size={20} />,
-    roles: ["admin", "seller","buyer"],
-    subItems: [
-      { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
-    ],
-  },
+  //   {
+  //   name: "Administration",
+  //   icon: <FileText size={20} />,
+  //   roles: ["admin", "seller","buyer"],
+  //   subItems: [
+  //     { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
+  //   ],
+  // },
 ];
 
 const supportItems: NavItem[] = [
@@ -159,6 +152,21 @@ const supportItems: NavItem[] = [
     roles:['admin','seller','buyer'],
     name: "Store",
     path: "/store",
+  },
+   {
+    name: "Add Attributes",
+    icon: <FileText size={20} />,
+    roles: ["admin"],
+    subItems: [
+      { name: "Add Categories", path: "/add-categories", roles: ["admin"], pro: false },
+      { name: "Add Traits", path: "/add-traits", roles: ["admin"], pro: false },
+      { name: "Add Tags", path: "/add-tags", roles: ["admin"], pro: false },
+      { name: "Add Diet", path: "/add-diet", roles: ["admin"], pro: false },
+      { name: "Add Maturity Level", path: "/add-maturity", roles: ["admin"], pro: false },
+      { name: "Add Origin", path: "/add-origin", roles: ["admin"], pro: false },
+      { name: "Add Gender", path: "/add-gender", roles: ["admin"], pro: false },
+
+    ],
   },
  
 ];
@@ -254,6 +262,22 @@ const AppSidebar: React.FC = () => {
 
 const hasAccess = (allowedRoles: RoleName[]) =>
   allowedRoles.some((role) => userRoleNames.includes(role));
+
+  // Modify navItems to set dynamic dashboard path based on role
+  const modifiedNavItems = navItems.map(item => {
+    if (item.name === "Dashboard") {
+      let dashboardPath = "/dashboard"; // default
+      if (userRoleNames.includes("admin") || userRoleNames.includes("superadmin")) {
+        dashboardPath = "/admin/dashboard";
+      } else if (userRoleNames.includes("seller")) {
+        dashboardPath = "/seller/dashboard";
+      } else if (userRoleNames.includes("buyer")) {
+        dashboardPath = "/buyer/dashboard";
+      }
+      return { ...item, path: dashboardPath };
+    }
+    return item;
+  });
 
   const renderMenuItems = (
   items: NavItem[],
@@ -461,7 +485,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                   <Ellipsis className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(modifiedNavItems, "main")}
             </div>
             <div>
               <h2

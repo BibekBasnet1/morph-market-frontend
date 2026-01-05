@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Store, MapPin, FileText, Image, Clock, CheckCircle } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textArea";
@@ -28,7 +28,7 @@ export default function StoreRegistrationForm() {
   console.log(user);
   
   const [formData, setFormData] = useState<StoreForm>({
-    user_id: user?.user?.id || "",
+    user_id: "",
     name: "",
     slug: "",
     email: "",
@@ -62,6 +62,17 @@ export default function StoreRegistrationForm() {
     }
   });
 
+    useEffect(() => {
+    if (user?.user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user?.user?.email ?? "",
+        username: user?.user?.username ?? "",
+        user_id:user?.user?.id ?? "",
+      }));
+    }
+  }, [user]);
+
   const saveMutation = useMutation({
     mutationFn: (data: FormData) => StoreService.create(data),
     onSuccess: () => toast.success("Store registered successfully"),
@@ -86,8 +97,8 @@ export default function StoreRegistrationForm() {
           storeInfoSchema.parse({
             name: formData.name,
             slug: formData.slug,
-            email: user?.user?.email,
-            username: user?.user?.username,
+            email: formData.email,
+            username: formData.username,
             brand_name: formData.brand_name,
             phone: formData.phone
           });
@@ -101,8 +112,6 @@ export default function StoreRegistrationForm() {
             policy: formData.policy,
             shipping_type: formData.shipping_type,
             contact_visible: formData.contact_visible,
-            is_active: formData.is_active,
-            is_verified: formData.is_verified
           });
           break;
         case 3:
@@ -391,7 +400,7 @@ export default function StoreRegistrationForm() {
                     <ErrorMessage field="address.country_id" />
                   </div>
                   <div>
-                    <Label>State ID *</Label>
+                    <Label>State ID</Label>
                     <Input
                       type="text"
                       value={formData.address.state_id}
@@ -404,7 +413,7 @@ export default function StoreRegistrationForm() {
                 </div>
 
                 <div>
-                  <Label>Address Line 1 *</Label>
+                  <Label>Address Line 1</Label>
                   <Input
                     type="text"
                     value={formData.address.address_line_1}
@@ -427,7 +436,7 @@ export default function StoreRegistrationForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>City *</Label>
+                    <Label>City</Label>
                     <Input
                       type="text"
                       value={formData.address.city}
@@ -438,7 +447,7 @@ export default function StoreRegistrationForm() {
                     <ErrorMessage field="address.city" />
                   </div>
                   <div>
-                    <Label>Zip Code *</Label>
+                    <Label>Zip Code</Label>
                     <Input
                       type="text"
                       value={formData.address.zip_code}
@@ -508,26 +517,6 @@ export default function StoreRegistrationForm() {
                     />
                     <span className="ml-2 text-sm text-gray-700">Contact Visible</span>
                   </label>
-
-                  {/* <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_active}
-                      onChange={(e) => handleChange("is_active", e.target.checked)}
-                      className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Store Active</span>
-                  </label>
-
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_verified}
-                      onChange={(e) => handleChange("is_verified", e.target.checked)}
-                      className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Store Verified</span>
-                  </label> */}
                 </div>
               </div>
             </div>

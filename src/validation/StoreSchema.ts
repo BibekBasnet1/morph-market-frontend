@@ -28,7 +28,7 @@ const storeHourSchema = z.object({
 
 // Main store schema
 export const storeSchema = z.object({
-  user_id: z.string().optional(),
+  user_id: z.number().optional(),
   name: z.string()
     .min(3, "Store name must be at least 3 characters")
     .max(100, "Store name must not exceed 100 characters"),
@@ -80,7 +80,7 @@ export const storeSchema = z.object({
   contact_visible: z.boolean().default(true),
 //   is_active: z.boolean().default(true),
   is_verified: z.boolean().default(false),
-  shipping_type: z.enum(["national", "international", "local"]),
+  shipping_type: z.enum(["national","regional", "international", "local_pickup"]),
   store_hours: z.array(storeHourSchema).length(7, "Must have exactly 7 days").nullable().optional(),
   address: addressSchema.optional()
 });
