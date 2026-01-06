@@ -216,6 +216,17 @@ export interface Product {
   } | null;
 }
 
+export interface ProductFilters {
+  search?: string;
+  category_id?: number;
+  origin_id?: number;
+  diet_id?: number;
+  gender_id?: number;
+  maturity_level_id?: number;
+  price_min?: number;
+  price_max?: number;
+}
+
 
 export interface ReptileFilters {
   category?: string;

@@ -12,11 +12,24 @@ import { Modal } from "../../components/ui/modal";
 const AllProductsPage = () => {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: ProductService.getAll,
-  });
+const {
+  data,
+  isLoading,
+  isFetching,
+} = useQuery({
+  queryKey: ["products", page],
+  queryFn: () =>
+    ProductService.getAll({
+      page,
+    }),
+  placeholderData: (prev) => prev,
+});
+const products = data?.data ?? [];
+const currentPage = data?.current_page ?? 1;
+const lastPage = data?.last_page ?? 1;
+
 
   const deleteMutation = useMutation({
     mutationFn: ProductService.remove,
@@ -30,21 +43,8 @@ const AllProductsPage = () => {
     },
   });
 
-  const handleDelete = (id: number) => {
-    setDeleteId(id);
-  };
-
-  const confirmDelete = () => {
-    if (!deleteId) return;
-    deleteMutation.mutate(deleteId);
-  };
-
-  const closeDeleteModal = () => {
-    setDeleteId(null);
-  };
-
   return (
-    <div className="space-y-6 max-w-6xl">
+    <div className="space-y-6 max-w-6xl text-gray-900 dark:text-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Products</h2>
@@ -56,14 +56,17 @@ const AllProductsPage = () => {
         </Link>
       </div>
 
-      {/* List */}
+      {/* Loading */}
       {isLoading && (
-        <p className="text-sm text-muted-foreground">Loading products...</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Loading products...
+        </p>
       )}
 
+      {/* Empty State */}
       {!isLoading && products.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             No products added yet.
           </p>
           <Link to="/products/add">
@@ -75,87 +78,119 @@ const AllProductsPage = () => {
         </div>
       )}
 
+      {/* Products Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-       {products?.map(product => (
-  <Card key={product.id}>
-    <CardContent className="p-4">
-      <div className="aspect-video bg-gray-100 rounded-md mb-3 overflow-hidden">
-        {product?.image ? (
-          <img
-            src={product?.image}
-            alt={product?.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            No Image
-          </div>
-        )}
-      </div>
+        {products.map((product:any) => (
+          <Card
+            key={product.id}
+            className="bg-white dark:bg-gray-900 border dark:border-gray-800"
+          >
+            <CardContent className="p-4">
+              {/* Image */}
+              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-md mb-3 overflow-hidden">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+                    No Image
+                  </div>
+                )}
+              </div>
 
-      <div className="space-y-2">
-        <h3 className="font-medium text-lg">{product?.name}</h3>
+              {/* Info */}
+              <div className="space-y-2">
+                <h3 className="font-medium text-lg">
+                  {product.name}
+                </h3>
 
-        <p className="text-sm text-muted-foreground">
-          Category: {product?.category?.name ?? "N/A"}
-        </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Category: {product.category?.name ?? "N/A"}
+                </p>
 
-        <p className="text-sm text-muted-foreground">
-          Origin: {product?.origin?.name ?? "N/A"}
-        </p>
-
-        <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Origin: {product.origin?.name ?? "N/A"}
+                </p>
+                {/* {product.diet && (
+                  <span className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    {product.diet.name}
+                  </span>
+                )} */}
+                        <p className="text-sm text-muted-foreground dark:text-gray-400">
           Diet: {product?.diet && (
-            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
+            <span className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
               {product?.diet?.name}
             </span>
           )}
         </p>
 
-        <div className="flex items-center gap-2">
-          {product?.gender && (
-            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-              {product?.gender?.name}
-            </span>
-          )}
+                <div className="flex flex-wrap gap-2">
+                  {product.gender && (
+                    <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                      {product.gender.name}
+                    </span>
+                  )}
 
-          {product.maturity_level && (
-            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">
-              {product.maturity_level.name}
-            </span>
-          )}
-        </div>
+                  {product.maturity_level && (
+                    <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                      {product.maturity_level.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 mt-4">
+                <Link to={`/products/edit/${product.id}`} className="flex-1">
+                  <Button size="sm" variant="outline" className="w-full">
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                </Link>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setDeleteId(product.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+      <div className="flex justify-between mt-6">
+  <Button
+    disabled={currentPage === 1}
+    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+  >
+    Previous
+  </Button>
 
-      <div className="flex gap-2 mt-4">
-        <Link to={`/products/edit/${product.id}`}>
-          <Button size="sm" variant="outline" className="flex-1">
-            <Edit className="h-4 w-4 mr-1" />
-            Edit
-          </Button>
-        </Link>
+  <span>
+    Page {currentPage} of {lastPage}
+  </span>
 
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={() => handleDelete(product.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
-))}
+  <Button
+    disabled={currentPage === lastPage}
+    onClick={() => setPage((p) => Math.min(p + 1, lastPage))}
+  >
+    Next
+  </Button>
+</div>
 
-      </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       <Modal
         isOpen={deleteId !== null}
-        onClose={closeDeleteModal}
-        className="max-w-md p-6"
+        onClose={() => setDeleteId(null)}
+        className="max-w-md p-6 bg-white dark:bg-gray-900"
       >
-        <h3 className="mb-3 text-lg font-semibold text-black dark:text-white">
+        <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
           Delete Product
         </h3>
 
@@ -166,13 +201,13 @@ const AllProductsPage = () => {
         </p>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="secondary" onClick={closeDeleteModal}>
+          <Button variant="secondary" onClick={() => setDeleteId(null)}>
             Cancel
           </Button>
 
           <Button
             variant="destructive"
-            onClick={confirmDelete}
+            onClick={() => deleteId && deleteMutation.mutate(deleteId)}
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}

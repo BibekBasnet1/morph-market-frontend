@@ -12,6 +12,7 @@ interface MultiSelectProps {
   value: string[];
   placeholder?: string;
   onChange: (values: string[]) => void;
+  className?: string;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -19,37 +20,36 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   value,
   placeholder = "Select options",
   onChange,
+  className = "",
 }) => {
   const [open, setOpen] = useState(false);
 
   const toggleValue = (val: string) => {
     onChange(
-      value.includes(val)
-        ? value.filter((v) => v !== val)
-        : [...value, val]
+      value.includes(val) ? value.filter((v) => v !== val) : [...value, val]
     );
   };
 
-  const selectedOptions = options.filter((o) =>
-    value.includes(o.value)
-  );
+  const selectedOptions = options.filter((o) => value.includes(o.value));
 
   return (
-    <div className="relative">
+    <div className={clsx("relative", className)}>
       {/* Trigger */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full min-h-[40px] flex items-center flex-wrap gap-1 rounded-md border px-3 py-2 text-sm"
+        className="w-full min-h-[40px] flex items-center flex-wrap gap-1 rounded-md border px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-700"
       >
         {selectedOptions.length === 0 && (
-          <span className="text-muted-foreground">{placeholder}</span>
+          <span className="text-muted-foreground dark:text-gray-400">
+            {placeholder}
+          </span>
         )}
 
         {selectedOptions.map((opt) => (
           <span
             key={opt.value}
-            className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs"
+            className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs"
           >
             {opt.label}
             <X
@@ -62,18 +62,18 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           </span>
         ))}
 
-        <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
+        <ChevronDown className="ml-auto h-4 w-4 opacity-50 dark:text-gray-300" />
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-md max-h-56 overflow-auto">
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 shadow-md max-h-56 overflow-auto">
           {options.map((opt) => (
             <label
               key={opt.value}
               className={clsx(
-                "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-100",
-                value.includes(opt.value) && "bg-gray-50"
+                "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700",
+                value.includes(opt.value) && "bg-gray-50 dark:bg-gray-700"
               )}
             >
               <input

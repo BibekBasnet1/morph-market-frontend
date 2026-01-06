@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 const Cta = () => {
   return (
   <section className="py-20" style={{ background: 'var(--gradient-primary-fade)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
             Ready to Start Your Reptile Journey?
           </h2>

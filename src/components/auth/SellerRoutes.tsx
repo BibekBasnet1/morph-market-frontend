@@ -4,10 +4,13 @@ import DashboardLayout from "../layout/DashboardLayout";
 import SellerDashboard from "../../pages/dashboards/SellerDashboard";
 import ProfilePage from "../../pages/profile/profilePage";
 import { lazy } from "react";
+// import StorePage from "../../pages/store/store";
 
 // Lazy load product pages
 const AllProductsPage = lazy(() => import("../../pages/products/allProducts"));
 const AddProductPage = lazy(() => import("../../pages/products/addProduct"));
+const EditProductPage = lazy(() => import("../../pages/products/editProduct"));
+const StorePage = lazy(() => import("../../pages/store/store"));
 
 const SellerRoutes = () => (
   <Routes>
@@ -29,6 +32,11 @@ const SellerRoutes = () => (
           <ProfilePage />
         </ProtectedRoute>
       } />
+         <Route path="store" element={
+              <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer','seller']}>
+                <StorePage />
+              </ProtectedRoute>
+            } />
       <Route path="products" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <AllProductsPage />
@@ -37,6 +45,11 @@ const SellerRoutes = () => (
       <Route path="products/add" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <AddProductPage />
+        </ProtectedRoute>
+      } />
+      <Route path="products/edit/:id" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <EditProductPage />
         </ProtectedRoute>
       } />
     </Route>

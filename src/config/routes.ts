@@ -30,7 +30,7 @@ export const ROUTES: RouteConfig[] = [
     path: '/store',
     label: 'Store',
     icon: 'Store',
-    roles: ['admin','buyer'],
+    roles: ['admin','buyer','seller'],
   },
     {
     path: '/add-categories',

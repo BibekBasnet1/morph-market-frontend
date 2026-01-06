@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 
 const SellingsCard = () => {
   return (
-    <Card>
+    <Card className="dark:text-white dark:bg-gray-800">
       <CardHeader>
         <CardTitle>Sellings</CardTitle>
       </CardHeader>

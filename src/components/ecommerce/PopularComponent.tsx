@@ -10,7 +10,7 @@ const products = [
 
 const PopularProductsCard = () => {
   return (
-    <Card>
+        <Card className="dark:text-white dark:bg-gray-800">
       <CardHeader>
         <CardTitle>Popular Snake Species</CardTitle>
       </CardHeader>

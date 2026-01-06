@@ -1,14 +1,14 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
-const button = cva("rounded-md hover:cursor-pointer flex items-center transition-all ease-in-out font-medium transition", {
+const button = cva("rounded-md hover:cursor-pointer flex items-center justify-center transition-all ease-in-out font-medium transition", {
   variants: {
     variant: {
-      primary: "bg-blue-600 text-white",
+      primary: "bg-green-600 hover:bg-green-500 text-white",
       ghost: "hover:bg-accent hover:text-accent-foreground",
       secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
       destructive: "bg-red-600 text-white hover:bg-red-700",
-      outline: "border",
+      outline: "border dark:text-white hover:bg-white hover:!text-black border-gray-200 dark:border-gray-700",
     },
     size: {
       sm: "px-3 h-8",

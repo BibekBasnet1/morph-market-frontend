@@ -14,6 +14,7 @@ interface MultiStepFormProps {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
+  className?: string; // ✅ added className here
 }
 
 export default function MultiStepForm({
@@ -23,12 +24,13 @@ export default function MultiStepForm({
   onNext,
   onBack,
   onSubmit,
+  className = "", // default empty string
 }: MultiStepFormProps) {
   return (
-    <div>
+    <div className={className}>
       {/* Progress Bar */}
       <div className="mb-8">
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
           <div
             className="h-full bg-green-500 transition-all duration-300"
             style={{
@@ -53,7 +55,7 @@ export default function MultiStepForm({
                     ? "bg-green-500 text-white shadow-lg"
                     : isCompleted
                     ? "bg-green-500 text-white"
-                    : "bg-gray-200 text-gray-500"
+                    : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -62,7 +64,7 @@ export default function MultiStepForm({
                 className={`text-xs font-medium text-center ${
                   isActive || isCompleted
                     ? "text-green-600"
-                    : "text-gray-500"
+                    : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {step.name}
@@ -73,7 +75,7 @@ export default function MultiStepForm({
       </div>
 
       {/* Step Content */}
-      <div className="bg-white rounded-xl shadow-md p-8">
+      <div className="bg-white rounded-xl shadow-md p-8 dark:bg-gray-900 dark:text-gray-100">
         {steps[currentStep].content}
 
         {/* Navigation */}

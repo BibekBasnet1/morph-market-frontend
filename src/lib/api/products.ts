@@ -1,12 +1,26 @@
-import type { Product } from "../../types";
+import type { Product, ProductFilters } from "../../types";
 import api from "./client";
 
-export const ProductService = {
-  async getAll(): Promise<Product[]> {
-    const res = await api.get("/seller/products");
-    return res.data.data.data;
-  },
+type GetAllParams = {
+  page?: number;
+  filters?: ProductFilters;
+};
 
+export const ProductService = {
+  // async getAll(): Promise<Product[]> {
+  //   const res = await api.get("/seller/products");
+  //   return res.data.data.data;
+  // },
+  getAll: async ({ page = 1, filters = {} }: GetAllParams) => {
+    const res = await api.get("/seller/products", {
+      params: {
+        page,
+        ...filters,
+      },
+    });
+console.log("ProductService.getAll - res.data.data:", res.data.data);
+    return res.data.data;
+  },
   async getById(id: number): Promise<Product> {
     const res = await api.get(`/seller/products/${id}`);
     return res.data.data;
@@ -18,7 +32,7 @@ export const ProductService = {
   },
 
   update: async (id: number, payload: FormData): Promise<Product> => {
-    const res = await api.post(`/seller/products/${id}`, payload);
+    const res = await api.put(`/seller/products/${id}`, payload);
     return res.data.data;
   },
 

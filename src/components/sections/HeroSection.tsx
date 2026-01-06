@@ -43,6 +43,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router";
 
 const snakeImages = [
   {
@@ -164,9 +165,11 @@ const HeroSection = () => {
               </Button>
             </div> */}
                 <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/all">
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/80 text-lg px-8">
                   Browse Snakes
                 </Button>
+                  </Link>
                 <Button size="lg" variant="outline" className="text-lg px-8 hover:bg-white hover:text-black">
                   Become a Seller
                 </Button>

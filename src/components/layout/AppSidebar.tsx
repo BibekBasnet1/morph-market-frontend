@@ -3,13 +3,9 @@ import { Link, useLocation } from "react-router";
 
 import {
   LayoutDashboard,
-  Sparkles,
   ShoppingCart,
-  Calendar,
   User,
-  CheckSquare,
   List,
-  Table,
   FileText,
   PieChart,
   ChevronDown,
@@ -55,17 +51,6 @@ const navItems: NavItem[] = [
     path: "/sellers",
   },
   {
-    name: "AI Assistant",
-    icon: <Sparkles size={20} />,
-    roles: ["admin", "seller"],
-    subItems: [
-      { name: "Text Generator", path: "/text-generator", roles: ["admin", "seller"] },
-      { name: "Image Generator", path: "/image-generator", roles: ["admin", "seller"] },
-      { name: "Code Generator", path: "/code-generator", roles: ["admin", "seller"] },
-      { name: "Video Generator", path: "/video-generator", roles: ["admin", "seller"] },
-    ],
-  },
-  {
     name: "Products",
     icon: <ShoppingCart size={20} />,
     roles: ["seller"],
@@ -75,53 +60,10 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <Calendar size={20} />,
-    name: "Calendar",
-    path: "/calendar",
-    roles: ["admin", "seller", "buyer"],
-  },
-  {
     icon: <User size={20} />,
     name: "User Profile",
     path: "/profile",
     roles: ["admin", "seller", "buyer"],
-  },
-  {
-    name: "Task",
-    icon: <CheckSquare size={20} />,
-    roles: ["admin", "seller"],
-    subItems: [
-      { name: "List", path: "/task-list", roles: ["admin", "seller"], pro: true },
-      { name: "Kanban", path: "/task-kanban", roles: ["admin", "seller"], pro: true },
-    ],
-  },
-  {
-    name: "Tables",
-    icon: <Table size={20} />,
-    roles: ["admin", "seller"],
-    subItems: [
-      { name: "Basic Tables", path: "/basic-tables", roles: ["admin", "seller"], pro: false },
-      { name: "Data Tables", path: "/data-tables", roles: ["admin", "seller"], pro: true },
-    ],
-  },
-  {
-    name: "Pages",
-    icon: <FileText size={20} />,
-    roles: ["admin", "seller"],
-    subItems: [
-      { name: "File Manager", path: "/file-manager", roles: ["admin", "seller"] },
-      { name: "Pricing Tables", path: "/pricing-tables", roles: ["admin", "seller"] },
-      { name: "FAQ", path: "/faq", roles: ["admin", "seller", "buyer"] },
-      { name: "API Keys", path: "/api-keys", roles: ["admin"] },
-      { name: "Integrations", path: "/integrations", roles: ["admin", "seller"] },
-      { name: "Blank Page", path: "/blank", roles: ["admin", "seller"] },
-      { name: "404 Error", path: "/error-404", roles: ["admin", "seller", "buyer"] },
-      { name: "500 Error", path: "/error-500", roles: ["admin", "seller"] },
-      { name: "503 Error", path: "/error-503", roles: ["admin", "seller"] },
-      { name: "Coming Soon", path: "/coming-soon", roles: ["admin", "seller", "buyer"] },
-      { name: "Maintenance", path: "/maintenance", roles: ["admin", "seller"] },
-      { name: "Success", path: "/success", roles: ["admin", "seller", "buyer"] },
-    ],
   },
 ];
 
@@ -334,7 +276,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                     className={`ml-auto w-5 h-5 transition-transform duration-200 ${
                       openSubmenu?.type === menuType &&
                       openSubmenu?.index === index
-                        ? "rotate-180 text-brand-500"
+                        ? "rotate-180 text-green-500"
                         : ""
                     }`}
                   />
@@ -422,7 +364,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
 
   return (
     <aside
-      className={`fixed dark:bg-black bg-white flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed dark:bg-black bg-white flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r dark:border-gray-700 border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[260px]"
