@@ -7,6 +7,11 @@ export const GenderService = {
     console.log(res.data.data);
     return res.data.data.data;
   },
+    async getAllPublic(): Promise<Gender[]> {
+    const res = await api.get("/genders");
+    console.log(res.data.data);
+    return res.data.data.data;
+  },
 
   create: async (payload: FormData): Promise<Gender> => {
     const res = await api.post("/admin/genders", payload);

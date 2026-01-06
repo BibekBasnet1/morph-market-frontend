@@ -7,6 +7,11 @@ export const MaturityService = {
     return res.data.data.data;
   },
 
+    async getAllPublic(): Promise<Maturity[]> {
+    const res = await api.get("/maturity-levels");
+    return res.data.data.data;
+  },
+
   create: async (payload: FormData): Promise<Maturity> => {
     const res = await api.post("/admin/maturity-levels", payload);
     return res.data.data;

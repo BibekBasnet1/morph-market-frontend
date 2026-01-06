@@ -6,6 +6,10 @@ export const DietService = {
     const res = await api.get("/admin/diets");
     return res.data.data.data;
   },
+    async getAllPublic(): Promise<Diet[]> {
+    const res = await api.get("/diets");
+    return res.data.data.data;
+  },
 
   create: async (payload: FormData): Promise<Diet> => {
     const res = await api.post("/admin/diets", payload);

@@ -7,6 +7,11 @@ export const OriginService = {
     return res.data.data.data;
   },
 
+    async getAllPublic(): Promise<Origin[]> {
+    const res = await api.get("/origins");
+    return res.data.data.data;
+  },
+
   create: async (payload: FormData): Promise<Origin> => {
     const res = await api.post("/admin/origins", payload);
     return res.data.data;

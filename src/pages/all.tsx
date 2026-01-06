@@ -50,7 +50,6 @@ const {
        filters: { ...filters, search: debouncedSearch },
     }),
     placeholderData: (prev) => prev,
-    enabled: debouncedSearch !== undefined,
 });
 
 const products = data?.data ?? [];
@@ -58,27 +57,27 @@ const products = data?.data ?? [];
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
-    queryFn: CategoryService.getAll,
+    queryFn: CategoryService.getAllPublic,
   });
 
   const { data: genders = [] } = useQuery({
     queryKey: ["genders"],
-    queryFn: GenderService.getAll,
+    queryFn: GenderService.getAllPublic,
   });
 
   const { data: maturities = [] } = useQuery({
     queryKey: ["maturities"],
-    queryFn: MaturityService.getAll,
+    queryFn: MaturityService.getAllPublic,
   });
 
   const { data: origins = [] } = useQuery({
     queryKey: ["origins"],
-    queryFn: OriginService.getAll,
+    queryFn: OriginService.getAllPublic,
   });
 
   const { data: diets = [] } = useQuery({
     queryKey: ["diets"],
-    queryFn: DietService.getAll,
+    queryFn: DietService.getAllPublic,
   });
 
   /* ----------------------------- UI ----------------------------- */
@@ -109,16 +108,16 @@ const products = data?.data ?? [];
               }
             />
 
-            <Select
-              placeholder="Category"
-              options={categories.map((c: any) => ({
-                value: c.id.toString(),
-                label: c.name,
-              }))}
-              onChange={(v) =>
-                updateFilters({ category_id: Number(v) })
-              }
-            />
+<Select
+  placeholder="Category"
+  options={categories.map((c: any) => ({
+    value: c.id.toString(),
+    label: c.name,
+  }))}
+  value={filters.category_id?.toString() ?? ""}
+  onChange={(v) => updateFilters({ category_id: Number(v) })}
+/>
+
 
             <div className="flex gap-2">
               <Input
@@ -161,27 +160,26 @@ const products = data?.data ?? [];
           {/* Advanced Filters */}
           {showMoreFilters && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4">
-              <Select
-                placeholder="Gender"
-                options={genders.map((g: any) => ({
-                  value: g.id.toString(),
-                  label: g.name,
-                }))}
-                onChange={(v) =>
-                  updateFilters({ gender_id: Number(v) })
-                }
-              />
+<Select
+  placeholder="Gender"
+  options={genders.map((g: any) => ({
+    value: g.id.toString(),
+    label: g.name,
+  }))}
+  value={filters.gender_id?.toString() ?? ""}
+  onChange={(v) => updateFilters({ gender_id: Number(v) })}
+/>
 
-              <Select
-                placeholder="Maturity"
-                options={maturities.map((m: any) => ({
-                  value: m.id.toString(),
-                  label: m.name,
-                }))}
-                onChange={(v) =>
-                  updateFilters({ maturity_level_id: Number(v) })
-                }
-              />
+
+<Select
+  placeholder="Maturity"
+  options={maturities.map((m: any) => ({
+    value: m.id.toString(),
+    label: m.name,
+  }))}
+  value={filters.maturity_level_id?.toString() ?? ""}
+  onChange={(v) => updateFilters({ maturity_level_id: Number(v) })}
+/>
 
               <Select
                 placeholder="Origin"
@@ -189,6 +187,7 @@ const products = data?.data ?? [];
                   value: o.id.toString(),
                   label: o.name,
                 }))}
+                value={filters.origin_id?.toString() ?? ""}
                 onChange={(v) =>
                   updateFilters({ origin_id: Number(v) })
                 }
@@ -200,6 +199,7 @@ const products = data?.data ?? [];
                   value: d.id.toString(),
                   label: d.name,
                 }))}
+                value={filters.diet_id?.toString() ?? ""}
                 onChange={(v) =>
                   updateFilters({ diet_id: Number(v) })
                 }
@@ -218,7 +218,7 @@ const products = data?.data ?? [];
       </Card>
 
       {/* Active Filters */}
-      {activeFiltersCount > 0 && (
+      {/* {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2">
           {Object.entries(filters).map(
             ([key, value]) =>
@@ -235,7 +235,51 @@ const products = data?.data ?? [];
               )
           )}
         </div>
-      )}
+      )} */}
+      {/* Active Filters */}
+{activeFiltersCount > 0 && (
+  <div className="flex flex-wrap gap-2">
+    {Object.entries(filters).map(([key, value]) => {
+      if (!value) return null;
+
+      let displayValue = value;
+
+      // Map filter keys to corresponding options arrays
+      switch (key) {
+        case "category_id":
+          displayValue = categories.find(c => c.id === value)?.name ?? value;
+          break;
+        case "gender_id":
+          displayValue = genders.find(g => g.id === value)?.name ?? value;
+          break;
+        case "maturity_level_id":
+          displayValue = maturities.find(m => m.id === value)?.name ?? value;
+          break;
+        case "origin_id":
+          displayValue = origins.find(o => o.id === value)?.name ?? value;
+          break;
+        case "diet_id":
+          displayValue = diets.find(d => d.id === value)?.name ?? value;
+          break;
+        default:
+          displayValue = value;
+      }
+
+      return (
+        <span
+          key={key}
+          className="flex items-center gap-1 px-3 py-1 text-xs rounded-full bg-muted"
+        >
+          {key.replace("_", " ")}: {displayValue}
+          <button onClick={() => updateFilters({ [key]: undefined })}>
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      );
+    })}
+  </div>
+)}
+
 
       {/* Loading */}
       {isLoading && (
@@ -245,7 +289,7 @@ const products = data?.data ?? [];
       )}
 
       {/* Products Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product: any) => (
           <Card
             key={product.id}
@@ -289,12 +333,59 @@ const products = data?.data ?? [];
                     {product.diet.name}
                   </span>
                 )}
+                {product.maturity_level && (
+                  <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
+                    {product.maturity_level.name}
+                  </span>
+                )}
               </div>
 
             </CardContent>
           </Card>
         ))}
-      </div>
+      </div> */}
+      {/* Products Grid */}
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {products.map((product: any) => (
+    <Card
+      key={product.id}
+      className="hover:shadow-md transition cursor-pointer dark:border-gray-600"
+      onClick={() => window.location.href = `/products/${product.id}`} // or use navigate from react-router
+    >
+      <CardContent className="p-4">
+
+        <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center text-sm">
+              <img
+                src="https://placehold.co/600x400"
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+
+        <h3 className="font-medium truncate font-semibold">{product.name}</h3>
+
+        <div className="text-sm text-muted-foreground space-y-3">
+          <p>Category: {product.category?.name ?? "Uncategorized"}</p>
+          {product.gender && <p>Gender: {product.gender.name}</p>}
+          {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet.name}</span></p>}
+          {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level.name}</span></p>}
+        </div>
+
+      </CardContent>
+    </Card>
+  ))}
+</div>
+
     </div>
   );
 };

@@ -25,7 +25,7 @@ const AddTraitsPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -39,7 +39,7 @@ const AddTraitsPage = () => {
       name: trait.name,
       slug: trait.slug,
       description: trait.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -62,7 +62,7 @@ const AddTraitsPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: "" });
     setEditingId(null);
   };
 
@@ -77,7 +77,7 @@ const AddTraitsPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await TraitsService.update(editingId, formData);
@@ -257,7 +257,7 @@ const AddTraitsPage = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Image</Label>
             <Input
               type="file"
@@ -266,7 +266,7 @@ const AddTraitsPage = () => {
                 handleChange("image", e.target.files?.[0] || null)
               }
             />
-          </div>
+          </div> */}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>

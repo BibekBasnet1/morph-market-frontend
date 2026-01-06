@@ -21,6 +21,15 @@ export const ProductService = {
 console.log("ProductService.getAll - res.data.data:", res.data.data);
     return res.data.data;
   },
+  getAllPublic: async ({ page = 1, filters = {} }: GetAllParams) => {
+    const res = await api.get("/products", {
+      params: {
+        page,
+        ...filters,
+      },
+    });
+    return res.data.data;
+  },
   async getById(id: number): Promise<Product> {
     const res = await api.get(`/seller/products/${id}`);
     return res.data.data;

@@ -25,7 +25,7 @@ const AddGenderPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -39,7 +39,7 @@ const AddGenderPage = () => {
       name: gender.name,
       slug: gender.slug,
       description: gender.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -62,7 +62,7 @@ const AddGenderPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: "" });
     setEditingId(null);
   };
 
@@ -77,7 +77,7 @@ const AddGenderPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await GenderService.update(editingId, formData);

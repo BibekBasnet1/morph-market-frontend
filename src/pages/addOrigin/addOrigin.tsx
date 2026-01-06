@@ -25,7 +25,7 @@ const AddOriginPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -39,7 +39,7 @@ const AddOriginPage = () => {
       name: origin.name,
       slug: origin.slug,
       description: origin.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -62,7 +62,7 @@ const AddOriginPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: ""});
     setEditingId(null);
   };
 
@@ -77,7 +77,7 @@ const AddOriginPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await OriginService.update(editingId, formData);

@@ -19,6 +19,7 @@ import { z } from "zod";
 // import { useUser } from "../../../providers/UserProvider";
 // import {getDefaultPathForRoles } from "../../../config/routes";
 import { useAuth } from "../../../contexts/AuthContext";
+import { getDefaultPathForRoles } from "../../../config/routes";
 
 
 
@@ -59,10 +60,10 @@ const VerifyOtpPage = () => {
       if (data?.user && data?.token) {
         login(data?.user, data?.token);
         toast.success("OTP verified successfully!");
-// const roleNames = data.user.roles.map((r: any) => r.name);
-        // const redirectPath = getDefaultPathForRoles(roleNames);
-        // navigate(redirectPath, { replace: true });
-        navigate("/login", { replace: true });
+const roleNames = data.user.roles.map((r: any) => r.name);
+        const redirectPath = getDefaultPathForRoles(roleNames);
+        navigate(redirectPath, { replace: true });
+        // navigate("/login", { replace: true });
       }
     },
     onError: (error: any) => {

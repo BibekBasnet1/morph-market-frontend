@@ -27,7 +27,7 @@ const AddCategoriesPage = () => {
     name: "",
       slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -41,7 +41,7 @@ const openEditModal = (category: Category) => {
     name: category.name,
     slug: category.slug,
     description: category.description,
-    image: null,
+    // image: null,
   });
   setIsOpen(true);
 };
@@ -65,7 +65,7 @@ const closeModal = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: "" });
     setEditingId(null);
   };
 
@@ -83,7 +83,7 @@ const saveMutation = useMutation({
     formData.append("name", form.name);
     formData.append("slug", form.slug);
     formData.append("description", form.description);
-    if (form.image) formData.append("image", form.image);
+    // if (form.image) formData.append("image", form.image);
 
     if (editingId) {
       const updated = await CategoryService.update(editingId, formData);
@@ -134,7 +134,7 @@ const saveMutation = useMutation({
       name: category.name,
       description: category.description,
       slug: category.slug,
-      image: null,
+      // image: null,
     });
   };
 
@@ -269,7 +269,7 @@ return (
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Image</Label>
             <Input
               type="file"
@@ -278,7 +278,7 @@ return (
                 handleChange("image", e.target.files?.[0] || null)
               }
             />
-          </div>
+          </div> */}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>

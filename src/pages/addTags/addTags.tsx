@@ -25,7 +25,7 @@ const AddTagsPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -39,7 +39,7 @@ const AddTagsPage = () => {
       name: tag.name,
       slug: tag.slug,
       description: tag.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -62,7 +62,7 @@ const AddTagsPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: ""});
     setEditingId(null);
   };
 
@@ -77,7 +77,7 @@ const AddTagsPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await TagsService.update(editingId, formData);
@@ -257,7 +257,7 @@ const AddTagsPage = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Image</Label>
             <Input
               type="file"
@@ -266,7 +266,7 @@ const AddTagsPage = () => {
                 handleChange("image", e.target.files?.[0] || null)
               }
             />
-          </div>
+          </div> */}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>

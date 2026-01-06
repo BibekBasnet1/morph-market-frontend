@@ -25,7 +25,7 @@ const AddMaturityPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -39,7 +39,7 @@ const AddMaturityPage = () => {
       name: maturity.name,
       slug: maturity.slug,
       description: maturity.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -62,7 +62,7 @@ const AddMaturityPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: "" });
     setEditingId(null);
   };
 
@@ -77,7 +77,7 @@ const AddMaturityPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await MaturityService.update(editingId, formData);

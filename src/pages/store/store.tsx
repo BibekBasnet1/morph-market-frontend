@@ -248,6 +248,7 @@ export default function StoreRegistrationForm() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className=" mx-auto">
+        <h1>Create your store</h1>
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -389,23 +390,23 @@ export default function StoreRegistrationForm() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Country ID</Label>
+                    <Label>Country</Label>
                     <Input
                       type="text"
                       value={formData.address.country_id}
                       onChange={(e) => handleAddressChange("country_id", e.target.value)}
-                      placeholder="e.g., 1"
+                      placeholder="e.g. US"
                       className={errors["address.country_id"] ? "border-red-500" : ""}
                     />
                     <ErrorMessage field="address.country_id" />
                   </div>
                   <div>
-                    <Label>State ID</Label>
+                    <Label>State</Label>
                     <Input
                       type="text"
                       value={formData.address.state_id}
                       onChange={(e) => handleAddressChange("state_id", e.target.value)}
-                      placeholder="e.g., 1"
+                      placeholder="e.g.Ohio"
                       className={errors["address.state_id"] ? "border-red-500" : ""}
                     />
                     <ErrorMessage field="address.state_id" />

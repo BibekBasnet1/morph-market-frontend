@@ -24,7 +24,7 @@ const AddDietPage = () => {
     name: "",
     slug: "",
     description: "",
-    image: null as File | null,
+    // image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -38,7 +38,7 @@ const AddDietPage = () => {
       name: diet.name,
       slug: diet.slug,
       description: diet.description,
-      image: null,
+      // image: null,
     });
     setIsOpen(true);
   };
@@ -61,7 +61,7 @@ const AddDietPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "", image: null });
+    setForm({ name: "", description: "", slug: ""});
     setEditingId(null);
   };
 
@@ -76,7 +76,7 @@ const AddDietPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      if (form.image) formData.append("image", form.image);
+      // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await DietService.update(editingId, formData);
@@ -256,7 +256,7 @@ const AddDietPage = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Image</Label>
             <Input
               type="file"
@@ -265,7 +265,7 @@ const AddDietPage = () => {
                 handleChange("image", e.target.files?.[0] || null)
               }
             />
-          </div>
+          </div> */}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>
