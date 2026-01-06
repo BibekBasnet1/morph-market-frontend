@@ -7,6 +7,11 @@ export const TraitsService = {
     console.log("Fetched traits:", res.data);
     return res.data.data.data;
   },
+    async getAllPublic(): Promise<Trait[]> {
+    const res = await api.get("/traits");
+    console.log("Fetched traits:", res.data);
+    return res.data.data.data;
+  },
 
   create: async (payload: FormData): Promise<Trait> => {
     const res = await api.post("/admin/traits", payload);

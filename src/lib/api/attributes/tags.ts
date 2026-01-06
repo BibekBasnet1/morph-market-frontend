@@ -6,7 +6,10 @@ export const TagsService = {
     const res = await api.get("/admin/tags");
     return res.data.data.data;
   },
-
+  async getAllPublic(): Promise<Tag[]> {
+    const res = await api.get("/tags");
+    return res.data.data.data;
+  },
   create: async (payload: FormData): Promise<Tag> => {
     const res = await api.post("/admin/tags", payload);
     return res.data.data;

@@ -7,7 +7,6 @@ import {
   User,
   List,
   FileText,
-  PieChart,
   ChevronDown,
   Ellipsis,
   Store,
@@ -68,25 +67,25 @@ const navItems: NavItem[] = [
 ];
 
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChart size={20} />,
-    name: "Charts",
-    roles:["admin"],
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", roles:['admin'],pro: true },
-      { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
-    ],
-  },
-  //   {
-  //   name: "Administration",
-  //   icon: <FileText size={20} />,
-  //   roles: ["admin", "seller","buyer"],
-  //   subItems: [
-  //     { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
-  //   ],
-  // },
-];
+// const othersItems: NavItem[] = [
+//   {
+//     icon: <PieChart size={20} />,
+//     name: "Charts",
+//     roles:["admin"],
+//     subItems: [
+//       { name: "Line Chart", path: "/line-chart", roles:[],pro: true },
+//       { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
+//     ],
+//   },
+//   //   {
+//   //   name: "Administration",
+//   //   icon: <FileText size={20} />,
+//   //   roles: ["admin", "seller","buyer"],
+//   //   subItems: [
+//   //     { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
+//   //   ],
+//   // },
+// ];
 
 const supportItems: NavItem[] = [
   {
@@ -128,7 +127,7 @@ const AppSidebar: React.FC = () => {
   }, [location.pathname]);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "support" | "others";
+    type: "main" | "support";
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
@@ -144,19 +143,17 @@ const AppSidebar: React.FC = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["main", "support", "others"].forEach((menuType) => {
+    ["main", "support"].forEach((menuType) => {
       const items =
         menuType === "main"
           ? navItems
-          : menuType === "support"
-          ? supportItems
-          : othersItems;
+          : supportItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as "main" | "support" | "others",
+                type: menuType as "main" | "support",
                 index,
               });
               submenuMatched = true;
@@ -185,7 +182,7 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: "main" | "support" | "others"
+    menuType: "main" | "support"
   ) => {
     setOpenSubmenu((prevOpenSubmenu) => {
       if (
@@ -223,7 +220,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
 
   const renderMenuItems = (
   items: NavItem[],
-  menuType: "main" | "support" | "others"
+  menuType: "main" | "support"
 ) => (
   <ul className="flex flex-col gap-1">
     {items
@@ -445,7 +442,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
               </h2>
               {renderMenuItems(supportItems, "support")}
             </div>
-            <div>
+            {/* <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -460,7 +457,7 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
-            </div>
+            </div> */}
           </div>
         </nav>
       </div>

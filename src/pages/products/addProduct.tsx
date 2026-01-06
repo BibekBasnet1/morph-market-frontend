@@ -62,13 +62,13 @@ const AddProductPage = () => {
   };
 
   /* Queries */
-  const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: CategoryService.getAll });
-  const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: TagsService.getAll });
-  const { data: traits = [] } = useQuery({ queryKey: ["traits"], queryFn: TraitsService.getAll });
-  const { data: diets = [] } = useQuery({ queryKey: ["diets"], queryFn: DietService.getAll });
-  const { data: maturities = [] } = useQuery({ queryKey: ["maturities"], queryFn: MaturityService.getAll });
-  const { data: origins = [] } = useQuery({ queryKey: ["origins"], queryFn: OriginService.getAll });
-  const { data: genders = [] } = useQuery({ queryKey: ["genders"], queryFn: GenderService.getAll });
+  const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: CategoryService.getAllPublic });
+  const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: TagsService.getAllPublic });
+  const { data: traits = [] } = useQuery({ queryKey: ["traits"], queryFn: TraitsService.getAllPublic });
+  const { data: diets = [] } = useQuery({ queryKey: ["diets"], queryFn: DietService.getAllPublic });
+  const { data: maturities = [] } = useQuery({ queryKey: ["maturities"], queryFn: MaturityService.getAllPublic });
+  const { data: origins = [] } = useQuery({ queryKey: ["origins"], queryFn: OriginService.getAllPublic });
+  const { data: genders = [] } = useQuery({ queryKey: ["genders"], queryFn: GenderService.getAllPublic });
 
   /* Mutation */
   const createMutation = useMutation({
