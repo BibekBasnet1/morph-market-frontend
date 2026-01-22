@@ -7,6 +7,8 @@ import ProfilePage from "../../pages/profile/profilePage";
 import StorePage from "../../pages/store/store";
 // import SellersListPage from "../../pages/user/auth/sellers";
 import AddCategoriesPage from "../../pages/addCategories/addCategories";
+import InventoryPage from "../../pages/inventory/Inventory";
+import CartPage from "../../pages/cart/cart";
 
 const BuyerRoutes = () => (
   <Routes>
@@ -46,6 +48,11 @@ const BuyerRoutes = () => (
       <Route path="add-categories" element={
         <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer']}>
           <AddCategoriesPage />
+        </ProtectedRoute>
+      } />
+      <Route path="inventory" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <InventoryPage />
         </ProtectedRoute>
       } />
     </Route>

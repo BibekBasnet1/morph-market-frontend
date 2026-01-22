@@ -62,7 +62,7 @@ const listings = [
 
 export function FeaturedListings() {
   return (
-    <section className="py-24">
+    <section className="py-24 dark:text-white">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -82,7 +82,7 @@ export function FeaturedListings() {
           {listings.map((listing) => (
             <Card
               key={listing.id}
-              className="group overflow-hidden border-0 shadow-md hover:shadow-2xl transition-all duration-300"
+              className="group overflow-hidden border-0 dark:bg-primary shadow-md hover:shadow-2xl transition-all duration-300"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img
@@ -90,11 +90,11 @@ export function FeaturedListings() {
                   alt={listing.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors">
+                <button className="absolute top-4 right-4 w-10 h-10 rounded-full dark:bg-white/0 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors">
                   <Heart className="h-5 w-5 text-foreground" />
                 </button>
                 {listing.verified && (
-                    <Badge className="absolute top-3 left-3 bg-green-400 text-primary-foreground">
+                    <Badge className="absolute top-3 left-3 bg-green-700 text-white">
                       Featured
                     </Badge>
                 )}

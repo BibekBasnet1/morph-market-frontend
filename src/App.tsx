@@ -20,6 +20,8 @@ const LoginPage = lazy(() => import("./pages/user/auth/login"));
 const RegisterPage = lazy(() => import("./pages/user/auth/register"));
 const VerifyOtpPage = lazy(() => import("./pages/user/auth/verifyOtp"));
 const NotFound = lazy(() => import("./pages/not-found/notFound"));
+const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
+const CartPage = lazy(()=> import("./pages/cart/cart"))
 
 const queryClient = new QueryClient();
 
@@ -33,9 +35,12 @@ const AppRoutes = () => {
   const publicMenu = [
     { path: "/", load: Index },
     { path: "/all", load: AllReptilesPage },
+    { path: "/product/:slug", load: ProductDetail },
     { path: "/login", load: LoginPage },
     { path: "/register", load: RegisterPage },
     { path: "/verifyOtp", load: VerifyOtpPage },
+    { path: "/cart", load: CartPage },
+
   ];
 
   return (

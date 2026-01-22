@@ -15,6 +15,7 @@ import { OriginService } from "../lib/api/attributes/origin";
 import { DietService } from "../lib/api/attributes/diet";
 import type { ProductFilters } from "../types";
 import { useDebounce } from "../hooks/useDebounce";
+import { useNavigate } from "react-router";
 
 
 /* ----------------------------- Component ----------------------------- */
@@ -24,6 +25,8 @@ const [filters, setFilters] = useState<ProductFilters>({});
 const debouncedSearch = useDebounce(filters.search, 1000);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [page, setPage] = useState(1);
+
+  const navigate = useNavigate();
 
   const updateFilters = (payload: Partial<ProductFilters>) => {
     setFilters((prev) => ({ ...prev, ...payload }));
@@ -45,12 +48,14 @@ const {
 } = useQuery({
   queryKey: ["products", page, { ...filters, search: debouncedSearch }],
   queryFn: () =>
-    ProductService.getAll({
+    ProductService.getAllPublic({
       page,
        filters: { ...filters, search: debouncedSearch },
     }),
     placeholderData: (prev) => prev,
 });
+
+
 
 const products = data?.data ?? [];
 // const lastPage = data?.last_page ?? 1;
@@ -83,7 +88,7 @@ const products = data?.data ?? [];
   /* ----------------------------- UI ----------------------------- */
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 py-12 text-gray-900 dark:text-gray-100">
+    <div className="p-10 mx-auto space-y-6 py-12 text-gray-900 dark:text-gray-100">
 
       {/* Page Title */}
       <div>
@@ -348,43 +353,58 @@ const products = data?.data ?? [];
 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
   {products.map((product: any) => (
     <Card
-      key={product.id}
-      className="hover:shadow-md transition cursor-pointer dark:border-gray-600"
-      onClick={() => window.location.href = `/products/${product.id}`} // or use navigate from react-router
+      key={product.slug}
+      className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[400px] flex flex-col"
+      onClick={() => navigate(`/product/${product.slug}`)}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex flex-col h-full">
 
-        <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="h-full flex items-center justify-center text-sm">
+        <div className="space-y-3 flex-1">
+          {/* Image */}
+          <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
+            {product.image ? (
               <img
-                src="https://placehold.co/600x400"
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
-            </div>
-          )}
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm">
+                <img
+                  src="https://placehold.co/600x400"
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Name */}
+          <h3 className="font-medium truncate font-semibold">{product.name}</h3>
+
+          <div className="text-sm text-muted-foreground space-y-3">
+            <p>Category: {product.category ?? "Uncategorized"}</p>
+            {product.gender && <p>Gender: {product.gender}</p>}
+            {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet}</span></p>}
+            {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level}</span></p>}
+            {product.tag && <p>Tag: <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-800">{product.tag}</span></p>}
+          </div>
         </div>
 
-        <h3 className="font-medium truncate font-semibold">{product.name}</h3>
-
-        <div className="text-sm text-muted-foreground space-y-3">
-          <p>Category: {product.category?.name ?? "Uncategorized"}</p>
-          {product.gender && <p>Gender: {product.gender.name}</p>}
-          {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet.name}</span></p>}
-          {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level.name}</span></p>}
-        </div>
+        {/* CTA */}
+        <Button
+          size="sm"
+          className="w-full mt-2"
+          onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }}
+        >
+          See details
+        </Button>
 
       </CardContent>
     </Card>
   ))}
 </div>
+
 
     </div>
   );

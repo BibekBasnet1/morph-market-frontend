@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Ellipsis,
   Store,
+  Warehouse,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -57,6 +58,12 @@ const navItems: NavItem[] = [
       { name: "All Products", path: "/products", roles: ["seller"] },
       { name: "Add Product", path: "/products/add", roles: ["seller"] },
     ],
+  },
+    {
+    name: "Inventory",
+    icon: <Warehouse size={20} />,
+    roles: ["seller","buyer"],
+    path: "/inventory",
   },
   {
     icon: <User size={20} />,

@@ -13,6 +13,8 @@ import type { Trait } from "../../types";
 import { TraitsService } from "../../lib/api/attributes/traits";
 import { slugify } from "../../lib/slugify";
 import { Modal } from "../../components/ui/modal";
+import Select from "../../components/ui/select";
+import { CategoryService } from "../../lib/api";
 
 const AddTraitsPage = () => {
   const queryClient = useQueryClient();
@@ -25,6 +27,7 @@ const AddTraitsPage = () => {
     name: "",
     slug: "",
     description: "",
+    category_id: "" as string | number,
     // image: null as File | null,
   });
 
@@ -39,6 +42,7 @@ const AddTraitsPage = () => {
       name: trait.name,
       slug: trait.slug,
       description: trait.description,
+      category_id: trait.category_id ?? "",
       // image: null,
     });
     setIsOpen(true);
@@ -62,7 +66,11 @@ const AddTraitsPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: "" });
+    setForm({     
+    name: "",
+    slug: "",
+    description: "",
+    category_id: "",});
     setEditingId(null);
   };
 
@@ -71,12 +79,18 @@ const AddTraitsPage = () => {
     queryFn: TraitsService.getAll,
   });
 
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: CategoryService.getAllPublic,
+  });
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
+      formData.append("category_id", String(form.category_id));
       // if (form.image) formData.append("image", form.image);
 
       if (editingId) {
@@ -234,6 +248,20 @@ const AddTraitsPage = () => {
         </h3>
 
         <div className="space-y-4">
+          <div>
+          <Label>Category</Label>
+          <Select
+            placeholder="Select category"
+            options={categories.map((c: any) => ({
+              value: c.id.toString(),
+              label: c.name,
+            }))}
+            value={form.category_id?.toString()}
+            onChange={(value) =>
+              handleChange("category_id", Number(value))
+            }
+          />
+        </div>
           <div>
             <Label>Name</Label>
             <Input

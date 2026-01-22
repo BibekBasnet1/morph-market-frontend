@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
-const button = cva("rounded-md hover:cursor-pointer flex items-center justify-center transition-all ease-in-out font-medium transition", {
+const button = cva("rounded-full hover:cursor-pointer flex items-center justify-center transition-all ease-in-out font-medium transition", {
   variants: {
     variant: {
       primary: "bg-green-600 hover:bg-green-500 text-white",
@@ -13,7 +13,7 @@ const button = cva("rounded-md hover:cursor-pointer flex items-center justify-ce
     size: {
       sm: "px-3 h-8",
       md: "px-4 h-10",
-      lg: "h-11 rounded-md px-8",
+      lg: "h-11  px-8",
       icon: "h-10 w-10",
     },
   },

@@ -20,6 +20,19 @@ export const ROUTES: RouteConfig[] = [
     icon: 'Package',
     roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },
+
+  {
+    path: '/inventory',
+    label: 'Inventory',
+    icon: 'Package',
+    roles: ['buyer', 'seller'],
+  },
+  {
+    path: '/add-listing',
+    label: 'Add Listing',
+    icon: 'Plus',
+    roles: ['seller'],
+  },
   {
     path: '/buyers',
     label: 'Buyers',

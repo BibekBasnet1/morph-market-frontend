@@ -21,6 +21,9 @@ export const ProductService = {
 console.log("ProductService.getAll - res.data.data:", res.data.data);
     return res.data.data;
   },
+
+
+
   getAllPublic: async ({ page = 1, filters = {} }: GetAllParams) => {
     const res = await api.get("/products", {
       params: {
@@ -34,6 +37,12 @@ console.log("ProductService.getAll - res.data.data:", res.data.data);
     const res = await api.get(`/seller/products/${id}`);
     return res.data.data;
   },
+
+  async getBySlug (slug: string) {
+    const res = await api.get(`/products/${slug}`);
+    console.log(res.data.data);
+  return res.data.data;
+},
 
   create: async (payload: FormData): Promise<Product> => {
     const res = await api.post("/seller/products", payload);

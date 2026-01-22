@@ -295,10 +295,11 @@ const Navbar: React.FC = () => {
           <Button variant="ghost" size="icon">
             <Heart className="h-5 text-gray-500 hover:text-red-500 w-5" />
           </Button>
-
+<Link to="/cart">
           <Button variant="ghost" size="icon">
             <ShoppingCart className="h-5 text-gray-500 hover:text-blue-500 w-5" />
           </Button>
+</Link>
 
           <ThemeToggleButton />
 

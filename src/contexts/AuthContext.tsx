@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import type { RoleName, User, UserRole } from '../types';
 import { hasPermission, isRoleHigherOrEqual } from '../lib/permissions';
+import type { Cart } from '../types/CartTypes';
+import { CartService } from '../lib/api/cart';
 
 interface AuthToken {
   accessToken: string;
@@ -26,6 +28,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = 'auth-storage';
+
+const getLocalCarts = (): Cart[] => {
+  try {
+    return JSON.parse(localStorage.getItem("cart-products") || "[]");
+  } catch {
+    return [];
+  }
+};
+
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -62,20 +73,51 @@ useEffect(() => {
     }
   }, [user, token, isLoading]);
 
-  // Login function receives the API response user and token
+
 // const login = useCallback(async (userData: User, token: string) => {
 //   setUser(userData);
 //   setRoles(userData.roles.map(r => r.name as RoleName));
 //   setToken({ accessToken: token });
 //   setIsAuthenticated(true);
+//   localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: { accessToken: token } }));
 // }, []);
+
 const login = useCallback(async (userData: User, token: string) => {
+  // 1️⃣ Set auth state
   setUser(userData);
   setRoles(userData.roles.map(r => r.name as RoleName));
   setToken({ accessToken: token });
   setIsAuthenticated(true);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: { accessToken: token } }));
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      user: userData,
+      token: { accessToken: token },
+    })
+  );
+
+  // 2️⃣ Merge local carts → API carts
+  const localCarts = getLocalCarts();
+  if (!localCarts.length) return;
+
+  try {
+    for (const item of localCarts) {
+      await CartService.create({
+        product_id: item.product_id,
+        store_id: item.store_id!,
+        quantity: item.quantity,
+      });
+    }
+
+    // 3️⃣ Clear local carts ONLY after success
+    localStorage.removeItem("cart-products");
+  } catch (error) {
+    console.error("Failed to sync local carts", error);
+    // ❗ Do NOT clear localStorage so we can retry later
+  }
 }, []);
+
 
 
   // Logout clears state

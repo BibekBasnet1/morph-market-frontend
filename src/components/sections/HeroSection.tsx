@@ -1,45 +1,3 @@
-// import { Button } from "../ui/button";
-
-// const HeroSection = () => {
-//   return (
-//  <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/20">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-//           <div className="grid md:grid-cols-2 gap-12 items-center">
-//             <div className="space-y-6">
-//               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-//                 Find Your Perfect
-//                 <span className="text-primary block">Scaled Companion</span>
-//               </h1>
-//               <p className="text-lg text-muted-foreground max-w-md">
-//                 The premier marketplace for exotic snakes and reptiles. 
-//                 Connect with trusted breeders and find rare morphs from verified sellers.
-//               </p>
-//               <div className="flex flex-col sm:flex-row gap-4">
-//                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8">
-//                   Browse Snakes
-//                 </Button>
-//                 <Button size="lg" variant="outline" className="text-lg px-8">
-//                   Become a Seller
-//                 </Button>
-//               </div>
-//             </div>
-//             <div className="relative hidden md:block">
-//               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
-//               <img
-//                 src="https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=600&h=500&fit=crop"
-//                 alt="Beautiful snake"
-//                 className="relative rounded-3xl shadow-2xl object-cover w-full h-[400px]"
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//   )
-// }
-
-// export default HeroSection
-
-
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -146,10 +104,21 @@ const HeroSection = () => {
               <p className="text-primary font-medium tracking-widest uppercase text-sm animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 Premier Reptile Marketplace
               </p>
-              <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              {/* <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight animate-fade-in" style={{ animationDelay: "0.4s" }}>
                 Find Your Perfect
                 <span className="block text-gradient">Scaled Companion</span>
-              </h1>
+              </h1> */}
+              <h1 className="text-2xl md:text-8xl lg:text-9xl font-display font-bold text-white leading-[0.85] tracking-tight drop-shadow-2xl">
+                    The Art of <br/>
+<span className="relative inline-block text-[#E8DFCA] italic pr-4 z-30">
+                        Scaled
+                        <svg className="absolute -bottom-2 w-full h-3 text-primary/50" preserveAspectRatio="none" viewBox="0 0 100 10">
+<path d="M0 5 Q 50 10 100 5" fill="none" stroke="currentColor" stroke-width="4"></path>
+</svg>
+</span> <br/>
+                    Companionship
+                </h1>
+
               <p className="text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-in" style={{ animationDelay: "0.6s" }}>
                 Connect with trusted breeders worldwide. Discover rare morphs, 
                 verified sellers, and exceptional reptiles for your collection.
@@ -194,7 +163,7 @@ const HeroSection = () => {
           </div>
 
           {/* Right Content - Slideshow Info Card */}
-          <div className="hidden lg:block relative">
+          <div className="hidden lg:block space-y-8 justify-end h-full flex relative">
             <div className="relative animate-float">
               {/* Main Card */}
               <div className="relative bg-card/80 backdrop-blur-xl rounded-2xl p-6 border border-border/50 shadow-2xl">

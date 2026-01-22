@@ -139,6 +139,7 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
+  category_id?: number | string;
   image?: File | null;
 }
 
@@ -189,31 +190,51 @@ export interface Product {
   location?: string;
   breeder?: string;
   weight?: number;
+  active?: boolean;
 
-  category?: {
-    id: number;
-    name: string;
-  } | null;
+  category?: string | null;
 
-  origin?: {
-    id: number;
-    name: string;
-  } | null;
+  origin?: string | null;
 
-  diet?: {
-    id: number;
-    name: string;
-  } | null;
+  diet?: string | null;
 
-  gender?: {
-    id: number;
-    name: string;
-  } | null;
+  gender?: string | null;
 
-  maturity_level?: {
-    id: number;
-    name: string;
-  } | null;
+  maturity_level?: string | null;
+
+  tag?: string | null;
+
+  specifications?: {
+    length?: number | null;
+    length_unit?: string | null;
+    weight?: number | null;
+    birth_date?: string | null;
+  };
+
+  availability?: {
+    store: {
+      name: string;
+      slug: string;
+      brand_name: string;
+      logo: string | null;
+      rating: number;
+      verified: boolean;
+    };
+    pricing: {
+      price: number;
+      sale_price: number;
+      discount_price: number;
+      has_discount: boolean;
+      discount_period: {
+        start: string;
+        end: string;
+      };
+    };
+    stock: number;
+    in_stock: boolean;
+  }[];
+
+  min_price?: string;
 }
 
 export interface ProductFilters {
@@ -227,6 +248,13 @@ export interface ProductFilters {
   price_max?: number;
 }
 
+export interface InventoryItem {
+  id: string;
+  product: Product;
+  quantity: number;
+  purchased_at: string;
+  status: 'in_stock' | 'sold' | 'pending';
+}
 
 export interface ReptileFilters {
   category?: string;
