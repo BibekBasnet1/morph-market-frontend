@@ -16,12 +16,6 @@ const loadLocalCarts = (): Cart[] => {
     return [];
   }
 };
-const GENDER_MAP: Record<number, string> = {
-  1: "Unknown",
-  2: "Male",
-  3: "Female",
-};
-
 
 const saveLocalCarts = (carts: Cart[]) => {
   localStorage.setItem("cart-products", JSON.stringify(carts));
@@ -114,115 +108,190 @@ const CartPage = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-10 space-y-6">
-      <h1 className="text-2xl font-semibold">My Cart</h1>
+  <div className=" mx-auto py-10 px-4">
+    {/* Header */}
+    <div className="mb-6">
+      <h1 className="text-3xl font-semibold">Your Shopping Cart</h1>
+      <p className="text-sm text-muted-foreground mt-1">
+        You have {carts.length} item ready for safe delivery.
+      </p>
+    </div>
 
-      {carts.map((item:any) => {
-        const product = item.product;
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* ---------------- LEFT: CART ITEMS ---------------- */}
+      <div className="lg:col-span-2 space-y-6">
+        <Card>
+          <CardContent className="p-0">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 px-6 py-4 text-xs font-semibold text-muted-foreground border-b">
+              <div className="col-span-7">PRODUCT DETAILS</div>
+              <div className="col-span-2 text-center">QTY</div>
+              <div className="col-span-3 text-right">PRICE</div>
+            </div>
 
-        return (
-          <Card key={item.id}>
-            <CardContent className="p-4 flex gap-4">
-              {/* Image */}
-              <img
-                src={product?.image ?? "https://placehold.co/120x120"}
-                alt={product?.name}
-                className="w-auto h-28 rounded object-cover"
-              />
+            {carts.map((item: any) => {
+              const product = item.product;
 
-              {/* Info */}
-              <div className="flex-1 space-y-2">
-                <p className="text-lg font-medium">
-                  {product?.name ?? `Product #${item.product_id}`}
-                </p>
-                {product?.gender_id && (
-  <p className="text-sm text-muted-foreground">
-    Gender: <span className="font-medium">{GENDER_MAP[product.gender_id]}</span>
-  </p>
-)}
-<p>Origin: {product.origin_id}</p>
-
-<p>Diet: {product.diet_id}</p>
-<p>Maturity: {product.maturity_level_id}</p>
-
-                {product?.traits?.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {product.traits.map((trait: string) => (
-                      <span
-                        key={trait}
-                        className="px-2 py-0.5 text-xs bg-muted rounded"
-                      >
-                        {trait}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <p className="text-sm">
-                  Price: <strong>${item.price}</strong>
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      updateQuantity(item, item.quantity - 1)
-                    }
-                  >
-                    −
-                  </Button>
-                  <span>{item.quantity}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      updateQuantity(item, item.quantity + 1)
-                    }
-                  >
-                    +
-                  </Button>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => removeItem(item)}
+              return (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-12 gap-4 px-6 py-5 border-b last:border-b-0 items-center"
                 >
-                  Remove
-                </Button>
+                  {/* Product */}
+                  <div className="col-span-7 flex gap-4">
+                    <img
+                      src={product?.image ?? "https://placehold.co/100x100"}
+                      alt={product?.name}
+                      className="w-20 h-20 rounded object-cover"
+                    />
+
+                    <div className="space-y-1">
+                      <p className="font-medium">
+                        {product?.name ?? `Product #${item.product_id}`}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        Breeder: {product?.store?.name ?? "N/A"}
+                      </p>
+
+                      <button
+                        onClick={() => removeItem(item)}
+                        className="text-xs text-red-600 hover:underline mt-2"
+                      >
+                        Remove from cart
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quantity */}
+                  <div className="col-span-2 flex justify-center">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          updateQuantity(item, item.quantity - 1)
+                        }
+                      >
+                        −
+                      </Button>
+                      <span className="min-w-[20px] text-center">
+                        {item.quantity}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          updateQuantity(item, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="col-span-3 text-right font-semibold">
+                    ${Number(item.price).toFixed(2)}
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        {/* ---------------- Shipping & Estimates ---------------- */}
+        {/* <Card>
+          <CardContent className="p-6 space-y-4">
+            <h2 className="font-semibold flex items-center gap-2">
+              Shipping & Estimates
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">
+                  Zip / Postal Code
+                </label>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    placeholder="90210"
+                    className="w-full border rounded px-3 py-2 text-sm"
+                  />
+                  <Button size="sm">Calculate</Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Live animals require priority shipping.
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
 
-      {/* Total */}
-      <Card>
-        <CardContent className="p-4 flex justify-between">
-          <span className="font-semibold">Total</span>
-          <span className="text-lg font-bold">
-            ${totalAmount.toFixed(2)}
-          </span>
-        </CardContent>
-      </Card>
+              <div>
+                <label className="text-sm font-medium">
+                  Notes to Breeder
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Specific handling instructions or delivery dates..."
+                  className="w-full border rounded px-3 py-2 text-sm mt-2"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card> */}
+      </div>
 
-      {/* Checkout */}
-      <div className="flex justify-end">
-        <Button
-          size="lg"
-          onClick={() =>
-            isAuthenticated ? navigate("/checkout") : navigate("/login")
-          }
-        >
-          Proceed to Checkout
-        </Button>
+      {/* ---------------- RIGHT: ORDER SUMMARY ---------------- */}
+      <div className="space-y-4">
+        <Card className="sticky top-6">
+          <CardContent className="p-6 space-y-4">
+            <h2 className="text-lg font-semibold">Order Summary</h2>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>${totalAmount.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Estimated Shipping</span>
+                <span>$55.00</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Tax (Estimated)</span>
+                <span>$32.00</span>
+              </div>
+
+              <hr />
+
+              <div className="flex justify-between text-lg font-bold">
+                <span>Order Total</span>
+                <span>${(totalAmount + 87).toFixed(2)}</span>
+              </div>
+            </div>
+
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() =>
+                isAuthenticated
+                  ? navigate("/checkout")
+                  : navigate("/login")
+              }
+            >
+              Proceed to Checkout
+            </Button>
+
+            <p className="text-xs text-muted-foreground text-center">
+              By clicking checkout you agree to the breeder’s store policy.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CartPage;

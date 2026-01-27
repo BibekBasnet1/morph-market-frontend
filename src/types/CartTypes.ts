@@ -12,6 +12,6 @@ export type Cart = {
 
 export type AddToCartPayload = {
   product_id: number;
-  store_id: number;
+  store_id?: number;
   quantity: number;
 };

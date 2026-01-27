@@ -180,28 +180,75 @@ export interface Gender extends Category {}
 //   updatedAt: string;
 // }
 
+// export interface Product {
+//   id: number;
+//   name: string;
+//   image: string | null;
+//   slug: string;
+//   description?: string;
+//   price?: number;
+//   location?: string;
+//   breeder?: string;
+//   weight?: number;
+//   active?: boolean;
+
+//   category?: string | null;
+
+//   origin?: string | null;
+
+//   diet?: string | null;
+
+//   gender?: string | null;
+
+//   maturity_level?: string | null;
+
+//   tag?: string | null;
+
+//   specifications?: {
+//     length?: number | null;
+//     length_unit?: string | null;
+//     weight?: number | null;
+//     birth_date?: string | null;
+//   };
+
+//   availability?: {
+//     store: {
+//       name: string;
+//       slug: string;
+//       brand_name: string;
+//       logo: string | null;
+//       rating: number;
+//       verified: boolean;
+//     };
+//     pricing: {
+//       price: number;
+//       sale_price: number;
+//       discount_price: number;
+//       has_discount: boolean;
+//       discount_period: {
+//         start: string;
+//         end: string;
+//       };
+//     };
+//     stock: number;
+//     in_stock: boolean;
+//   }[];
+
+//   min_price?: string;
+// }
+
 export interface Product {
   id: number;
   name: string;
   image: string | null;
   slug: string;
   description?: string;
-  price?: number;
-  location?: string;
-  breeder?: string;
-  weight?: number;
-  active?: boolean;
 
   category?: string | null;
-
   origin?: string | null;
-
   diet?: string | null;
-
   gender?: string | null;
-
   maturity_level?: string | null;
-
   tag?: string | null;
 
   specifications?: {
@@ -211,31 +258,9 @@ export interface Product {
     birth_date?: string | null;
   };
 
-  availability?: {
-    store: {
-      name: string;
-      slug: string;
-      brand_name: string;
-      logo: string | null;
-      rating: number;
-      verified: boolean;
-    };
-    pricing: {
-      price: number;
-      sale_price: number;
-      discount_price: number;
-      has_discount: boolean;
-      discount_period: {
-        start: string;
-        end: string;
-      };
-    };
-    stock: number;
-    in_stock: boolean;
-  }[];
-
   min_price?: string;
 }
+
 
 export interface ProductFilters {
   search?: string;
@@ -249,7 +274,7 @@ export interface ProductFilters {
 }
 
 export interface InventoryItem {
-  id: string;
+  id: number;
   product: Product;
   quantity: number;
   purchased_at: string;
@@ -261,7 +286,7 @@ export interface ReptileFilters {
   location?: string;
   priceMin?: number;
   priceMax?: number;
-  sex?: 'male' | 'female' | 'unknown';
+  sex?: string | 'male' | 'female' | 'unknown';
   weightMin?: number;
   weightMax?: number;
   traits?: string[];

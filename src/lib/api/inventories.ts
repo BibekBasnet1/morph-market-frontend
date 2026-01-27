@@ -11,4 +11,8 @@ export const InventoryService = {
     const res = await api.post("/buyer/inventories", payload);
     return res.data.data;
   },
+  update: async (id: number, payload: FormData): Promise<InventoryItem> => {
+    const res = await api.put(`/buyer/inventories/${id}`, payload);
+    return res.data.data;
+  }
 };

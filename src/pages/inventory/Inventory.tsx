@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { DataTable } from "../../components/common/DataTable";
 import type { ColumnDef } from "../../components/common/DataTable";
-import type { InventoryItem, ProductFilters } from "../../types";
+import type { InventoryItem, Product, ProductFilters } from "../../types";
 import { InventoryService } from "../../lib/api";
 import { CategoryService } from "../../lib/api";
 import { GenderService } from "../../lib/api/attributes/gender";
@@ -22,6 +22,7 @@ import { MoreVertical, Plus, Filter, X } from "lucide-react";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const InventoryPage = () => {
+  
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: inventoriesRaw, isLoading } = useQuery({
@@ -66,20 +67,25 @@ const InventoryPage = () => {
     queryFn: DietService.getAllPublic,
   });
 
-  const updateProductMutation = useMutation({
-    mutationFn: async ({ product, active }: { product: Product; active: boolean }) => {
-      const formData = new FormData();
-      formData.append("name", product.name);
-      formData.append("slug", product.slug);
-      formData.append("category_id", String(product.category_id || ""));
-      formData.append("active", active ? "1" : "0");
-      // Add other required fields if needed
-      return ProductService.update(product.id, formData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    },
-  });
+const updateProductMutation = useMutation({
+  mutationFn: async ({ item, active }: { item: InventoryItem; active: boolean }) => {
+    const formData = new FormData();
+
+    // Required fields for inventory update
+    formData.append("store_id", String((item as any).store_id || ""));
+    formData.append("product_id", String(item.product?.id || ""));
+    formData.append("price", String((item as any).price || item.product?.price || 0));
+    formData.append("stock", String((item as any).stock || 0));
+    formData.append("active", active ? "1" : "0");
+
+    return InventoryService.update(item.id, formData);
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["inventories"] });
+  },
+});
+
+
 
   const [isAdvancedView, setIsAdvancedView] = useState(false);
 
@@ -98,9 +104,7 @@ const InventoryPage = () => {
     [filters]
   );
 
-  const [activeStatus, setActiveStatus] = useState<Record<string, boolean>>(
-    () => normalized.reduce((acc, it) => ({ ...acc, [it.id]: (it.product as any).active ?? true }), {} as Record<string, boolean>)
-  );
+
 
   const filtered = useMemo(() => {
     let result = normalized;
@@ -132,7 +136,6 @@ const InventoryPage = () => {
       result = result.filter((it) => it.product?.maturity_level?.id === filters.maturity_level_id);
     }
 
-    // Apply origin filter
     if (filters.origin_id) {
       result = result.filter((it) => it.product?.origin?.id === filters.origin_id);
     }
@@ -448,10 +451,16 @@ const InventoryPage = () => {
                         <p className="font-semibold">{((item as any).sale_price || (item as any).price) ? `$${Number((item as any).sale_price || (item as any).price).toLocaleString()}` : '—'}</p>
                         <div className="mt-2 flex items-center gap-3 justify-end">
                           <Badge variant={(item as any).active ? 'default' : 'destructive'}>{(item as any).active ? 'AVAILABLE' : 'SOLD'}</Badge>
-                          <Switch defaultChecked={activeStatus[item.id]} onChange={(checked) => {
-                            setActiveStatus((s) => ({ ...s, [item.id]: checked }));
-                            updateProductMutation.mutate({ id: Number(item.product.id), active: checked });
-                          }} />
+                          <Switch
+                            checked={Boolean((item as any).active)}
+                            disabled={updateProductMutation.isPending}
+                            onChange={(checked) => {
+                              updateProductMutation.mutate({
+                                item: item,
+                                active: checked,
+                              });
+                            }}
+                          />
                           <button className="p-2 rounded hover:bg-accent"><MoreVertical /></button>
                         </div>
                       </div>

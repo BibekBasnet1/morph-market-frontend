@@ -12,7 +12,7 @@ export const CartService = {
     return res.data.data;
   },
     update: async (id: number, payload: FormData): Promise<Cart[]> => {
-    const res = await api.post(`/admin/categories/${id}`, payload);
+    const res = await api.post(`/carts/${id}`, payload);
     return res.data.data;
   },
   remove: async (id: number): Promise<void> => {
