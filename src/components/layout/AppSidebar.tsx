@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Activity, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
 import {
@@ -11,6 +11,7 @@ import {
   Ellipsis,
   Store,
   Warehouse,
+  ActivityIcon,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -64,6 +65,12 @@ const navItems: NavItem[] = [
     icon: <Warehouse size={20} />,
     roles: ["seller","buyer"],
     path: "/inventory",
+  },
+      {
+    name: "Activity Log",
+    icon: <ActivityIcon size={20} />,
+    roles: ["seller","buyer", 'admin'],
+    path: "/activity-log",
   },
   {
     icon: <User size={20} />,

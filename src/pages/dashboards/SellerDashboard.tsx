@@ -1,17 +1,20 @@
 import PopularProductsCard from "../../components/ecommerce/PopularComponent";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
+import SellerRecentActivity from "../../components/ecommerce/SellerRecentActivityComponent";
+import SellerStatsCards from "../../components/ecommerce/SellerStatsComponent";
 
 const SellerDashboard = () => {
   return (
-<>
-      <div className="col-span-12 xl:col-span-4">
+<section className="grid grid-cols-1 gap-4">
+      <div className="col-span-12">
+        <SellerStatsCards />
+      </div>
+          <div className=" col-span-6">
+        <SellerRecentActivity />
+      </div>
+      <div className=" col-span-6">
         <PopularProductsCard />
       </div>
-
-      <div className="col-span-12 xl:col-span-5">
-        <DemographicCard />
-      </div>
-</>
+</section>
   );
 };
 

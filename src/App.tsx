@@ -22,6 +22,8 @@ const VerifyOtpPage = lazy(() => import("./pages/user/auth/verifyOtp"));
 const NotFound = lazy(() => import("./pages/not-found/notFound"));
 const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
 const CartPage = lazy(()=> import("./pages/cart/cart"))
+const ActivityLogPage = lazy(() => import("./pages/activityLog/activityLog"));
+const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const AppRoutes = () => {
     { path: "/register", load: RegisterPage },
     { path: "/verifyOtp", load: VerifyOtpPage },
     { path: "/cart", load: CartPage },
+    {path: "/activity-log", load: ActivityLogPage},
+    { path: "/product/:slug/details", load: ProductDetailsImmersive },
 
   ];
 

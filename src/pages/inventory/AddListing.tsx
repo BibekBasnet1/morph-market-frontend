@@ -30,6 +30,9 @@ const AddListingPage = () => {
     Record<number, InventoryItem>
   >({});
 
+  const [openProductId, setOpenProductId] = useState<number | null>(null);
+
+
   const { data, isLoading } = useQuery({
     queryKey: ["seller-products"],
     queryFn: () => ProductService.getAll({}),
@@ -78,29 +81,128 @@ const AddListingPage = () => {
     },
   });
 
-  const handleProductSelect = (productId: number) => {
+const handleProductSelect = (productId: number) => {
+  if (mode === "single") {
+    setSelectedProducts([productId]);
+    setOpenProductId(productId);
+  } else {
     setSelectedProducts((prev) =>
-      mode === "single"
-        ? [productId]
-        : prev.includes(productId)
+      prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
+  }
 
-    if (!inventoryData[productId]) {
-      const product = products.find((p: any) => p.id === productId);
+  if (!inventoryData[productId]) {
+    const product = products.find((p: any) => p.id === productId);
 
-      setInventoryData((prev) => ({
-        ...prev,
-        [productId]: {
-          price: product?.price || 0,
-          stock: 1,
-          quantity: 1,
-          active: true,
-        },
-      }));
-    }
-  };
+    setInventoryData((prev) => ({
+      ...prev,
+      [productId]: {
+        price: product?.price || 0,
+        stock: 1,
+        quantity: 1,
+        active: true,
+      },
+    }));
+  }
+};
+
+const InventoryModal = ({
+  product,
+  item,
+  onClose,
+  onChange,
+}: {
+  product: any;
+  item: InventoryItem;
+  onClose: () => void;
+  onChange: (field: keyof InventoryItem, value: any) => void;
+}) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-xl rounded-xl bg-white p-6 dark:bg-[#111827]">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">{product.name}</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Price</Label>
+            <Input
+              type="number"
+              value={item.price}
+              onChange={(e) => onChange("price", +e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label>Sale Price</Label>
+            <Input
+              type="number"
+              value={item.sale_price || ""}
+              onChange={(e) =>
+                onChange(
+                  "sale_price",
+                  e.target.value ? +e.target.value : undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Discount Price</Label>
+            <Input
+              type="number"
+              value={item.discount_price || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_price",
+                  e.target.value ? +e.target.value : undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Stock</Label>
+            <Input
+              type="number"
+              value={item.stock}
+              onChange={(e) => onChange("stock", +e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label>Quantity</Label>
+            <Input
+              type="number"
+              value={item.quantity}
+              onChange={(e) => onChange("quantity", +e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
+            Save
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
   const updateItem = (
     productId: number,
@@ -184,8 +286,10 @@ const AddListingPage = () => {
           })}
         </div>
 
-        {/* Inventory Forms */}
-        {selectedProducts.map((id) => {
+
+
+       {mode === "bulk" &&
+        selectedProducts.map((id) => {
           const product = products.find((p: any) => p.id === id);
           const item = inventoryData[id];
 
@@ -287,6 +391,18 @@ const AddListingPage = () => {
             </Card>
           );
         })}
+
+        {openProductId && (
+  <InventoryModal
+    product={products.find((p: any) => p.id === openProductId)}
+    item={inventoryData[openProductId]}
+    onClose={() => setOpenProductId(null)}
+    onChange={(field, value) =>
+      updateItem(openProductId, field, value)
+    }
+  />
+)}
+
 
         {/* Submit */}
         {selectedProducts.length > 0 && (

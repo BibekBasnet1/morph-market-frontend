@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProductService } from "../../lib/api/products";
 import { CartService } from "../../lib/api/cart";
@@ -113,6 +113,27 @@ const addToLocalCart = ({
   localStorage.setItem("cart-products", JSON.stringify(existing));
 };
 
+const handleAddToCart = () => {
+  const availability = product.availability?.[0];
+  if (!availability) return;
+
+  const price = getFinalPrice(availability.pricing);
+
+  const payload: AddToCartPayload = {
+    product_id: product.id,
+    quantity: 1,
+  };
+
+  if (isGuestUser()) {
+    addToLocalCart({ product, price });
+    toast.success("Added to cart");
+    return;
+  }
+
+  addToCartMutation.mutate(payload);
+};
+
+
 
   /* ---------------- UI ---------------- */
 
@@ -143,14 +164,25 @@ const addToLocalCart = ({
 
         {/* Overview */}
         <section>
+          <div className=" flex justify-between">
           <h2 className="text-lg font-semibold mb-2">Overview</h2>
           <p className="text-sm text-gray-500 italic">
             "{renderValue(product.description)}"
           </p>
+          </div>
+          <div>
+            <Link
+            to={`/products/${product.slug}/details`}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            View more details →
+          </Link>
+
+          </div>
         </section>
 
         {/* Technical Specifications */}
-        <section className="border-t pt-6">
+        {/* <section className="border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Technical Specifications</h2>
           </div>
@@ -182,10 +214,10 @@ const addToLocalCart = ({
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Lineage & Origin */}
-        <section className="bg-emerald-50 rounded-xl p-6">
+        {/* <section className="bg-emerald-50 rounded-xl p-6">
           <h3 className="font-semibold mb-4 text-lg text-primary ">Lineage & Origin</h3>
 
           <div className="grid sm:grid-cols-2 gap-6 text-sm">
@@ -206,7 +238,7 @@ const addToLocalCart = ({
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
       </div>
 
@@ -220,9 +252,20 @@ const addToLocalCart = ({
 
           return (
             <div className="border rounded-xl p-6 space-y-5">
+              <div className="flex justify-between items-start">
+
               <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
                 Recently Listed
               </span>
+
+              <Button
+                onClick={handleAddToCart}
+                disabled={addToCartMutation.isPending}
+              >
+                {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
+              </Button>
+
+              </div>
 
               <h1 className="text-2xl font-semibold">{product.name}</h1>
 
@@ -276,9 +319,9 @@ const addToLocalCart = ({
             </div>
           </div>
 
-          <Button className="">
+          <a href={`/store/${product.availability?.[0]?.store?.slug}`} className="text-primary font-medium text-sm">
             Visit Store Profile →
-          </Button>
+          </a>
         </div>
 
       </div>

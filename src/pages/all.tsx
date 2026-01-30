@@ -85,6 +85,11 @@ const products = data?.data ?? [];
     queryFn: DietService.getAllPublic,
   });
 
+  // const { data: diets = [] } = useQuery({
+  //   queryKey: ["diets"],
+  //   queryFn: DietService.getAllPublic,
+  // });
+
   /* ----------------------------- UI ----------------------------- */
 
   return (

@@ -6,6 +6,7 @@ import ProfilePage from "../../pages/profile/profilePage";
 import { lazy } from "react";
 import InventoryPage from "../../pages/inventory/Inventory";
 import CartPage from "../../pages/cart/cart";
+import ActivityLogPage from "../../pages/activityLog/activityLog";
 // import StorePage from "../../pages/store/store";
 
 // Lazy load product pages
@@ -59,6 +60,12 @@ const SellerRoutes = () => (
       <Route path="products/add" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <AddProductPage />
+        </ProtectedRoute>
+      } />
+
+            <Route path="activity-log" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <ActivityLogPage />
         </ProtectedRoute>
       } />
       <Route path="products/edit/:id" element={
