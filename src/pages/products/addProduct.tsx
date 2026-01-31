@@ -207,7 +207,7 @@ const AddProductPage = () => {
           </div>
 
           <div>
-            <Label>Weight</Label>
+            <Label>Weight (in grams)</Label>
             <Input
               value={form.weight}
               onChange={(e) => handleChange("weight", e.target.value)}

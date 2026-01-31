@@ -2,22 +2,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 
 const SellingsCard = () => {
   return (
-    <Card className="dark:text-white dark:bg-gray-800">
+    <Card
+      className="border border-gray-200 bg-white text-gray-900
+                 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+    >
       <CardHeader>
-        <CardTitle>Sellings</CardTitle>
+        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Sellings
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+
+      <CardContent className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span>Total Orders</span>
-          <span className="font-semibold">128</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            Total Orders
+          </span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            128
+          </span>
         </div>
+
         <div className="flex justify-between">
-          <span>Total Revenue</span>
-          <span className="font-semibold">$4,560</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            Total Revenue
+          </span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            $4,560
+          </span>
         </div>
+
         <div className="flex justify-between">
-          <span>Pending Orders</span>
-          <span className="font-semibold text-yellow-600">12</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            Pending Orders
+          </span>
+          <span className="font-semibold text-yellow-600 dark:text-yellow-400">
+            12
+          </span>
         </div>
       </CardContent>
     </Card>

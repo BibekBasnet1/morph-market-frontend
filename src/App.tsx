@@ -7,6 +7,7 @@ import MainLayout from "./components/layout/MainLayout";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { Toaster } from "react-hot-toast";
 import Loading from "./components/common/Loading";
+import QuickNav from "./components/common/QuickNav";
 
 // Lazy load route components
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
@@ -15,7 +16,7 @@ const BuyerRoutes = lazy(() => import("./components/auth/BuyerRoutes"));
 
 // Lazy load components
 const Index = lazy(() => import("./pages/index"));
-const AllReptilesPage = lazy(() => import("./pages/all"));
+const AllReptilesPage = lazy(() => import("./pages/marketplace"));
 const LoginPage = lazy(() => import("./pages/user/auth/login"));
 const RegisterPage = lazy(() => import("./pages/user/auth/register"));
 const VerifyOtpPage = lazy(() => import("./pages/user/auth/verifyOtp"));
@@ -34,17 +35,17 @@ const AppRoutes = () => {
   const isSeller = roles?.includes('seller');
   const isBuyer = roles?.includes('buyer');
 
+
   const publicMenu = [
     { path: "/", load: Index },
-    { path: "/all", load: AllReptilesPage },
+    { path: "/marketplace", load: AllReptilesPage },
     { path: "/product/:slug", load: ProductDetail },
     { path: "/login", load: LoginPage },
     { path: "/register", load: RegisterPage },
     { path: "/verifyOtp", load: VerifyOtpPage },
     { path: "/cart", load: CartPage },
-    {path: "/activity-log", load: ActivityLogPage},
-    { path: "/product/:slug/details", load: ProductDetailsImmersive },
-
+    { path: "/activity-log", load: ActivityLogPage },
+    { path: "/products/:slug/details", load: ProductDetailsImmersive },
   ];
 
   return (
@@ -111,6 +112,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SidebarProvider>
+          <QuickNav />
           <Toaster
             position="top-center"
             containerStyle={{

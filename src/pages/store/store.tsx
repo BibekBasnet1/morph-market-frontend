@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Store, MapPin, FileText, Image, Clock, CheckCircle } from "lucide-react";
+import { Store, MapPin, FileText, Image, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textArea";
 import { Button } from "../../components/ui/button";
 import Label from "../../components/ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import type { StoreForm } from "../../types/StoreType";
 import { StoreService } from "../../lib/api/stores";
@@ -19,13 +19,26 @@ import {
   hoursSchema 
 } from "../../validation/StoreSchema";
 import { z } from "zod";
+import { CountryService } from "../../lib/api/countries";
+import Select from "../../components/ui/select";
 
 export default function StoreRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
   const user = useAuth();
   console.log(user);
+
+  const { data: countries = [], isLoading } = useQuery({
+  queryKey: ["countries"],
+  queryFn: CountryService.getAll,
+});
+
+const countryOptions = countries.map((c: any) => ({
+  value: c.id,
+  label: c.name,
+}));
   
   const [formData, setFormData] = useState<StoreForm>({
     user_id: "",
@@ -249,6 +262,17 @@ export default function StoreRegistrationForm() {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className=" mx-auto">
         <h1>Create your store</h1>
+
+        {isSubmitted ? (
+          <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 p-6 rounded-lg flex items-center gap-4">
+            <AlertCircle className="w-6 h-6" />
+            <div>
+              <p className="font-semibold">Store Registration Pending</p>
+              <p>Your store request has been submitted and is pending review. You will be notified once it is approved.</p>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -389,7 +413,7 @@ export default function StoreRegistrationForm() {
               
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <Label>Country</Label>
                     <Input
                       type="text"
@@ -398,6 +422,21 @@ export default function StoreRegistrationForm() {
                       placeholder="e.g. US"
                       className={errors["address.country_id"] ? "border-red-500" : ""}
                     />
+                    <ErrorMessage field="address.country_id" />
+                  </div> */}
+
+                   <div>
+                    <Label>Country</Label>
+                    {isLoading ? (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Loading countries...</p>
+                    ) : (
+                      <Select
+                        options={countryOptions}
+                        value={formData.address.country_id}
+                        placeholder="Select a country"
+                        onChange={(val:any) => handleAddressChange("country_id", val)}
+                      />
+                    )}
                     <ErrorMessage field="address.country_id" />
                   </div>
                   <div>
@@ -688,6 +727,8 @@ export default function StoreRegistrationForm() {
             )}
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

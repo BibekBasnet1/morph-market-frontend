@@ -5,20 +5,30 @@ const products = [
   { species: "Corn Snake", count: 12 },
   { species: "Boa Constrictor", count: 7 },
   { species: "King Snake", count: 5 },
-
 ];
 
 const PopularProductsCard = () => {
   return (
-        <Card className="dark:text-white dark:bg-gray-800">
+    <Card
+      className="border border-gray-200 bg-white text-gray-900
+                 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+    >
       <CardHeader>
-        <CardTitle>Popular Snake Species</CardTitle>
+        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Popular Snake Species
+        </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-3 text-sm">
         {products.map((snake) => (
-          <div key={snake.species} className="flex justify-between">
-            <span>{snake.species}</span>
-            <span className="font-semibold">
+          <div
+            key={snake.species}
+            className="flex justify-between items-center"
+          >
+            <span className="text-gray-600 dark:text-gray-400">
+              {snake.species}
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {snake.count} sold
             </span>
           </div>

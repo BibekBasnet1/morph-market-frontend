@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="bg-card dark:bg-gray-900 border-t border-border dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -24,7 +24,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
               <li>
                 <Link
-                  to="/all"
+                  to="/marketplace"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
                   Browse All

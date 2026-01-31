@@ -313,7 +313,7 @@ const Navbar: React.FC = () => {
               </Link>
 
               <Link to="/register">
-                <Button>Start Selling</Button>
+                <Button>Join Community</Button>
               </Link>
             </>
           ) : (

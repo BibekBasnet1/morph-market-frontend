@@ -32,7 +32,7 @@ const CategorySection = () => {
   const navigate = useNavigate();
 
   const handleCategoryClick = (categoryName: string) => {
-    navigate(`/all?category=${encodeURIComponent(categoryName)}`);
+    navigate(`/marketplace?category=${encodeURIComponent(categoryName)}`);
   };
 
   return (

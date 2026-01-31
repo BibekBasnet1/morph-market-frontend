@@ -134,7 +134,7 @@ const HeroSection = () => {
               </Button>
             </div> */}
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to="/all">
+                  <Link to="/marketplace">
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/80 text-lg px-8">
                   Browse Snakes
                 </Button>

@@ -179,11 +179,15 @@ const updateProductMutation = useMutation({
     <div className="p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-extrabold">Inventory</h1>
-          <p className="text-sm text-muted-foreground">Manage your active listings and reptile collection.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+            Inventory
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Manage your active listings and reptile collection.
+          </p>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => setIsAdvancedView((v) => !v)}>
+          <Button className="text-gray-900 dark:text-gray-100" variant="ghost" size="sm" onClick={() => setIsAdvancedView((v) => !v)}>
             {isAdvancedView ? "Card View" : "Advanced View"}
           </Button>
           <Button variant="primary" size="md" onClick={() => navigate('/add-listing')}>
@@ -194,25 +198,29 @@ const updateProductMutation = useMutation({
 
       {/* Stats cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Items</p>
-          <p className="text-2xl font-semibold">{totalItems}</p>
-          <p className="text-xs text-emerald-400 mt-1">+12 this month</p>
+        <div className="rounded-lg border border-gray-200 bg-white p-4
+                dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
+          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{totalItems}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+12 this month</p>
         </div>
-        <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Available</p>
-          <p className="text-2xl font-semibold">{available}</p>
-          <p className="text-xs text-muted-foreground mt-1">{Math.round((available / Math.max(1, totalItems)) * 100)}% of total inventory</p>
+        <div className="rounded-lg border border-gray-200 bg-white p-4
+                dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Available</p>
+          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{available}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">{Math.round((available / Math.max(1, totalItems)) * 100)}% of total inventory</p>
         </div>
-        <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Recently Sold</p>
-          <p className="text-2xl font-semibold">{recentlySold}</p>
-          <p className="text-xs text-muted-foreground mt-1">Last 7 days</p>
+        <div className="rounded-lg border border-gray-200 bg-white p-4
+                dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Recently Sold</p>
+          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{recentlySold}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Last 7 days</p>
         </div>
       </div>
 
       {/* Filters */}
-      <Card className="dark:border-none mb-6">
+      <Card className="mb-6 border border-gray-200 bg-white
+                 dark:border-gray-700 dark:bg-gray-900">
         <CardContent className="p-4 space-y-4">
 
           {/* Primary Filters */}
@@ -337,7 +345,7 @@ const updateProductMutation = useMutation({
 
       {/* Active Filters */}
       {activeFiltersCount > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex dark:text-gray-100 flex-wrap gap-2 mb-6">
           {Object.entries(filters).map(([key, value]) => {
             if (!value) return null;
 
@@ -380,7 +388,7 @@ const updateProductMutation = useMutation({
       )}
 
       {/* Listings or Table */}
-      <div>
+      <div className="dark:text-white">
         {isAdvancedView ? (
           <DataTable data={filtered} columns={(
             [
@@ -394,7 +402,11 @@ const updateProductMutation = useMutation({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">No Image</div>
+                        <div className="w-full h-full bg-gray-200 dark:bg-gray-800
+                          flex items-center justify-center
+                          text-xs text-gray-500 dark:text-gray-400">
+                          No Image
+                        </div>
                       )}
                     </div>
                     <div>
@@ -432,7 +444,9 @@ const updateProductMutation = useMutation({
               <div className="text-center text-muted-foreground py-12">No listings found</div>
             ) : (
               filtered.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 rounded-md border bg-card p-4">
+                <div key={item.id} className="flex items-center gap-4 rounded-md border
+                border-gray-200 bg-white p-4
+                dark:border-gray-700 dark:bg-gray-900">
                   <div className="w-28 h-20 rounded overflow-hidden bg-muted flex-shrink-0">
                     {item.product?.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -444,8 +458,8 @@ const updateProductMutation = useMutation({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-semibold text-lg">{item.product?.name}</p>
-                        <p className="text-sm text-muted-foreground">ID: {(item as any).sku ?? `BP-${item.id}`}{(item.product?.category?.name) ? ` • ${item.product.category?.name}` : ''}</p>
+                        <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">{item.product?.name}</p>
+                       <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{(item.product?.category?.name) ? ` • ${item.product.category?.name}` : ''}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">{((item as any).sale_price || (item as any).price) ? `$${Number((item as any).sale_price || (item as any).price).toLocaleString()}` : '—'}</p>
@@ -461,7 +475,9 @@ const updateProductMutation = useMutation({
                               });
                             }}
                           />
-                          <button className="p-2 rounded hover:bg-accent"><MoreVertical /></button>
+                          <button className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <MoreVertical />
+                          </button>
                         </div>
                       </div>
                     </div>

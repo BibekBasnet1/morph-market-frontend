@@ -54,24 +54,20 @@ const VerifyOtpPage = () => {
     resolver: zodResolver(verifyOtpSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: verifyOtpApi,
-    onSuccess: (data) => {
-      if (data?.user && data?.token) {
-        login(data?.user, data?.token);
-        toast.success("OTP verified successfully!");
-const roleNames = data.user.roles.map((r: any) => r.name);
-        const redirectPath = getDefaultPathForRoles(roleNames);
-        navigate(redirectPath, { replace: true });
-        // navigate("/login", { replace: true });
-      }
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Invalid OTP"
-      );
-    },
-  });
+const mutation = useMutation({
+  mutationFn: verifyOtpApi,
+  onSuccess: (data) => {
+    if (data.success && data.data?.token) {
+      login(data.data.user || {}, data.data.token);
+      toast.success(data.message || "OTP verified successfully!");
+      navigate("/login");
+    }
+  },
+  onError: (error: any) => {
+    toast.error(error?.response?.data?.message || "Invalid OTP");
+  },
+});
+
 
   const onSubmit = (data: VerifyOtpSchema) => {
     if (!email) {

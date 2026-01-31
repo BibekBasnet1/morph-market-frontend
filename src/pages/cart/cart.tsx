@@ -103,9 +103,29 @@ const CartPage = () => {
     0
   );
 
-  if (!carts.length) {
-    return <p className="p-6">Your cart is empty</p>;
-  }
+if (!carts.length) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+      <div className="mb-4 text-6xl">🛒</div>
+
+      <h2 className="text-xl font-semibold mb-2">
+        Your cart is empty
+      </h2>
+
+      <p className="text-muted-foreground mb-6 max-w-sm">
+        Looks like you haven’t added anything yet. Start exploring and add items you love.
+      </p>
+
+      <Button
+        onClick={() => navigate("/marketplace")}
+        className="px-6"
+      >
+        Browse Products
+      </Button>
+    </div>
+  );
+}
+
 
   return (
   <div className=" mx-auto py-10 px-4">
