@@ -9,6 +9,7 @@ import type { RoleName, User, UserRole } from '../types';
 import { hasPermission, isRoleHigherOrEqual } from '../lib/permissions';
 import type { Cart } from '../types/CartTypes';
 import { CartService } from '../lib/api/cart';
+import { normalizeUser } from '../lib/normalizeUser';
 
 interface AuthToken {
   accessToken: string;
@@ -46,54 +47,48 @@ const [roles, setRoles] = useState<RoleName[]>([]);
   const [token, setToken] = useState<AuthToken | null>(null);
 
   // Load persisted auth state
-useEffect(() => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored);
-      if (parsed.user && parsed.token) {
-
-        console.log("aaaaaaa", parsed)
-        setUser(parsed.user);
-        setRoles(parsed.user.roles.map((r: UserRole) => r.name));
-        setToken(parsed.token);
-        setIsAuthenticated(true);
-      }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-    } 
-  }
-  setIsLoading(false);
-}, []);
-
-  // Persist auth state on change
   useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, token }));
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.user && parsed.token) {
+          const normalized = normalizeUser(parsed.user);
+          // token in storage might be object { accessToken } or raw string
+          const storedToken =
+            typeof parsed.token === 'string'
+              ? { accessToken: parsed.token.replace(/^Bearer\s+/i, '') }
+              : parsed.token?.accessToken
+              ? parsed.token
+              : { accessToken: parsed.token };
+
+          setUser(normalized);
+          setRoles(normalized.roles.map((r: UserRole) => r.name as RoleName));
+          setToken(storedToken);
+          setIsAuthenticated(true);
+        }
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
-  }, [user, token, isLoading]);
+    setIsLoading(false);
+  }, []);
 
 
-// const login = useCallback(async (userData: User, token: string) => {
-//   setUser(userData);
-//   setRoles(userData.roles.map(r => r.name as RoleName));
-//   setToken({ accessToken: token });
-//   setIsAuthenticated(true);
-//   localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: { accessToken: token } }));
-// }, []);
-
-const login = useCallback(async (userData: User, token: string) => {
-  // 1️⃣ Set auth state
-  setUser(userData);
-  setRoles(userData.roles.map(r => r.name as RoleName));
-  setToken({ accessToken: token });
+const login = useCallback(async (userData: any, token: string) => {
+  const normalized = normalizeUser(userData);
+  setUser(normalized);
+  setRoles(normalized.roles.map((r) => r.name as RoleName));
+  // strip any 'Bearer ' prefix we might receive from API
+  const raw = typeof token === 'string' ? token.replace(/^Bearer\s+/i, '') : token;
+  setToken({ accessToken: raw });
   setIsAuthenticated(true);
 
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({
-      user: userData,
-      token: { accessToken: token },
+      user: normalized,
+      token: { accessToken: raw },
     })
   );
 

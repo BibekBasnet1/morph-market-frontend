@@ -1,10 +1,11 @@
 import type { User, UserRole } from '../types';
 
 export const normalizeUser = (apiUser: any): User => {
-  const roles: UserRole[] = apiUser.roles?.map((r: any) => ({
-    id: r.id,
-    name: r.name,
-  })) ?? [{ id: 0, name: 'buyer' }];
+  const roles: UserRole[] =
+    apiUser.roles?.map((r: any) => {
+      if (typeof r === 'string') return { id: 0, name: r };
+      return { id: r?.id ?? 0, name: r?.name ?? String(r) };
+    }) ?? [{ id: 0, name: 'buyer' }];
 
   return {
     id: apiUser.id,

@@ -4,11 +4,12 @@ import { ProductService } from "../../lib/api/products";
 import { CartService } from "../../lib/api/cart";
 // import type { Product } from "../../types";
 import type { AddToCartPayload } from "../../types/CartTypes";
-import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+import { useState } from 'react';
+import PaymentMethodsModal from '../../components/payments/PaymentMethodsModal';
 import { toast } from "react-hot-toast";
 import type { Pricing, ProductDetails } from "../../types/ProductDetailsType";
-import { Compass } from "lucide-react";
+// removed unused Compass import
 
 const ProductDetailsPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -24,6 +25,8 @@ const {
   queryFn: () => ProductService.getBySlug(slug!),
   enabled: !!slug,
 });
+
+  const [showPayment, setShowPayment] = useState(false);
 
   const renderValue = (value: any) => {
   if (value === null || value === undefined || value === "") return "N/A";
@@ -75,6 +78,10 @@ const getFinalPrice = (pricing: Pricing): number => {
 
   return pricing.price;
 };
+
+  const modalItems = product?.availability?.[0]
+    ? [{ product_id: product.id, store_id: product.availability[0].store.id, quantity: 1, price: getFinalPrice(product.availability[0].pricing) }]
+    : [];
 
 
 const addToLocalCart = ({
@@ -138,7 +145,7 @@ const handleAddToCart = () => {
   /* ---------------- UI ---------------- */
 
  return (
-  <div className="p-10 mx-auto py-10 px-4">
+  <div className="p-10 mx-auto dark:text-white py-10 px-4">
     <div className="grid lg:grid-cols-3 gap-10">
 
       {/* ================= LEFT SIDE ================= */}
@@ -284,13 +291,19 @@ const handleAddToCart = () => {
                 )}
               </div>
 
-              <Button className="w-full">Purchase Now</Button>
+              <Button className="w-full" onClick={() => setShowPayment(true)}>Purchase Now</Button>
               <Button variant="outline" className="w-full">
                 Contact Breeder
               </Button>
             </div>
           );
         })()}
+
+        <PaymentMethodsModal
+          isOpen={Boolean(showPayment)}
+          onClose={() => setShowPayment(false)}
+          items={modalItems}
+        />
 
         {/* Breeder Info */}
         <div className="border rounded-xl p-6 space-y-4">

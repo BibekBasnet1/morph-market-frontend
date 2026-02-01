@@ -2,6 +2,7 @@ import type { Product } from "./index";
 
 /* ---------------- Store ---------------- */
 export interface Store {
+  id: number;
   name: string;
   slug: string;
   brand_name: string;

@@ -36,10 +36,14 @@ const LoginPage = () => {
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-      login(data.data.user, data.data.token);
-      const roles = data.data.user.roles.map((r: any) => r.name);
-      navigate(getDefaultPathForRoles(roles), { replace: true });
-    },
+  login(data.data.user, data.data.token);
+  const apiRoles = data?.data?.user?.roles ?? [];
+  const roles =
+    apiRoles.length && typeof apiRoles[0] === 'string'
+      ? apiRoles
+      : apiRoles.map((r: any) => r.name);
+  navigate(getDefaultPathForRoles(roles), { replace: true });
+},
     onError: () => {
       toast.error("Invalid Credentials");
     },
