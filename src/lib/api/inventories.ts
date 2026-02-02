@@ -15,8 +15,8 @@ export const InventoryService = {
     const res = await api.put(`/buyer/inventories/${id}`, payload);
     return res.data.data;
   },
-    async getAllPrivate(storeSlug: string): Promise<InventoryItem[]> {
-    const res = await api.get(`buyer/inventories/${storeSlug}`);
+    async getAllPrivate(): Promise<InventoryItem[]> {
+    const res = await api.get(`buyer/inventories/my-products`);
     console.log("InventoryService.getAllPrivate - res.data:", res.data);
     return res.data.data;
   },

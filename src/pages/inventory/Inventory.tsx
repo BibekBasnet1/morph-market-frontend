@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../contexts/AuthContext";
+// import { useAuth } from "../../contexts/AuthContext";
 import { DataTable } from "../../components/common/DataTable";
 import type { ColumnDef } from "../../components/common/DataTable";
 import type { InventoryItem, ProductFilters } from "../../types";
@@ -25,10 +25,10 @@ const InventoryPage = () => {
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   // Get the first store's slug for the user
-  const storeSlug = user?.stores?.[0]?.slug;
+  // const storeSlug = user?.stores?.[0]?.slug;
 
   // Helper to safely extract id from string or object
   const getId = (val: any) => {
@@ -50,9 +50,9 @@ const InventoryPage = () => {
   };
 
   const { data: inventoriesRaw, isLoading } = useQuery({
-    queryKey: ["inventories", storeSlug],
-    queryFn: () => storeSlug ? InventoryService.getAllPrivate(storeSlug) : Promise.resolve([]),
-    enabled: !!storeSlug,
+    queryKey: ["inventories"],
+    queryFn: () => InventoryService.getAllPrivate(),
+    // enabled: !!storeSlug,
   });
 
   // The API can return either an array or a pagination wrapper: { data: [...] }
