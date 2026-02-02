@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Filter, X } from "lucide-react";
 
 import { Card, CardContent } from "../components/ui/card";
@@ -21,10 +22,11 @@ import { useNavigate } from "react-router";
 /* ----------------------------- Component ----------------------------- */
 
 const AllProductsPage = () => {
-const [filters, setFilters] = useState<ProductFilters>({});
-const debouncedSearch = useDebounce(filters.search, 1000);
+  const [filters, setFilters] = useState<ProductFilters>({});
+  const debouncedSearch = useDebounce(filters.search, 1000);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [page, setPage] = useState(1);
+  const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
 
@@ -64,6 +66,19 @@ const products = data?.data ?? [];
     queryKey: ["categories"],
     queryFn: CategoryService.getAllPublic,
   });
+
+  // Auto-filter by category from URL params
+  useEffect(() => {
+    const categoryName = searchParams.get("category");
+    if (categoryName && categories.length > 0) {
+      const category = categories.find(
+        (c: any) => c.name.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (category) {
+        setFilters((prev) => ({ ...prev, category_id: category.id }));
+      }
+    }
+  }, [searchParams, categories]);
 
   const { data: genders = [] } = useQuery({
     queryKey: ["genders"],
@@ -355,11 +370,11 @@ const products = data?.data ?? [];
         ))}
       </div> */}
       {/* Products Grid */}
-<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
   {products.map((product: any) => (
     <Card
       key={product.slug}
-      className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[400px] flex flex-col"
+      className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[250px] flex flex-col"
       onClick={() => navigate(`/product/${product.slug}`)}
     >
       <CardContent className="p-4 flex flex-col h-full">
@@ -386,14 +401,17 @@ const products = data?.data ?? [];
 
           {/* Name */}
           <h3 className="font-medium truncate font-semibold">{product.name}</h3>
+            <div className=" flex justify-between">
 
           <div className="text-sm text-muted-foreground space-y-3">
             <p>Category: {product.category ?? "Uncategorized"}</p>
             {product.gender && <p>Gender: {product.gender}</p>}
-            {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet}</span></p>}
+            {/* {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet}</span></p>}
             {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level}</span></p>}
-            {product.tag && <p>Tag: <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-800">{product.tag}</span></p>}
+            {product.tag && <p>Tag: <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-800">{product.tag}</span></p>} */}
           </div>
+          <p className="font-semibold">{product?.price ? `$${product.price}` : ""}</p>
+            </div>
         </div>
 
         {/* CTA */}

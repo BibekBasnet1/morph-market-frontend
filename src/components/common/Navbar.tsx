@@ -318,7 +318,6 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
-              <NotificationDropdown />
               <UserDropdown />
             </>
           )}

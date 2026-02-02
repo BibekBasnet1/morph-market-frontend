@@ -27,7 +27,8 @@ const AddCategoriesPage = () => {
     name: "",
       slug: "",
     description: "",
-    // image: null as File | null,
+    image: null as File | null,
+    preview: "" as string
   });
 
   const openAddModal = () => {
@@ -41,7 +42,8 @@ const openEditModal = (category: Category) => {
     name: category.name,
     slug: category.slug,
     description: category.description,
-    // image: null,
+    image: null,
+    preview: category.image || ""
   });
   setIsOpen(true);
 };
@@ -52,27 +54,38 @@ const closeModal = () => {
 };
 
 
-  const handleChange = (key: string, value: any) => {
-     if (key === "name") {
-    setForm(prev => ({
-      ...prev,
-      name: value,
-      slug: slugify(value),
-    }));
-    return;
-  }
+const handleChange = (key: string, value: any) => {
+if (key === "name") {
+setForm(prev => ({
+...prev,
+name: value,
+slug: slugify(value),
+}));
+return;
+}
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
-  const resetForm = () => {
-    setForm({ name: "", description: "", slug: "" });
-    setEditingId(null);
-  };
-
+  // const resetForm = () => {
+  //   setForm({ name: "", description: "", slug: "" });
+  //   setEditingId(null);
+  // };
+const resetForm = () => {
+try {
+if (form.preview && form.preview.startsWith("blob:")) {
+URL.revokeObjectURL(form.preview);
+}
+} catch (e) {
+// ignore
+}
+setForm({ name: "", description: "", slug: "", image: null, preview: "" });
+setEditingId(null);
+};
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: CategoryService.getAll,
+    
+    queryFn: CategoryService.getAllPublic,
   });
 
 
@@ -83,7 +96,7 @@ const saveMutation = useMutation({
     formData.append("name", form.name);
     formData.append("slug", form.slug);
     formData.append("description", form.description);
-    // if (form.image) formData.append("image", form.image);
+    if (form.image) formData.append("image", form.image);
 
     if (editingId) {
       const updated = await CategoryService.update(editingId, formData);
@@ -134,7 +147,8 @@ const saveMutation = useMutation({
       name: category.name,
       description: category.description,
       slug: category.slug,
-      // image: null,
+      image: null,
+      preview: category.image || ""
     });
   };
 
@@ -269,16 +283,15 @@ return (
             />
           </div>
 
-          {/* <div>
-            <Label>Image</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={e =>
-                handleChange("image", e.target.files?.[0] || null)
-              }
-            />
-          </div> */}
+          <div> 
+            <Label>Image</Label> 
+            <Input type="file" accept="image/*" onChange={e => handleChange("image", e.target.files?.[0] || null)} /> 
+            {form.preview && ( 
+              <img src={form.preview} 
+              alt="preview" 
+              className="mt-3 w-32 h-32 object-cover rounded" />
+          )} 
+          </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>

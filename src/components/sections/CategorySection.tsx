@@ -1,35 +1,27 @@
 import { Card } from "../../components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { CategoryService } from "../../lib/api";
 
-const categories = [
-  {
-    name: "Geckos",
-    count: "234 listings",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/leopard-gecko-close-up-yellow-spotted-SzKRu4eAlkMcvfKBFTha2wXfhlhqkn.jpg",
-  },
-  {
-    name: "Snakes",
-    count: "189 listings",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/ball-python-snake-coiled-beautiful-morph-SGOnk0kgCKE5rD7NvKfHsOuKZC4Cyh.jpg",
-  },
-  {
-    name: "Chameleons",
-    count: "87 listings",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/panther-chameleon-colorful-vibrant-blue-green-oJixy8IgQg0pc3U7Nvnt22XveCjSRC.jpg",
-  },
-  {
-    name: "Bearded Dragons",
-    count: "156 listings",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/bearded-dragon-lizard-orange-close-up-EZNw2uMp2ObnDrmMCAZ36MJ9BX6hG8.jpg",
-  },
-];
+// Keep hardcoded images mapped to category names
+const categoryImages: Record<string, string> = {
+  Geckos:
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/leopard-gecko-close-up-yellow-spotted-SzKRu4eAlkMcvfKBFTha2wXfhlhqkn.jpg",
+  Snakes:
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/ball-python-snake-coiled-beautiful-morph-SGOnk0kgCKE5rD7NvKfHsOuKZC4Cyh.jpg",
+  Chameleons:
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/panther-chameleon-colorful-vibrant-blue-green-oJixy8IgQg0pc3U7Nvnt22XveCjSRC.jpg",
+  "Bearded Dragons":
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/bearded-dragon-lizard-orange-close-up-EZNw2uMp2ObnDrmMCAZ36MJ9BX6hG8.jpg",
+};
 
 const CategorySection = () => {
   const navigate = useNavigate();
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: CategoryService.getAllPublic,
+  });
 
   const handleCategoryClick = (categoryName: string) => {
     navigate(`/marketplace?category=${encodeURIComponent(categoryName)}`);
@@ -50,9 +42,9 @@ const CategorySection = () => {
 
         {/* Categories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => (
+          {categories.map((category: any) => (
             <Card
-              key={category.name}
+              key={category.id}
               onClick={() => handleCategoryClick(category.name)}
               className="group cursor-pointer overflow-hidden border border-border/40
                          bg-card shadow-md hover:shadow-xl
@@ -60,7 +52,7 @@ const CategorySection = () => {
             >
               <div className="relative aspect-square overflow-hidden">
                 <img
-                  src={category.image}
+                  src={categoryImages[category.name] || category.image || "https://placehold.co/400x400"}
                   alt={category.name}
                   className="w-full h-full object-cover
                              group-hover:scale-110 transition-transform duration-500"
