@@ -161,12 +161,12 @@ const AddListingPage = () => {
 
 
   const { user } = useAuth();
-  const storeSlug = user?.stores?.[0]?.slug;
+  // const storeSlug = user?.stores?.[0]?.slug;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["seller-products", storeSlug],
-    queryFn: () => ProductService.getAllPrivate(storeSlug as string),
-    enabled: !!storeSlug,
+    queryKey: ["seller-products"],
+    queryFn: () => ProductService.getAllPrivate(),
+    // enabled: !!storeSlug,
   });
 
   const products = data?.data ?? [];
@@ -177,7 +177,7 @@ const AddListingPage = () => {
         const item = inventoryData[productId];
 
         const formData = new FormData();
-        formData.append("store_id", "1");
+        formData.append("store_id", (user?.stores?.[0]?.id || "").toString());
         formData.append("product_id", productId.toString());
         formData.append("price", item.price.toString());
         formData.append("stock", item.stock.toString());
