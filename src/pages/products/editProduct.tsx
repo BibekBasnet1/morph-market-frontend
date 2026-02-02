@@ -55,6 +55,13 @@ const EditProductPage = () => {
     image: null as File | null,
   });
 
+  const getId = (val: any) => {
+    if (!val) return 0;
+    if (typeof val === "object") return (val.id as number) ?? 0;
+    const n = Number(val);
+    return Number.isNaN(n) ? 0 : n;
+  };
+
   const handleChange = (key: string, value: any) => {
     if (key === "name") {
       setForm((prev) => ({ ...prev, name: value, slug: slugify(value) }));
@@ -76,16 +83,16 @@ const EditProductPage = () => {
       setForm({
         name: product.name || "",
         slug: product.slug || "",
-        category_id: product.category?.id || 0,
+        category_id: getId(product.category),
         price: product.price?.toString() || "",
         location: product.location || "",
         breeder: product.breeder || "",
-        gender_id: product.gender?.id || 0,
+        gender_id: getId(product.gender),
         weight: product.weight?.toString() || "",
         age: "",
-        maturity_level_id: product.maturity_level?.id || 0,
-        origin_id: product.origin?.id || 0,
-        diet_ids: product.diet ? [product.diet.id] : [],
+        maturity_level_id: getId(product.maturity_level),
+        origin_id: getId(product.origin),
+        diet_ids: product.diet ? [getId(product.diet)] : [],
         tag_id: 0,
         tag_ids: [],
         trait_ids: [],

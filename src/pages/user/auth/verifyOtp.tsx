@@ -19,7 +19,6 @@ import { z } from "zod";
 // import { useUser } from "../../../providers/UserProvider";
 // import {getDefaultPathForRoles } from "../../../config/routes";
 import { useAuth } from "../../../contexts/AuthContext";
-import { getDefaultPathForRoles } from "../../../config/routes";
 
 
 

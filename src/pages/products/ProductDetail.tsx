@@ -281,7 +281,7 @@ const handleAddToCart = () => {
               </p>
 
               <div>
-                <p className="text-3xl font-bold">₹{price}</p>
+                <p className="text-3xl font-bold">${price}</p>
 
                 {item.pricing.has_discount && (
                   <p className="text-sm text-green-600">

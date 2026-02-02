@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../components/ui/card";
 const stats = [
   {
     label: "Total Revenue",
-    value: "₹1,24,000",
+    value: "$1,24,000",
     note: "+12% this month",
   },
   {

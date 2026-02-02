@@ -1,7 +1,5 @@
 
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Camera, Settings } from 'lucide-react';
-import { Button } from '../../components/ui/button';
+import { Camera } from 'lucide-react';
 import ProfileTabs from '../../components/userProfile/userProfileTabs';
 import { useState } from 'react';
 import ProfileTab from '../../components/userProfile/tabs/ProfileTab';

@@ -39,7 +39,7 @@ const countryOptions = countries.map((c: any) => ({
   value: c.id,
   label: c.name,
 }));
-  
+  console.log('set',setIsSubmitted)
   const [formData, setFormData] = useState<StoreForm>({
     user_id: "",
     name: "",

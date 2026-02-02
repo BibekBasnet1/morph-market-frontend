@@ -52,11 +52,11 @@ const ProductDetailsImmersivePage = () => {
             <div className="flex items-center gap-6">
               <div className="text-right">
                 <p className="text-2xl font-bold">
-                  ₹{pricing?.sale_price ?? pricing?.price}
+                  ${pricing?.sale_price ?? pricing?.price}
                 </p>
                 {pricing?.sale_price && (
                   <p className="text-xs line-through text-muted-foreground">
-                    ₹{pricing.price}
+                    ${pricing.price}
                   </p>
                 )}
               </div>

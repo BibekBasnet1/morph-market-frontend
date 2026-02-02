@@ -62,7 +62,7 @@ const SellerRecentActivity = () => {
                   </div>
                 </td>
                 <td className="py-3 text-theme-sm text-gray-500">Reptile</td>
-                <td className="py-3 text-theme-sm text-gray-500">₹32,000</td>
+                <td className="py-3 text-theme-sm text-gray-500">$32,000</td>
                 <td className="py-3">
                   <span className="inline-flex rounded-full bg-success-50 px-2.5 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
                     Delivered
@@ -92,7 +92,7 @@ const SellerRecentActivity = () => {
                   </div>
                 </td>
                 <td className="py-3 text-theme-sm text-gray-500">Reptile</td>
-                <td className="py-3 text-theme-sm text-gray-500">₹18,500</td>
+                <td className="py-3 text-theme-sm text-gray-500">$18,500</td>
                 <td className="py-3">
                   <span className="inline-flex rounded-full bg-warning-50 px-2.5 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
                     Pending
@@ -122,7 +122,7 @@ const SellerRecentActivity = () => {
                   </div>
                 </td>
                 <td className="py-3 text-theme-sm text-gray-500">Bird</td>
-                <td className="py-3 text-theme-sm text-gray-500">₹95,000</td>
+                <td className="py-3 text-theme-sm text-gray-500">$95,000</td>
                 <td className="py-3">
                   <span className="inline-flex rounded-full bg-success-50 px-2.5 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
                     Delivered
@@ -152,7 +152,7 @@ const SellerRecentActivity = () => {
                   </div>
                 </td>
                 <td className="py-3 text-theme-sm text-gray-500">Reptile</td>
-                <td className="py-3 text-theme-sm text-gray-500">₹12,000</td>
+                <td className="py-3 text-theme-sm text-gray-500">$12,000</td>
                 <td className="py-3">
                   <span className="inline-flex rounded-full bg-error-50 px-2.5 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
                     Canceled
