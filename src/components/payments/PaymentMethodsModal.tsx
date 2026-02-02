@@ -57,7 +57,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
 
   const [flowState, setFlowState] = useState<FlowState>('address');
   const [orderId, setOrderId] = useState<number | null>(null);
-  const [paymentId, setPaymentId] = useState<number | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [currency, setCurrency] = useState<string>('usd');
@@ -81,7 +80,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
     if (!isOpen) {
       setFlowState('address');
       setOrderId(null);
-      setPaymentId(null);
       setClientSecret(null);
       setShippingAddress({ line1: '', city: '' });
       setBillingAddress({ line1: '', city: '' });
@@ -125,24 +123,8 @@ export const PaymentMethodsModal: React.FC<Props> = ({
   const initiatePaymentMutation = useMutation({
     mutationFn: (orderId: number) => PaymentService.initiateStripePayment(orderId),
     onSuccess: (data: any) => {
-      setPaymentId(data.data.payment.id || data.data.id);
       setClientSecret(data.data.client_secret);
       setFlowState('payment');
-    },
-    onError: (error: any) => {
-      toast.error(getReadableError(error.message));
-      setFlowState('failed');
-    },
-  });
-
-  const confirmPaymentMutation = useMutation({
-    mutationFn: (payload: any) => PaymentService.confirmPayment(paymentId!, payload),
-    onSuccess: () => {
-      setFlowState('confirmed');
-      setTimeout(() => {
-        onSuccess?.();
-        onClose();
-      }, 1200);
     },
     onError: (error: any) => {
       toast.error(getReadableError(error.message));

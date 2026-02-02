@@ -185,7 +185,6 @@ import { useSidebar } from "../../contexts/SidebarContext";
 import { useAuth } from "../../contexts/AuthContext";
 
 import { ThemeToggleButton } from "../../components/common/ThemeToggleButton";
-import NotificationDropdown from "../../components/header/NotificationDropDown";
 import UserDropdown from "../../components/header/UserDropDown";
 import { Button } from "../ui/button";
 

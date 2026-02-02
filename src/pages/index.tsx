@@ -1,14 +1,10 @@
 
 import CategorySection from '../components/sections/CategorySection';
 import { FeaturedListings } from '../components/sections/FeatureSection';
-import Navbar from '../components/common/Navbar';
 import HeroSection from '../components/sections/HeroSection';
 import Cta from '../components/sections/Cta';
-import { Badge } from 'lucide-react';
 import BadgesSection from '../components/sections/BadgesSection';
-import Footer from '../components/common/Footer';
-import AppSidebar from '../components/layout/AppSidebar';
-import Backdrop from '../components/layout/BackDrop';
+
 // import { 
 //   Search, 
 //   Heart, 

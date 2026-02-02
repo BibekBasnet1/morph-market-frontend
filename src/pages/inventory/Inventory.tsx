@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 import { DataTable } from "../../components/common/DataTable";
 import type { ColumnDef } from "../../components/common/DataTable";
-import type { InventoryItem, Product, ProductFilters } from "../../types";
+import type { InventoryItem, ProductFilters } from "../../types";
 import { InventoryService } from "../../lib/api";
 import { CategoryService } from "../../lib/api";
 import { GenderService } from "../../lib/api/attributes/gender";
 import { MaturityService } from "../../lib/api/attributes/maturity";
 import { OriginService } from "../../lib/api/attributes/origin";
 import { DietService } from "../../lib/api/attributes/diet";
-import { ProductService } from "../../lib/api/products";
 import { Badge } from "../../components/ui/badge";
 import Spinner from "../../components/ui/spinner";
 import { Button } from "../../components/ui/button";
@@ -25,9 +25,34 @@ const InventoryPage = () => {
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Get the first store's slug for the user
+  const storeSlug = user?.stores?.[0]?.slug;
+
+  // Helper to safely extract id from string or object
+  const getId = (val: any) => {
+    if (!val) return undefined;
+    if (typeof val === "object") return val.id;
+    return val;
+  };
+
+  // Helper to safely extract name from string or object
+  const getName = (val: any) => {
+    if (!val) return "";
+    if (typeof val === "object") return val.name || "";
+    return String(val);
+  };
+
+  // Helper to safely get price from InventoryItem or product
+  const getPrice = (item: any) => {
+    return (item as any).sale_price || (item as any).price || item.product?.min_price || 0;
+  };
+
   const { data: inventoriesRaw, isLoading } = useQuery({
-    queryKey: ["inventories"],
-    queryFn: InventoryService.getAll,
+    queryKey: ["inventories", storeSlug],
+    queryFn: () => storeSlug ? InventoryService.getAllPrivate(storeSlug) : Promise.resolve([]),
+    enabled: !!storeSlug,
   });
 
   // The API can return either an array or a pagination wrapper: { data: [...] }
@@ -40,7 +65,7 @@ const InventoryPage = () => {
   }
 
   // Ensure `id` is a string for keying and consistency
-  const normalized = inventoryList.map((it) => ({ ...(it as any), id: String((it as any).id) })) as InventoryItem[];
+  const normalized = inventoryList.map((it) => ({ ...(it as any), id: String((it as any).id) } as any));
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -74,7 +99,7 @@ const updateProductMutation = useMutation({
     // Required fields for inventory update
     formData.append("store_id", String((item as any).store_id || ""));
     formData.append("product_id", String(item.product?.id || ""));
-    formData.append("price", String((item as any).price || item.product?.price || 0));
+    formData.append("price", String(getPrice(item)));
     formData.append("stock", String((item as any).stock || 0));
     formData.append("active", active ? "1" : "0");
 
@@ -116,46 +141,46 @@ const updateProductMutation = useMutation({
         return (
           String(it.product?.name ?? "").toLowerCase().includes(q) ||
           String((it as any).sku ?? "").toLowerCase().includes(q) ||
-          String(it.product?.category?.name ?? "").toLowerCase().includes(q)
+          String(getName(it.product?.category) ?? "").toLowerCase().includes(q)
         );
       });
     }
 
     // Apply category filter
     if (filters.category_id) {
-      result = result.filter((it) => it.product?.category?.id === filters.category_id);
+      result = result.filter((it) => getId(it.product?.category) === filters.category_id);
     }
 
     // Apply gender filter
     if (filters.gender_id) {
-      result = result.filter((it) => it.product?.gender?.id === filters.gender_id);
+      result = result.filter((it) => getId(it.product?.gender) === filters.gender_id);
     }
 
     // Apply maturity filter
     if (filters.maturity_level_id) {
-      result = result.filter((it) => it.product?.maturity_level?.id === filters.maturity_level_id);
+      result = result.filter((it) => getId(it.product?.maturity_level) === filters.maturity_level_id);
     }
 
     if (filters.origin_id) {
-      result = result.filter((it) => it.product?.origin?.id === filters.origin_id);
+      result = result.filter((it) => getId(it.product?.origin) === filters.origin_id);
     }
 
     // Apply diet filter
     if (filters.diet_id) {
-      result = result.filter((it) => it.product?.diet?.id === filters.diet_id);
+      result = result.filter((it) => getId(it.product?.diet) === filters.diet_id);
     }
 
     // Apply price filters
     if (filters.price_min !== undefined) {
       result = result.filter((it) => {
-        const price = (it as any).sale_price || (it as any).price || it.product?.price;
+        const price = getPrice(it);
         return price && Number(price) >= filters.price_min!;
       });
     }
 
     if (filters.price_max !== undefined) {
       result = result.filter((it) => {
-        const price = (it as any).sale_price || (it as any).price || it.product?.price;
+        const price = getPrice(it);
         return price && Number(price) <= filters.price_max!;
       });
     }
@@ -420,7 +445,7 @@ const updateProductMutation = useMutation({
                 key: "price",
                 header: "Price",
                 render: (item: InventoryItem) => {
-                  const price = (item as any).sale_price || (item as any).price || item.product?.price;
+                  const price = getPrice(item);
                   return price ? `$${Number(price).toLocaleString()}` : "N/A";
                 },
               },
@@ -459,16 +484,16 @@ const updateProductMutation = useMutation({
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">{item.product?.name}</p>
-                       <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{(item.product?.category?.name) ? ` • ${item.product.category?.name}` : ''}</p>
+                       <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{getName(item.product?.category) ? ` • ${getName(item.product?.category)}` : ''}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">{((item as any).sale_price || (item as any).price) ? `$${Number((item as any).sale_price || (item as any).price).toLocaleString()}` : '—'}</p>
+                        <p className="font-semibold">{getPrice(item) ? `$${Number(getPrice(item)).toLocaleString()}` : '—'}</p>
                         <div className="mt-2 flex items-center gap-3 justify-end">
                           <Badge variant={(item as any).active ? 'default' : 'destructive'}>{(item as any).active ? 'AVAILABLE' : 'SOLD'}</Badge>
                           <Switch
-                            checked={Boolean((item as any).active)}
+                            defaultChecked={Boolean((item as any).active)}
                             disabled={updateProductMutation.isPending}
-                            onChange={(checked) => {
+                            onChange={(checked: boolean) => {
                               updateProductMutation.mutate({
                                 item: item,
                                 active: checked,

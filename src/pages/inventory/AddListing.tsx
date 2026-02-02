@@ -113,11 +113,13 @@ const InventoryModal = ({
   item,
   onClose,
   onChange,
+  onAddToInventory,
 }: {
   product: any;
   item: InventoryItem;
   onClose: () => void;
   onChange: (field: keyof InventoryItem, value: any) => void;
+  onAddToInventory: () => void;
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -136,7 +138,7 @@ const InventoryModal = ({
           <div>
             <Label>Price</Label>
             <Input
-              type="number"
+              type="string"
               value={item.price}
               onChange={(e) => onChange("price", +e.target.value)}
             />
@@ -145,7 +147,7 @@ const InventoryModal = ({
           <div>
             <Label>Sale Price</Label>
             <Input
-              type="number"
+              type="string"
               value={item.sale_price || ""}
               onChange={(e) =>
                 onChange(
@@ -159,7 +161,7 @@ const InventoryModal = ({
           <div>
             <Label>Discount Price</Label>
             <Input
-              type="number"
+              type="string"
               value={item.discount_price || ""}
               onChange={(e) =>
                 onChange(
@@ -171,9 +173,37 @@ const InventoryModal = ({
           </div>
 
           <div>
+            <Label>Discount Start Date</Label>
+            <Input
+              type="date"
+              value={item.discount_start_date || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_start_date",
+                  e.target.value || undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Discount End Date</Label>
+            <Input
+              type="date"
+              value={item.discount_end_date || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_end_date",
+                  e.target.value || undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
             <Label>Stock</Label>
             <Input
-              type="number"
+              type="string"
               value={item.stock}
               onChange={(e) => onChange("stock", +e.target.value)}
             />
@@ -182,7 +212,7 @@ const InventoryModal = ({
           <div>
             <Label>Quantity</Label>
             <Input
-              type="number"
+              type="string"
               value={item.quantity}
               onChange={(e) => onChange("quantity", +e.target.value)}
             />
@@ -193,8 +223,8 @@ const InventoryModal = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
-            Save
+          <Button onClick={onAddToInventory} className="bg-green-600 hover:bg-green-700">
+            Add to Inventory
           </Button>
         </div>
       </div>
@@ -400,6 +430,11 @@ const InventoryModal = ({
     onChange={(field, value) =>
       updateItem(openProductId, field, value)
     }
+    onAddToInventory={() => {
+      setSelectedProducts([openProductId]);
+      setOpenProductId(null);
+      addMutation.mutate();
+    }}
   />
 )}
 

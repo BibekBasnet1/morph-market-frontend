@@ -18,5 +18,6 @@ export const normalizeUser = (apiUser: any): User => {
     postal_code: apiUser.postal_code ?? null,
     birth_date: apiUser.birth_date ?? null,
     bio: apiUser.bio ?? null,
+    stores: apiUser.stores ?? undefined,
   };
 };

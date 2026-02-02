@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router";
 import { lazy, Suspense } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { Toaster } from "react-hot-toast";

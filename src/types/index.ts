@@ -17,6 +17,21 @@ export interface User {
   postal_code?: string | null;
   birth_date?: string | null;
   bio?: string | null;
+  stores?: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    brand_name: string;
+    logo: string | null;
+    cover_photo: string | null;
+    is_active: boolean;
+    is_verified: boolean;
+    rating: string;
+    shipping_type: string;
+    total_reviews: number;
+    total_sales: number;
+    username: string;
+  }>;
 }
 
 // types/roles.ts
@@ -243,13 +258,18 @@ export interface Product {
   image: string | null;
   slug: string;
   description?: string;
+  price?: number;
+  location?: string;
+  breeder?: string;
 
-  category?: string | null;
-  origin?: string | null;
-  diet?: string | null;
-  gender?: string | null;
-  maturity_level?: string | null;
-  tag?: string | null;
+  category?: Category | string | null;
+  origin?: Origin | string | null;
+  diet?: Diet | string | null;
+  gender?: Gender | string | null;
+  maturity_level?: Maturity | string | null;
+  tag?: Tag | string | null;
+  trait_ids?: number[];
+  availability?: any[];
 
   specifications?: {
     length?: number | null;

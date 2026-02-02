@@ -5,7 +5,6 @@ import SellerDashboard from "../../pages/dashboards/SellerDashboard";
 import ProfilePage from "../../pages/profile/profilePage";
 import { lazy } from "react";
 import InventoryPage from "../../pages/inventory/Inventory";
-import CartPage from "../../pages/cart/cart";
 import ActivityLogPage from "../../pages/activityLog/activityLog";
 // import StorePage from "../../pages/store/store";
 

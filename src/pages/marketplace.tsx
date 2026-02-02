@@ -29,7 +29,7 @@ const AllProductsPage = () => {
   const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
-
+console.log(setPage);
   const updateFilters = (payload: Partial<ProductFilters>) => {
     setFilters((prev) => ({ ...prev, ...payload }));
   };
@@ -46,7 +46,6 @@ const AllProductsPage = () => {
 const {
   data,
   isLoading,
-  isFetching,
 } = useQuery({
   queryKey: ["products", page, { ...filters, search: debouncedSearch }],
   queryFn: () =>

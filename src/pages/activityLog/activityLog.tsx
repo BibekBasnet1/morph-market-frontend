@@ -108,7 +108,6 @@ async function fetchActivities(): Promise<ActivityLog[]> {
 // ---------------- page ----------------
 export default function ActivityLogPage() {
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<string>("all");
 
   const { data = [] } = useQuery({
     queryKey: ["activity-logs"],

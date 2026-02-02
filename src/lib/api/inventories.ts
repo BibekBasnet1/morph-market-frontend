@@ -14,5 +14,10 @@ export const InventoryService = {
   update: async (id: number, payload: FormData): Promise<InventoryItem> => {
     const res = await api.put(`/buyer/inventories/${id}`, payload);
     return res.data.data;
-  }
+  },
+    async getAllPrivate(storeSlug: string): Promise<InventoryItem[]> {
+    const res = await api.get(`buyer/inventories/${storeSlug}`);
+    console.log("InventoryService.getAllPrivate - res.data:", res.data);
+    return res.data.data;
+  },
 };

@@ -9,7 +9,6 @@ import SellersListPage from "../../pages/user/auth/sellers";
 import AddCategoriesPage from "../../pages/addCategories/addCategories";
 import { lazy } from "react";
 import AddGenderPage from "../../pages/addGenders/addGenders";
-import CartPage from "../../pages/cart/cart";
 
 // Lazy load pages
 const AddTraitsPage = lazy(() => import("../../pages/addTraits/addTraits"));

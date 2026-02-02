@@ -6,7 +6,6 @@ import {
   Package,
   Tags,
   Sliders,
-  FileText,
   Image as ImageIcon,
 } from "lucide-react";
 

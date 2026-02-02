@@ -6,7 +6,6 @@ import {
   Package,
   Tags,
   Sliders,
-  FileText,
   Image as ImageIcon,
 } from "lucide-react";
 
@@ -84,11 +83,11 @@ const EditProductPage = () => {
         name: product.name || "",
         slug: product.slug || "",
         category_id: getId(product.category),
-        price: product.price?.toString() || "",
+        price: (product.price && product.price.toString()) || (product.min_price && product.min_price.toString()) || "",
         location: product.location || "",
         breeder: product.breeder || "",
         gender_id: getId(product.gender),
-        weight: product.weight?.toString() || "",
+        weight: product.specifications?.weight?.toString() || "",
         age: "",
         maturity_level_id: getId(product.maturity_level),
         origin_id: getId(product.origin),

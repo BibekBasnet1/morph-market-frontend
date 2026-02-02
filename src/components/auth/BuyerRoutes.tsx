@@ -8,7 +8,6 @@ import StorePage from "../../pages/store/store";
 // import SellersListPage from "../../pages/user/auth/sellers";
 import AddCategoriesPage from "../../pages/addCategories/addCategories";
 import InventoryPage from "../../pages/inventory/Inventory";
-import CartPage from "../../pages/cart/cart";
 
 const BuyerRoutes = () => (
   <Routes>

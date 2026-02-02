@@ -43,7 +43,7 @@ const openEditModal = (category: Category) => {
     slug: category.slug,
     description: category.description,
     image: null,
-    preview: category.image || ""
+    preview: (typeof category.image === 'string' ? category.image : "") || ""
   });
   setIsOpen(true);
 };
@@ -139,17 +139,6 @@ const saveMutation = useMutation({
   const handleSubmit = () => {
     if (!form.name.trim()) return;
     saveMutation.mutate();
-  };
-
-  const handleEdit = (category: Category) => {
-    setEditingId(category.id);
-    setForm({
-      name: category.name,
-      description: category.description,
-      slug: category.slug,
-      image: null,
-      preview: category.image || ""
-    });
   };
 
 const openDeleteModal = (id: number) => {
