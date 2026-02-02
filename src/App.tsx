@@ -28,7 +28,17 @@ const CartPage = lazy(()=> import("./pages/cart/cart"))
 const ActivityLogPage = lazy(() => import("./pages/activityLog/activityLog"));
 const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1, // Only retry failed queries once instead of 3 times
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+    mutations: {
+      retry: 0, // Don't retry mutations (forms, posts, etc)
+    },
+  },
+});
 
 // Create a separate component to use AuthContext
 const AppRoutes = () => {

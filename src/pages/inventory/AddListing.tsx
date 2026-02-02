@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { Card, CardContent } from "../../components/ui/card";
@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import Label from "../../components/ui/label";
 import { ProductService } from "../../lib/api/products";
+import { useAuth } from "../../contexts/AuthContext";
 import { InventoryService } from "../../lib/api";
 import { toast } from "react-hot-toast";
 
@@ -20,6 +21,132 @@ type InventoryItem = {
   active: boolean;
 };
 
+const InventoryModal = memo(({
+  product,
+  item,
+  onClose,
+  onChange,
+  onAddToInventory,
+}: {
+  product: any;
+  item: InventoryItem;
+  onClose: () => void;
+  onChange: (field: keyof InventoryItem, value: any) => void;
+  onAddToInventory: () => void;
+}) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-xl rounded-xl bg-white p-6 dark:bg-[#111827]">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">{product.name}</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Price</Label>
+            <Input
+              type="number"
+              value={item.price}
+              onChange={(e) => onChange("price", +e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label>Sale Price</Label>
+            <Input
+              type="number"
+              value={item.sale_price || ""}
+              onChange={(e) =>
+                onChange(
+                  "sale_price",
+                  e.target.value ? +e.target.value : undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Discount Price</Label>
+            <Input
+              type="number"
+              value={item.discount_price || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_price",
+                  e.target.value ? +e.target.value : undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Discount Start Date</Label>
+            <Input
+              type="date"
+              value={item.discount_start_date || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_start_date",
+                  e.target.value || undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Discount End Date</Label>
+            <Input
+              type="date"
+              value={item.discount_end_date || ""}
+              onChange={(e) =>
+                onChange(
+                  "discount_end_date",
+                  e.target.value || undefined
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <Label>Stock</Label>
+            <Input
+              type="number"
+              value={item.stock}
+              onChange={(e) => onChange("stock", +e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label>Quantity</Label>
+            <Input
+              type="number"
+              value={item.quantity}
+              onChange={(e) => onChange("quantity", +e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={onAddToInventory} className="bg-green-600 hover:bg-green-700">
+            Add to Inventory
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+InventoryModal.displayName = "InventoryModal";
+
 const AddListingPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -33,9 +160,13 @@ const AddListingPage = () => {
   const [openProductId, setOpenProductId] = useState<number | null>(null);
 
 
+  const { user } = useAuth();
+  const storeSlug = user?.stores?.[0]?.slug;
+
   const { data, isLoading } = useQuery({
-    queryKey: ["seller-products"],
-    queryFn: () => ProductService.getAll({}),
+    queryKey: ["seller-products", storeSlug],
+    queryFn: () => ProductService.getAllPrivate({ storeSlug: storeSlug as string }),
+    enabled: !!storeSlug,
   });
 
   const products = data?.data ?? [];
@@ -106,130 +237,6 @@ const handleProductSelect = (productId: number) => {
       },
     }));
   }
-};
-
-const InventoryModal = ({
-  product,
-  item,
-  onClose,
-  onChange,
-  onAddToInventory,
-}: {
-  product: any;
-  item: InventoryItem;
-  onClose: () => void;
-  onChange: (field: keyof InventoryItem, value: any) => void;
-  onAddToInventory: () => void;
-}) => {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-xl rounded-xl bg-white p-6 dark:bg-[#111827]">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">{product.name}</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label>Price</Label>
-            <Input
-              type="string"
-              value={item.price}
-              onChange={(e) => onChange("price", +e.target.value)}
-            />
-          </div>
-
-          <div>
-            <Label>Sale Price</Label>
-            <Input
-              type="string"
-              value={item.sale_price || ""}
-              onChange={(e) =>
-                onChange(
-                  "sale_price",
-                  e.target.value ? +e.target.value : undefined
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <Label>Discount Price</Label>
-            <Input
-              type="string"
-              value={item.discount_price || ""}
-              onChange={(e) =>
-                onChange(
-                  "discount_price",
-                  e.target.value ? +e.target.value : undefined
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <Label>Discount Start Date</Label>
-            <Input
-              type="date"
-              value={item.discount_start_date || ""}
-              onChange={(e) =>
-                onChange(
-                  "discount_start_date",
-                  e.target.value || undefined
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <Label>Discount End Date</Label>
-            <Input
-              type="date"
-              value={item.discount_end_date || ""}
-              onChange={(e) =>
-                onChange(
-                  "discount_end_date",
-                  e.target.value || undefined
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <Label>Stock</Label>
-            <Input
-              type="string"
-              value={item.stock}
-              onChange={(e) => onChange("stock", +e.target.value)}
-            />
-          </div>
-
-          <div>
-            <Label>Quantity</Label>
-            <Input
-              type="string"
-              value={item.quantity}
-              onChange={(e) => onChange("quantity", +e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={onAddToInventory} className="bg-green-600 hover:bg-green-700">
-            Add to Inventory
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 
@@ -335,7 +342,7 @@ const InventoryModal = ({
                   <div>
                     <Label>Price</Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={item.price}
                       onChange={(e) =>
                         updateItem(id, "price", +e.target.value)
@@ -346,7 +353,7 @@ const InventoryModal = ({
                   <div>
                     <Label>Sale Price</Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={item.sale_price || ""}
                       onChange={(e) =>
                         updateItem(
@@ -361,7 +368,7 @@ const InventoryModal = ({
                   <div>
                     <Label>Discount Price</Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={item.discount_price || ""}
                       onChange={(e) =>
                         updateItem(
@@ -398,7 +405,7 @@ const InventoryModal = ({
                   <div>
                     <Label>Stock</Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={item.stock}
                       onChange={(e) =>
                         updateItem(id, "stock", +e.target.value)
@@ -409,7 +416,7 @@ const InventoryModal = ({
                   <div>
                     <Label>Quantity</Label>
                     <Input
-                      type="number"
+                      type="text"
                       value={item.quantity}
                       onChange={(e) =>
                         updateItem(id, "quantity", +e.target.value)
