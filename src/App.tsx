@@ -9,6 +9,9 @@ import { Toaster } from "react-hot-toast";
 import Loading from "./components/common/Loading";
 import QuickNav from "./components/common/QuickNav";
 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
 // Lazy load route components
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
@@ -48,6 +51,7 @@ const AppRoutes = () => {
     { path: "/products/:slug/details", load: ProductDetailsImmersive },
   ];
 
+
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
@@ -64,6 +68,7 @@ const AppRoutes = () => {
             }
           />
         ))}
+
         {isAdmin && (
           <Route 
             path="/*" 
@@ -108,6 +113,8 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY)
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -165,7 +172,8 @@ const App = () => {
             }}
             containerClassName="pointer-events-none"
           />
-          <AppRoutes />
+          <Elements stripe={stripePromise}> <AppRoutes /> </Elements>
+
         </SidebarProvider>
       </AuthProvider>
     </QueryClientProvider>

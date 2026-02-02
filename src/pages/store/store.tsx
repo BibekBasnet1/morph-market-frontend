@@ -259,7 +259,7 @@ const countryOptions = countries.map((c: any) => ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen dark:text-white dark:bg-gray-900 bg-gray-50 py-8 px-4">
       <div className=" mx-auto">
         <h1>Create your store</h1>
 
@@ -316,7 +316,7 @@ const countryOptions = countries.map((c: any) => ({
         </div>
 
         {/* Form Content */}
-        <div className="bg-white rounded-xl shadow-md p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
           {/* Step 0: Store Info */}
           {currentStep === 0 && (
             <div>
@@ -344,7 +344,7 @@ const countryOptions = countries.map((c: any) => ({
                     onChange={(e) => handleChange("slug", e.target.value)}
                     placeholder="my-awesome-store"
                     readOnly
-                    className="bg-gray-50"
+                    className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-500 mt-1">Auto-generated from store name</p>
                   <ErrorMessage field="slug" />

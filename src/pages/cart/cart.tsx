@@ -7,6 +7,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
+import PaymentMethodsModal from "../../components/payments/PaymentMethodsModal";
 
 /* ---------------- Local cart helpers ---------------- */
 const loadLocalCarts = (): Cart[] => {
@@ -28,6 +29,7 @@ const CartPage = () => {
 
   /* ---------------- Local cart state ---------------- */
   const [localCarts, setLocalCarts] = useState<Cart[]>([]);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   useEffect(() => {
     setLocalCarts(loadLocalCarts());
@@ -43,12 +45,13 @@ const CartPage = () => {
   /* ---------------- Merge carts ---------------- */
   const carts = useMemo<Cart[]>(() => {
     return isAuthenticated ? [...apiCarts, ...localCarts] : localCarts;
+    
   }, [apiCarts, localCarts, isAuthenticated]);
-
+console.log("Carts:", carts);
   /* ---------------- API mutations ---------------- */
   const updateMutation = useMutation({
     mutationFn: ({ id, quantity }: { id: number; quantity: number }) =>
-      CartService.update(id, { quantity }),
+      CartService.update(id, { quantity } as any),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["carts"] }),
   });
 
@@ -103,9 +106,11 @@ const CartPage = () => {
     0
   );
 
+  const estimatedTax = totalAmount * 0.01;
+
 if (!carts.length) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+    <div className="flex flex-col dark:text-white items-center justify-center py-16 px-6 text-center">
       <div className="mb-4 text-6xl">🛒</div>
 
       <h2 className="text-xl font-semibold mb-2">
@@ -128,7 +133,7 @@ if (!carts.length) {
 
 
   return (
-  <div className=" mx-auto py-10 px-4">
+  <div className="dark:text-white mx-auto py-10 px-4">
     {/* Header */}
     <div className="mb-6">
       <h1 className="text-3xl font-semibold">Your Shopping Cart</h1>
@@ -274,12 +279,12 @@ if (!carts.length) {
 
               <div className="flex justify-between">
                 <span>Estimated Shipping</span>
-                <span>$55.00</span>
+                <span>$45.00</span>
               </div>
 
               <div className="flex justify-between">
                 <span>Tax (Estimated)</span>
-                <span>$32.00</span>
+                <span>${estimatedTax.toFixed(2)}</span>
               </div>
 
               <hr />
@@ -295,7 +300,7 @@ if (!carts.length) {
               className="w-full"
               onClick={() =>
                 isAuthenticated
-                  ? navigate("/checkout")
+                  ? setIsPaymentModalOpen(true)
                   : navigate("/login")
               }
             >
@@ -309,6 +314,29 @@ if (!carts.length) {
         </Card>
       </div>
     </div>
+
+    <PaymentMethodsModal
+      isOpen={isPaymentModalOpen}
+      onClose={() => setIsPaymentModalOpen(false)}
+      items={carts.map((cart) => {
+        const product = (cart as any).product;
+        return {
+          product_id: cart.product_id,
+          product_name: product?.name || "Unknown Product",
+          store_id: product?.store_id || 1,
+          quantity: cart.quantity,
+          price: Number(cart.price),
+        };
+      })}
+      onSuccess={() => {
+        setIsPaymentModalOpen(false);
+        // Clear the cart after successful payment
+        setLocalCarts([]);
+        saveLocalCarts([]);
+        queryClient.invalidateQueries({ queryKey: ["carts"] });
+        toast.success("Order placed successfully!");
+      }}
+    />
   </div>
 );
 

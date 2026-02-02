@@ -38,7 +38,7 @@ const AllProductsPage = () => {
   });
 
   return (
-    <div className="space-y-6 max-w-6xl text-gray-900 dark:text-gray-100">
+    <div className="space-y-6 p-10 mx-auto text-gray-900 dark:text-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Products</h2>

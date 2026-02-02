@@ -80,7 +80,7 @@ const getFinalPrice = (pricing: Pricing): number => {
 };
 
   const modalItems = product?.availability?.[0]
-    ? [{ product_id: product.id, store_id: product.availability[0].store.id, quantity: 1, price: getFinalPrice(product.availability[0].pricing) }]
+    ? [{ product_id: product.id, store_id: product.availability[0].store.id, quantity: 1, product_name: product.name, price: getFinalPrice(product.availability[0].pricing) }]
     : [];
 
 
