@@ -165,7 +165,7 @@ const AddListingPage = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["seller-products", storeSlug],
-    queryFn: () => ProductService.getAllPrivate({ storeSlug: storeSlug as string }),
+    queryFn: () => ProductService.getAllPrivate(storeSlug as string),
     enabled: !!storeSlug,
   });
 

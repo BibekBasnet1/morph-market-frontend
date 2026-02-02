@@ -34,14 +34,8 @@ console.log("ProductService.getAll - res.data.data:", res.data.data);
     return res.data.data;
   },
 
-  // Fetch seller products scoped to a store (supports pagination + filters)
-  getAllPrivate: async ({ storeSlug, page = 1, filters = {} }: { storeSlug: string } & GetAllParams) => {
-    const res = await api.get(`/seller/products/${storeSlug}`, {
-      params: {
-        page,
-        ...filters,
-      },
-    });
+  getAllPrivate: async (storeSlug: string): Promise<Product[]> => {
+    const res = await api.get(`/seller/products/${storeSlug}`);
     return res.data.data;
   },
   async getById(id: number): Promise<Product> {

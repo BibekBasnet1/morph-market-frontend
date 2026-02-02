@@ -13,27 +13,24 @@ import { Modal } from "../../components/ui/modal";
 const AllProductsPage = () => {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [page, setPage] = useState(1);
   const [view, setView] = useState<"card" | "table">("card"); // toggle view
 
   const { user } = useAuth();
   const storeSlug = user?.stores?.[0]?.slug;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", page, storeSlug],
-    queryFn: () => ProductService.getAllPrivate({ storeSlug: storeSlug as string, page }),
+    queryKey: ["products", storeSlug],
+    queryFn: () => ProductService.getAllPrivate(storeSlug as string),
     placeholderData: (prev) => prev,
     enabled: !!storeSlug,
   });
 
   const products = data?.data ?? [];
-  const currentPage = data?.current_page ?? 1;
-  const lastPage = data?.last_page ?? 1;
 
   const deleteMutation = useMutation({
     mutationFn: ProductService.remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products", page, storeSlug as string] });
+      queryClient.invalidateQueries({ queryKey: ["products", storeSlug as string] });
       toast.success("Product deleted");
       setDeleteId(null);
     },
@@ -245,27 +242,6 @@ const AllProductsPage = () => {
           </table>
         </div>
       )}
-
-      {/* Pagination */}
-      <div className="flex justify-between mt-6">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-        >
-          Previous
-        </Button>
-
-        <span>
-          Page {currentPage} of {lastPage}
-        </span>
-
-        <Button
-          disabled={currentPage === lastPage}
-          onClick={() => setPage((p) => Math.min(p + 1, lastPage))}
-        >
-          Next
-        </Button>
-      </div>
 
       {/* Delete Modal */}
       <Modal
