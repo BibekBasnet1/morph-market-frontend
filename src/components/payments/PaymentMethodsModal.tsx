@@ -272,7 +272,7 @@ console.log("item.name", items) ;
                         <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
                       </div>
                       <div className="text-green-400 font-semibold">
-                        ${((item.quantity || 1) * 100).toFixed(2)}
+                        ${((item.price || 0) * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
