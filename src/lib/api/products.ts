@@ -34,8 +34,8 @@ console.log("ProductService.getAll - res.data.data:", res.data.data);
     return res.data.data;
   },
 
-  getAllPrivate: async (storeSlug: string): Promise<Product[]> => {
-    const res = await api.get(`/seller/products/${storeSlug}`);
+  getAllPrivate: async (): Promise<Product[]> => {
+    const res = await api.get(`/seller/my-products`);
     return res.data.data;
   },
   async getById(id: number): Promise<Product> {

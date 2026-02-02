@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Trash2, Edit, Plus, Table as TableIcon, Grid as GridIcon } from "lucide-react";
 import { ProductService } from "../../lib/api/products";
-import { useAuth } from "../../contexts/AuthContext";
+// import { useAuth } from "../../contexts/AuthContext";
 import { Modal } from "../../components/ui/modal";
 
 const AllProductsPage = () => {
@@ -15,14 +15,14 @@ const AllProductsPage = () => {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [view, setView] = useState<"card" | "table">("card"); // toggle view
 
-  const { user } = useAuth();
-  const storeSlug = user?.stores?.[0]?.slug;
+  // const { user } = useAuth();
+  // const storeSlug = user?.stores?.[0]?.slug;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", storeSlug],
-    queryFn: () => ProductService.getAllPrivate(storeSlug as string),
+    queryKey: ["products"],
+    queryFn: () => ProductService.getAllPrivate(),
     placeholderData: (prev) => prev,
-    enabled: !!storeSlug,
+    // enabled: !!storeSlug,
   });
 
   const products = data?.data ?? [];
@@ -30,7 +30,7 @@ const AllProductsPage = () => {
   const deleteMutation = useMutation({
     mutationFn: ProductService.remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products", storeSlug as string] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product deleted");
       setDeleteId(null);
     },
