@@ -23,6 +23,7 @@ const CategorySection = () => {
     queryFn: CategoryService.getAllPublic,
   });
 
+
   const handleCategoryClick = (categoryName: string) => {
     navigate(`/marketplace?category=${encodeURIComponent(categoryName)}`);
   };

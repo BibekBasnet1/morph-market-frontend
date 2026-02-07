@@ -11,12 +11,10 @@ import QuickNav from "./components/common/QuickNav";
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
-// Lazy load route components
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
 const BuyerRoutes = lazy(() => import("./components/auth/BuyerRoutes"));
 
-// Lazy load components
 const Index = lazy(() => import("./pages/index"));
 const AllReptilesPage = lazy(() => import("./pages/marketplace"));
 const LoginPage = lazy(() => import("./pages/user/auth/login"));
@@ -31,16 +29,16 @@ const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetai
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1, // Only retry failed queries once instead of 3 times
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 2, 
+      staleTime: 0, 
+      // staleTime: 1000 * 60 * 5, // 5 minutes
     },
     mutations: {
-      retry: 0, // Don't retry mutations (forms, posts, etc)
+      retry: 0, 
     },
   },
 });
 
-// Create a separate component to use AuthContext
 const AppRoutes = () => {
   const { roles } = useAuth();
   const isAdmin = roles?.includes('admin') || roles?.includes('superadmin');

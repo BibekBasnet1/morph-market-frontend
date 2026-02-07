@@ -16,53 +16,50 @@ import { Modal } from "../../components/ui/modal";
 
 const AddCategoriesPage = () => {
   const queryClient = useQueryClient();
-
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-
-
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
     name: "",
-      slug: "",
+    slug: "",
     description: "",
     image: null as File | null,
     preview: "" as string
   });
 
   const openAddModal = () => {
-  resetForm();
-  setIsOpen(true);
-};
+    resetForm();
+    setIsOpen(true);
+  };
 
-const openEditModal = (category: Category) => {
-  setEditingId(category.id);
-  setForm({
-    name: category.name,
-    slug: category.slug,
-    description: category.description,
-    image: null,
-    preview: (typeof category.image === 'string' ? category.image : "") || ""
-  });
-  setIsOpen(true);
-};
+  const openEditModal = (category: Category) => {
+    setEditingId(category.id);
+    setForm({
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      image: null,
+      preview: (typeof category.image === 'string' ? category.image : "") || ""
+    });
+    setIsOpen(true);
+  };
 
-const closeModal = () => {
-  resetForm();
-  setIsOpen(false);
-};
+  const closeModal = () => {
+    resetForm();
+    setIsOpen(false);
+  };
 
 
-const handleChange = (key: string, value: any) => {
-if (key === "name") {
-setForm(prev => ({
-...prev,
-name: value,
-slug: slugify(value),
-}));
-return;
-}
+  const handleChange = (key: string, value: any) => {
+    if (key === "name") {
+      setForm(prev => ({
+        ...prev,
+        name: value,
+        slug: slugify(value),
+      }));
+      return;
+    }
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
@@ -70,58 +67,58 @@ return;
   //   setForm({ name: "", description: "", slug: "" });
   //   setEditingId(null);
   // };
-const resetForm = () => {
-try {
-if (form.preview && form.preview.startsWith("blob:")) {
-URL.revokeObjectURL(form.preview);
-}
-} catch (e) {
-// ignore
-}
-setForm({ name: "", description: "", slug: "", image: null, preview: "" });
-setEditingId(null);
-};
+  const resetForm = () => {
+    try {
+      if (form.preview && form.preview.startsWith("blob:")) {
+        URL.revokeObjectURL(form.preview);
+      }
+    } catch (e) {
+      // ignore
+    }
+    setForm({ name: "", description: "", slug: "", image: null, preview: "" });
+    setEditingId(null);
+  };
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories"],
-    
+
     queryFn: CategoryService.getAllPublic,
   });
 
 
 
-const saveMutation = useMutation({
-  mutationFn: async () => {
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("slug", form.slug);
-    formData.append("description", form.description);
-    if (form.image) formData.append("image", form.image);
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("slug", form.slug);
+      formData.append("description", form.description);
+      if (form.image) formData.append("image", form.image);
 
-    if (editingId) {
-      const updated = await CategoryService.update(editingId, formData);
-      return updated; // return the updated category
-    } else {
-      const created = await CategoryService.create(formData);
-      return created; // return the new category
-    }
-  },
-  onSuccess: (category: Category) => {
-    // Update cache manually to avoid extra fetch
-    queryClient.setQueryData<Category[]>(["categories"], old =>
-      editingId
-        ? old!.map(cat => (cat.id === editingId ? category : cat))
-        : [...(old || []), category]
-    );
+      if (editingId) {
+        const updated = await CategoryService.update(editingId, formData);
+        return updated; // return the updated category
+      } else {
+        const created = await CategoryService.create(formData);
+        return created; // return the new category
+      }
+    },
+    onSuccess: (category: Category) => {
+      // Update cache manually to avoid extra fetch
+      queryClient.setQueryData<Category[]>(["categories"], old =>
+        editingId
+          ? old!.map(cat => (cat.id === editingId ? category : cat))
+          : [...(old || []), category]
+      );
 
-    toast.success(editingId ? "Category updated" : "Category created");
-    resetForm();
-    setIsOpen(false); // close the modal
-  },
-  onError: () => {
-    toast.error("Something went wrong");
-  },
-});
+      toast.success(editingId ? "Category updated" : "Category created");
+      resetForm();
+      setIsOpen(false); // close the modal
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+  });
 
 
   const deleteMutation = useMutation({
@@ -141,26 +138,26 @@ const saveMutation = useMutation({
     saveMutation.mutate();
   };
 
-const openDeleteModal = (id: number) => {
-  setDeleteId(id);
-};
+  const openDeleteModal = (id: number) => {
+    setDeleteId(id);
+  };
 
-const closeDeleteModal = () => {
-  setDeleteId(null);
-};
+  const closeDeleteModal = () => {
+    setDeleteId(null);
+  };
 
-const confirmDelete = () => {
-  if (!deleteId) return;
+  const confirmDelete = () => {
+    if (!deleteId) return;
 
-  deleteMutation.mutate(deleteId, {
-    onSuccess: () => {
-      closeDeleteModal();
-    },
-  });
-};
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        closeDeleteModal();
+      },
+    });
+  };
 
 
-return (
+  return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -204,7 +201,7 @@ return (
                   size="icon"
                   variant="destructive"
                   className="flex justify-center items-center"
-                 onClick={() => openDeleteModal(category.id)}
+                  onClick={() => openDeleteModal(category.id)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -214,36 +211,36 @@ return (
         ))}
       </div>
       <Modal
-  isOpen={deleteId !== null}
-  onClose={closeDeleteModal}
-  className="max-w-md p-6"
->
-  <h3 className="mb-3 text-lg font-semibold text-black dark:text-white">
-    Delete Category
-  </h3>
+        isOpen={deleteId !== null}
+        onClose={closeDeleteModal}
+        className="max-w-md p-6"
+      >
+        <h3 className="mb-3 text-lg font-semibold text-black dark:text-white">
+          Delete Category
+        </h3>
 
-  <p className="text-sm text-gray-600 dark:text-gray-400">
-    Are you sure you want to delete this category?
-    <br />
-    This action cannot be undone.
-  </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Are you sure you want to delete this category?
+          <br />
+          This action cannot be undone.
+        </p>
 
-  <div className="mt-6 flex justify-end gap-3">
-    <Button variant="secondary" onClick={closeDeleteModal}>
-      Cancel
-    </Button>
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="secondary" onClick={closeDeleteModal}>
+            Cancel
+          </Button>
 
-    <Button
-      variant="destructive"
-      onClick={confirmDelete}
-      disabled={deleteMutation.isPending}
-    >
-      {deleteMutation.isPending ? "Deleting..." : "Delete"}
-    </Button>
-  </div>
-</Modal>
+          <Button
+            variant="destructive"
+            onClick={confirmDelete}
+            disabled={deleteMutation.isPending}
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </div>
+      </Modal>
 
-       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-lg p-6">
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-lg p-6">
         <h3 className="mb-4 text-lg font-semibold">
           {editingId ? "Edit Category" : "Add Category"}
         </h3>
@@ -272,14 +269,14 @@ return (
             />
           </div>
 
-          <div> 
-            <Label>Image</Label> 
-            <Input type="file" accept="image/*" onChange={e => handleChange("image", e.target.files?.[0] || null)} /> 
-            {form.preview && ( 
-              <img src={form.preview} 
-              alt="preview" 
-              className="mt-3 w-32 h-32 object-cover rounded" />
-          )} 
+          <div>
+            <Label>Image</Label>
+            <Input type="file" accept="image/*" onChange={e => handleChange("image", e.target.files?.[0] || null)} />
+            {form.preview && (
+              <img src={form.preview}
+                alt="preview"
+                className="mt-3 w-32 h-32 object-cover rounded" />
+            )}
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

@@ -6,7 +6,7 @@ export const CategoryService = {
     const res = await api.get("/admin/categories");
     return res.data.data.data;
   },
-    async getAllPublic(): Promise<Category[]> {
+  async getAllPublic(): Promise<Category[]> {
     const res = await api.get("/categories");
     return res.data.data.data;
   },
@@ -17,7 +17,7 @@ export const CategoryService = {
   },
 
   update: async (id: number, payload: FormData): Promise<Category> => {
-    const res = await api.post(`/admin/categories/${id}`, payload);
+    const res = await api.put(`/admin/categories/${id}`, payload);
     return res.data.data;
   },
 

@@ -34,11 +34,7 @@ export const ProtectedRoute = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Convert role objects → role names
 const roleNames: RoleName[] = user.roles?.map(r => r.name as RoleName) ?? [];
-
-    console.log('roles',allowedRoles)
-
   // Role-based access
   if (
     allowedRoles &&

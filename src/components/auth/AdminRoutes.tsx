@@ -9,6 +9,8 @@ import SellersListPage from "../../pages/user/auth/sellers";
 import AddCategoriesPage from "../../pages/addCategories/addCategories";
 import { lazy } from "react";
 import AddGenderPage from "../../pages/addGenders/addGenders";
+import BuyerReviewPage from "../../pages/user/buyer-review";
+import SellerReviewPage from "../../pages/user/sellerReview";
 
 // Lazy load pages
 const AddTraitsPage = lazy(() => import("../../pages/addTraits/addTraits"));
@@ -42,7 +44,18 @@ const AdminRoutes = () => (
           <BuyersListPage />
         </ProtectedRoute>
       } />
-            <Route path="add-gender" element={
+
+      <Route path="sellers/:sellerId/review" element={
+        <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+          <SellerReviewPage />
+        </ProtectedRoute>
+      } />
+      <Route path="buyers/:userId/review" element={
+        <ProtectedRoute allowedRoles={['superadmin', 'admin']}>
+          <BuyerReviewPage />
+        </ProtectedRoute>
+      } />
+      <Route path="add-gender" element={
         <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer']}>
           <AddGenderPage />
         </ProtectedRoute>
