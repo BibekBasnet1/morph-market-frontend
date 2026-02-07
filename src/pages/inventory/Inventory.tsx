@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-// import { useAuth } from "../../contexts/AuthContext";
 import { DataTable } from "../../components/common/DataTable";
 import type { ColumnDef } from "../../components/common/DataTable";
 import type { InventoryItem, ProductFilters } from "../../types";
@@ -22,7 +21,7 @@ import { MoreVertical, Plus, Filter, X } from "lucide-react";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const InventoryPage = () => {
-  
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   // const { user } = useAuth();
@@ -92,25 +91,23 @@ const InventoryPage = () => {
     queryFn: DietService.getAllPublic,
   });
 
-const updateProductMutation = useMutation({
-  mutationFn: async ({ item, active }: { item: InventoryItem; active: boolean }) => {
-    const formData = new FormData();
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ item, active }: { item: InventoryItem; active: boolean }) => {
+      const formData = new FormData();
 
-    // Required fields for inventory update
-    formData.append("store_id", String((item as any).store_id || ""));
-    formData.append("product_id", String(item.product?.id || ""));
-    formData.append("price", String(getPrice(item)));
-    formData.append("stock", String((item as any).stock || 0));
-    formData.append("active", active ? "1" : "0");
+      // Required fields for inventory update
+      formData.append("store_id", String((item as any).store_id || ""));
+      formData.append("product_id", String(item.product?.id || ""));
+      formData.append("price", String(getPrice(item)));
+      formData.append("stock", String((item as any).stock || 0));
+      formData.append("active", active ? "1" : "0");
 
-    return InventoryService.update(item.id, formData);
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["inventories"] });
-  },
-});
-
-
+      return InventoryService.update(item.id, formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventories"] });
+    },
+  });
 
   const [isAdvancedView, setIsAdvancedView] = useState(false);
 
@@ -484,7 +481,7 @@ const updateProductMutation = useMutation({
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">{item.product?.name}</p>
-                       <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{getName(item.product?.category) ? ` • ${getName(item.product?.category)}` : ''}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{getName(item.product?.category) ? ` • ${getName(item.product?.category)}` : ''}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">{getPrice(item) ? `$${Number(getPrice(item)).toLocaleString()}` : '—'}</p>

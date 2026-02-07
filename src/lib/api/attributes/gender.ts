@@ -4,12 +4,10 @@ import type { Gender } from "../../../types";
 export const GenderService = {
   async getAll(): Promise<Gender[]> {
     const res = await api.get("/admin/genders");
-    console.log(res.data.data);
     return res.data.data.data;
   },
     async getAllPublic(): Promise<Gender[]> {
     const res = await api.get("/genders");
-    console.log(res.data.data);
     return res.data.data.data;
   },
 

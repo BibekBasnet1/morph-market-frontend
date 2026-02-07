@@ -20,4 +20,9 @@ export const StoreService = {
   remove: async (id: number): Promise<void> => {
     await api.delete(`/buyer/stores/${id}`);
   },
+
+  getMyStore: async() => {
+    const response = await api.get('/buyers/stores/my-store');
+    return response.data.data;
+  },
 };

@@ -4,12 +4,10 @@ import type { Trait } from "../../../types";
 export const TraitsService = {
   async getAll(): Promise<Trait[]> {
     const res = await api.get("/admin/traits");
-    console.log("Fetched traits:", res.data);
     return res.data.data.data;
   },
     async getAllPublic(): Promise<Trait[]> {
     const res = await api.get("/traits");
-    console.log("Fetched traits:", res.data);
     return res.data.data.data;
   },
 

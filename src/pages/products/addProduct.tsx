@@ -107,7 +107,7 @@ const AddProductPage = () => {
       content: (
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label>Name *</Label>
+            <Label>Name <span className="text-green-500">*</span></Label>
             <Input
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
@@ -115,7 +115,7 @@ const AddProductPage = () => {
             />
           </div>
 
-          <div>
+          <div className="hidden">
             <Label>Slug</Label>
             <Input
               value={form.slug}
@@ -124,9 +124,8 @@ const AddProductPage = () => {
             />
           </div>
 
-
           <div>
-            <Label>Category *</Label>
+            <Label>Category <span className="text-green-500">*</span></Label>
             <Select
               value={form.category_id ? form.category_id.toString() : ""}
               options={categories.map((c) => ({ value: c.id.toString(), label: c.name }))}
@@ -135,7 +134,7 @@ const AddProductPage = () => {
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             />
           </div>
-
+          {/* 
           <div>
             <Label>Price *</Label>
             <Input
@@ -144,7 +143,7 @@ const AddProductPage = () => {
               onChange={(e) => handleChange("price", e.target.value)}
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             />
-          </div>
+          </div> */}
 
           <div>
             <Label>Gender</Label>
@@ -155,14 +154,14 @@ const AddProductPage = () => {
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             />
           </div>
-                    <div>
+          <div>
             <Label>Description about Product</Label>
-        <Textarea
-        rows={4}
-        value={form.description}
-        onChange={(e) => handleChange("description", e.target.value)}
-        className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-        />
+            <Textarea
+              rows={4}
+              value={form.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+              className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            />
           </div>
         </div>
       ),
@@ -215,14 +214,14 @@ const AddProductPage = () => {
           </div>
           <div>
             <Label>Tags</Label>
-              <Select
+            <Select
               value={form.tag_id ? form.tag_id.toString() : ""}
               options={tags.map((t) => ({ value: t.id.toString(), label: t.name }))}
               placeholder="Tags"
               onChange={(v) => handleChange("tag_id", Number(v))}
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-              />
-              </div>
+            />
+          </div>
         </div>
       ),
     },
@@ -299,7 +298,7 @@ const AddProductPage = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl p-4">
+    <div className="mx-auto max-w-full p-4">
       <MultiStepForm
         steps={steps}
         currentStep={currentStep}

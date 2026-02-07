@@ -212,32 +212,32 @@ const AddListingPage = () => {
     },
   });
 
-const handleProductSelect = (productId: number) => {
-  if (mode === "single") {
-    setSelectedProducts([productId]);
-    setOpenProductId(productId);
-  } else {
-    setSelectedProducts((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
-  }
+  const handleProductSelect = (productId: number) => {
+    if (mode === "single") {
+      setSelectedProducts([productId]);
+      setOpenProductId(productId);
+    } else {
+      setSelectedProducts((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId]
+      );
+    }
 
-  if (!inventoryData[productId]) {
-    const product = products.find((p: any) => p.id === productId);
+    if (!inventoryData[productId]) {
+      const product = products.find((p: any) => p.id === productId);
 
-    setInventoryData((prev) => ({
-      ...prev,
-      [productId]: {
-        price: product?.price || 0,
-        stock: 1,
-        quantity: 1,
-        active: true,
-      },
-    }));
-  }
-};
+      setInventoryData((prev) => ({
+        ...prev,
+        [productId]: {
+          price: product?.price || 0,
+          stock: 1,
+          quantity: 1,
+          active: true,
+        },
+      }));
+    }
+  };
 
 
 
@@ -260,9 +260,8 @@ const handleProductSelect = (productId: number) => {
   }
 
   return (
-    <div className="min-h-screen dark:bg-[#0b0f0e] dark:text-white p-6">
+    <div className="min-h-screen dark:bg-dark dark:text-white p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex justify-between mb-6">
           <h2 className="text-2xl font-bold">Add Inventory</h2>
 
@@ -300,10 +299,9 @@ const handleProductSelect = (productId: number) => {
                 key={product.id}
                 onClick={() => handleProductSelect(product.id)}
                 className={`cursor-pointer rounded-xl overflow-hidden border
-                  ${
-                    selected
-                      ? "border-green-500 ring-1 ring-green-500"
-                      : "border-gray-800"
+                  ${selected
+                    ? "border-green-500 ring-1 ring-green-500"
+                    : "border-gray-800"
                   }
                   dark:bg-[#111827]
                 `}
@@ -314,9 +312,9 @@ const handleProductSelect = (productId: number) => {
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">{product.name}</h3>
-                  <p className="text-sm text-gray-400">
+                  {/* <p className="text-sm text-gray-400">
                     Base Price: ${product.price}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             );
@@ -325,129 +323,127 @@ const handleProductSelect = (productId: number) => {
 
 
 
-       {mode === "bulk" &&
-        selectedProducts.map((id) => {
-          const product = products.find((p: any) => p.id === id);
-          const item = inventoryData[id];
+        {mode === "bulk" &&
+          selectedProducts.map((id) => {
+            const product = products.find((p: any) => p.id === id);
+            const item = inventoryData[id];
 
-          return (
-            <Card
-              key={id}
-              className="mt-6 dark:bg-[#111827] border border-green-500"
-            >
-              <CardContent className="p-4 space-y-4">
-                <h3 className="font-semibold">{product?.name}</h3>
+            return (
+              <Card
+                key={id}
+                className="mt-6 dark:bg-[#111827] border border-green-500"
+              >
+                <CardContent className="p-4 space-y-4">
+                  <h3 className="font-semibold">{product?.name}</h3>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label>Price</Label>
-                    <Input
-                      type="text"
-                      value={item.price}
-                      onChange={(e) =>
-                        updateItem(id, "price", +e.target.value)
-                      }
-                    />
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Actual Price</Label>
+                      <Input
+                        type="text"
+                        value={item.price}
+                        onChange={(e) =>
+                          updateItem(id, "price", +e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Sale Price (You want to sell)</Label>
+                      <Input
+                        type="text"
+                        value={item.sale_price || ""}
+                        onChange={(e) =>
+                          updateItem(
+                            id,
+                            "sale_price",
+                            e.target.value ? +e.target.value : undefined
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Discount Price</Label>
+                      <Input
+                        type="text"
+                        value={item.discount_price || ""}
+                        onChange={(e) =>
+                          updateItem(
+                            id,
+                            "discount_price",
+                            e.target.value ? +e.target.value : undefined
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Discount Start</Label>
+                      <Input
+                        type="date"
+                        value={item.discount_start_date || ""}
+                        onChange={(e) =>
+                          updateItem(id, "discount_start_date", e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Discount End</Label>
+                      <Input
+                        type="date"
+                        value={item.discount_end_date || ""}
+                        onChange={(e) =>
+                          updateItem(id, "discount_end_date", e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Stock</Label>
+                      <Input
+                        type="text"
+                        value={item.stock}
+                        onChange={(e) =>
+                          updateItem(id, "stock", +e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Quantity</Label>
+                      <Input
+                        type="text"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateItem(id, "quantity", +e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
-
-                  <div>
-                    <Label>Sale Price</Label>
-                    <Input
-                      type="text"
-                      value={item.sale_price || ""}
-                      onChange={(e) =>
-                        updateItem(
-                          id,
-                          "sale_price",
-                          e.target.value ? +e.target.value : undefined
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Discount Price</Label>
-                    <Input
-                      type="text"
-                      value={item.discount_price || ""}
-                      onChange={(e) =>
-                        updateItem(
-                          id,
-                          "discount_price",
-                          e.target.value ? +e.target.value : undefined
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Discount Start</Label>
-                    <Input
-                      type="date"
-                      value={item.discount_start_date || ""}
-                      onChange={(e) =>
-                        updateItem(id, "discount_start_date", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Discount End</Label>
-                    <Input
-                      type="date"
-                      value={item.discount_end_date || ""}
-                      onChange={(e) =>
-                        updateItem(id, "discount_end_date", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Stock</Label>
-                    <Input
-                      type="text"
-                      value={item.stock}
-                      onChange={(e) =>
-                        updateItem(id, "stock", +e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Quantity</Label>
-                    <Input
-                      type="text"
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateItem(id, "quantity", +e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+                </CardContent>
+              </Card>
+            );
+          })}
 
         {openProductId && (
-  <InventoryModal
-    product={products.find((p: any) => p.id === openProductId)}
-    item={inventoryData[openProductId]}
-    onClose={() => setOpenProductId(null)}
-    onChange={(field, value) =>
-      updateItem(openProductId, field, value)
-    }
-    onAddToInventory={() => {
-      setSelectedProducts([openProductId]);
-      setOpenProductId(null);
-      addMutation.mutate();
-    }}
-  />
-)}
+          <InventoryModal
+            product={products.find((p: any) => p.id === openProductId)}
+            item={inventoryData[openProductId]}
+            onClose={() => setOpenProductId(null)}
+            onChange={(field, value) =>
+              updateItem(openProductId, field, value)
+            }
+            onAddToInventory={() => {
+              setSelectedProducts([openProductId]);
+              setOpenProductId(null);
+              addMutation.mutate();
+            }}
+          />
+        )}
 
-
-        {/* Submit */}
-        {selectedProducts.length > 0 && (
+        {/* {selectedProducts.length > 0 && (
           <div className="flex justify-end mt-8">
             <Button
               onClick={() => addMutation.mutate()}
@@ -457,7 +453,7 @@ const handleProductSelect = (productId: number) => {
               {addMutation.isPending ? "Saving..." : "Create Inventory"}
             </Button>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
