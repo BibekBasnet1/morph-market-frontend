@@ -65,13 +65,13 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden text-white bg-background">
+    <section className="hero-section relative min-h-screen overflow-hidden text-white bg-background">
       {/* Background Image Slideshow */}
       <div className="absolute inset-0">
         {snakeImages.map((image, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+            className={`hero-slide absolute inset-0 transition-all duration-700 ease-in-out ${
               index === currentSlide
                 ? isTransitioning
                   ? "opacity-0 scale-105"
@@ -82,7 +82,7 @@ const HeroSection = () => {
             <img
               src={image.url}
               alt={image.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover hero-img"
             />
           </div>
         ))}

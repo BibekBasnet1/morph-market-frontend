@@ -399,6 +399,179 @@ layer(base);
   @apply !fill-gray-800 !font-semibold dark:!fill-white/90;
 }
 
+/* Navbar overflow fixes and legacy-friendly responsive rules */
+.mm-navbar {
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+.mm-navbar *,
+.mm-navbar *::before,
+.mm-navbar *::after {
+  box-sizing: border-box;
+}
+.mm-navbar .mm-left,
+.mm-navbar .mm-right,
+.mm-navbar .mm-item {
+  -webkit-box-flex: 0 1 auto; /* legacy flex shorthand support */
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  flex-shrink: 1;
+  min-width: 0; /* allow truncation */
+}
+.mm-navbar .mm-logo span:first-child {
+  display: inline-block;
+}
+
+/* Mobile specific: tighten gaps and reduce button padding/font-size */
+@media (max-width: 480px) {
+  .mm-navbar {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .mm-navbar .mm-left { gap: 6px; }
+  .mm-navbar .mm-right { gap: 6px; }
+
+  .mm-navbar .mm-item { padding-left: 4px; padding-right: 4px; }
+
+  .mm-navbar .mm-join {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 12px;
+  }
+
+  .mm-navbar .mm-logo span:first-child { font-size: 18px; }
+  .mm-navbar .mm-logo span:last-child { font-size: 12px; }
+}
+
+/* Very small legacy support: prefer simple properties */
+@media (max-width: 480px) and (orientation: portrait) {
+  .mm-navbar { overflow-x: hidden; }
+}
+
+/* Global image defaults: prevent cropping and ensure responsiveness */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Preserve explicit object-fit utilities when used */
+img.object-cover,
+.object-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+img.object-contain,
+.object-contain img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Background images (inline style or class) */
+[style*="background-image"],
+.bg-image,
+.bg-cover,
+.hero-bg {
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Ensure aspect containers don't cut content: prefer aspect-ratio over fixed height */
+.aspect-video,
+.img-aspect,
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.aspect-video > img,
+.img-aspect > img,
+.image-wrapper > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* If a parent sets an explicit fixed height, allow images to scale within it */
+[class*="h-"] > img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Mobile optimization: make sure images scale down and subject remains centered */
+@media (max-width: 640px) {
+  img {
+    object-fit: contain;
+  }
+
+  .aspect-video > img,
+  .image-wrapper > img {
+    object-fit: contain;
+  }
+}
+
+/* Hero-specific image positioning and left-side overlay for better contrast */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+.hero-section .hero-slide {
+  position: absolute;
+  inset: 0;
+}
+.hero-section .hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Shift main subject to the right on desktop so left text doesn't overlap */
+  object-position: 80% 50%;
+}
+
+/* subtle left-side gradient overlay to improve text contrast */
+.hero-section .hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(2,6,23,0.65) 0%, rgba(2,6,23,0.45) 18%, rgba(2,6,23,0.12) 35%, transparent 60%);
+}
+
+/* Ensure overlay sits above images but below content (content uses z-10) */
+.hero-section > .hero-gradient-overlay { z-index: 8; }
+
+/* Mobile adjustments: center subject vertically and horizontally more, reduce overlay width */
+@media (max-width: 640px) {
+  .hero-section .hero-img {
+    object-position: 50% 45%;
+  }
+  .hero-section .hero-gradient-overlay {
+    background: linear-gradient(90deg, rgba(2,6,23,0.7) 0%, rgba(2,6,23,0.5) 28%, rgba(2,6,23,0.18) 48%, transparent 70%);
+  }
+}
+
+/* Older small devices fallback: use background-position on elements with inline background-image */
+@media (max-width: 480px) {
+  [style*="background-image"] {
+    background-position: center 45% !important;
+    background-size: cover !important;
+  }
+}
+
 #chartSixteen .apexcharts-legend {
   @apply !p-0 !pl-6;
 }

@@ -216,11 +216,11 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex items-center justify-between px-4 py-3 xl:px-6">
+    <header className="mm-navbar sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 overflow-x-hidden">
+      <div className="flex items-center justify-between px-3 py-2 xl:px-6 w-full max-w-full flex-nowrap min-w-0">
 
         {/* LEFT */}
-        <div className="flex items-center gap-3">
+        <div className="mm-left flex items-center gap-2">
           {isAuthenticated && (
                       <button
             className={`items-center justify-center  w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 flex dark:text-gray-400 lg:h-11 lg:w-11 xl:border ${
@@ -264,9 +264,9 @@ const Navbar: React.FC = () => {
           )}
 
           {!isAuthenticated && (
-            <Link to="/" className="flex items-center gap-2">
-              <span className="text-2xl">🐍</span>
-              <span className="font-serif text-xl font-bold text-black dark:text-white">
+            <Link to="/" className="mm-item mm-logo flex items-center gap-2 min-w-0">
+              <span className="text-xl sm:text-2xl">🐍</span>
+              <span className="font-serif text-sm sm:text-xl font-bold truncate text-black dark:text-white">
                 SerpentMarket
               </span>
             </Link>
@@ -290,7 +290,7 @@ const Navbar: React.FC = () => {
         )}
 
         {/* RIGHT */}
-        <div className="flex items-center gap-3">
+        <div className="mm-right flex items-center gap-2 sm:gap-3 min-w-0">
           <Button variant="ghost" size="icon">
             <Heart className="h-5 text-gray-500 hover:text-red-500 w-5" />
           </Button>
@@ -305,14 +305,14 @@ const Navbar: React.FC = () => {
           {!isAuthenticated ? (
             <>
               <Link to="/login">
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="mm-item gap-2 px-2 py-1 text-xs sm:text-sm">
                   <User className="h-4 w-4" />
-                  Sign In
+                  <span className="truncate">Sign In</span>
                 </Button>
               </Link>
 
               <Link to="/register">
-                <Button>Join Community</Button>
+                <Button className="mm-item mm-join px-3 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm">Join Community</Button>
               </Link>
             </>
           ) : (
