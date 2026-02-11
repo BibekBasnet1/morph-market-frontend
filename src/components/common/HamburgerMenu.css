@@ -1,0 +1,19 @@
+.hamburger-menu {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Initially hidden on the right */
+  width: 280px;
+  height: 100vh;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden; /* Prevents internal overflow */
+}
+
+.hamburger-menu.open {
+  right: 0; /* Slides in */
+}
+
+/* Ensure body doesn't scroll when menu is open */
+body.menu-open {
+  overflow: hidden;
+}

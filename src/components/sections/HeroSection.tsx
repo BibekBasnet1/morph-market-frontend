@@ -65,7 +65,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="hero-section relative min-h-screen overflow-hidden text-white bg-background">
+    <section className="hero-section relative min-h-screen overflow-x-hidden max-w-full text-white bg-background">
       {/* Background Image Slideshow */}
       <div className="absolute inset-0">
         {snakeImages.map((image, index) => (
@@ -82,7 +82,8 @@ const HeroSection = () => {
             <img
               src={image.url}
               alt={image.title}
-              className="w-full h-full object-cover hero-img"
+              className="w-full h-full object-cover object-center hero-img"
+              style={{ maxWidth: '100vw', objectFit: 'cover', objectPosition: 'center' }}
             />
           </div>
         ))}
