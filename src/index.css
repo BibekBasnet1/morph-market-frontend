@@ -218,8 +218,14 @@ layer(base);
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+  
+  /* Mobile Responsive - Zero Overflow Fix */
+  html {
+    overflow-x: hidden;
+  }
+  
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative font-normal font-outfit z-1 bg-gray-50 overflow-x-hidden;
   }
 }
 
