@@ -32,12 +32,12 @@ export default function StoreRegistrationForm() {
   const {
     data: existingStore,
     isLoading: isStoreLoading,
-    isError: storeError
+
   } = useQuery({
     queryKey: ["my-store"],
-    queryFn: StoreService.getMyStore,   
+    queryFn: StoreService.getMyStore,
     retry: 1,
-    staleTime: 5 * 60 * 1000,  
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: countries = [], isLoading } = useQuery({
@@ -84,21 +84,51 @@ export default function StoreRegistrationForm() {
     }
   });
 
+  // Prefill form with authenticated user's information for better UX
+  // Only runs if no existing store data is being loaded to avoid overwriting
   useEffect(() => {
-    if (user?.user) {
+    if (user?.user && !existingStore && !isStoreLoading) {
       setFormData(prev => ({
         ...prev,
-        email: user?.user?.email ?? "",
-        username: user?.user?.username ?? "",
-        user_id: user?.user?.id ?? "",
+        // Populate email field from authenticated user - ensures required validation passes
+        email: user.user?.email || "",
+        // Populate store identification fields from authenticated user
+        username: user.user?.username || "",
+        user_id: user.user?.id || "",
+        // Prefill brand_name with user's full name as a helpful suggestion
+        brand_name: user.user?.name || "",
       }));
+      // Clear email error after prefilling
+      setErrors(prev => ({ ...prev, email: "" }));
     }
-  }, [user]);
+  }, [user, existingStore, isStoreLoading]);
+
+  // Prefill form with existing store data if available
+  useEffect(() => {
+    if (existingStore) {
+      setFormData(prev => ({
+        ...prev,
+        ...existingStore,
+        // Ensure store_hours and address are correctly spread if they match structure
+        // If existingStore has different structure, map fields manually here
+      }));
+      // If we are editing, we might want to start at the review step or just the first step
+      // For now, let's keep it at step 0
+    }
+  }, [existingStore]);
 
   const saveMutation = useMutation({
-    mutationFn: (data: FormData) => StoreService.create(data),
-    onSuccess: () => toast.success("Store registered successfully"),
-    onError: () => toast.error("Failed to register store"),
+    mutationFn: (data: FormData) => {
+      if (existingStore) {
+        return StoreService.update(existingStore.id, data);
+      }
+      return StoreService.create(data);
+    },
+    onSuccess: () => {
+      toast.success(existingStore ? "Store updated successfully" : "Store registered successfully");
+      setIsSubmitted(true);
+    },
+    onError: () => toast.error(existingStore ? "Failed to update store" : "Failed to register store"),
   });
 
   const steps = [
@@ -269,7 +299,7 @@ export default function StoreRegistrationForm() {
   return (
     <div className="min-h-screen dark:text-white dark:bg-gray-900 bg-gray-50 py-8 px-4">
       <div className=" mx-auto">
-        <h1>Create your store</h1>
+        <h1>{existingStore ? "Manage your store" : "Create your store"}</h1>
 
         {isSubmitted ? (
           <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 p-6 rounded-lg flex items-center gap-4">
@@ -361,24 +391,30 @@ export default function StoreRegistrationForm() {
                         <Label>Email *</Label>
                         <Input
                           type="email"
-                          value={user?.user?.email}
+                          value={formData.email}
                           onChange={(e) => handleChange("email", e.target.value)}
                           placeholder="store@example.com"
-                          readOnly
+                          readOnly={!!user?.user?.email}
                           className={errors.email ? "border-red-500" : ""}
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {user?.user?.email
+                            ? "Prefilled from your account"
+                            : "Please enter your email address"}
+                        </p>
                         <ErrorMessage field="email" />
                       </div>
                       <div>
                         <Label>Username *</Label>
                         <Input
                           type="text"
-                          value={user?.user?.username}
+                          value={formData.username}
                           onChange={(e) => handleChange("username", e.target.value)}
                           placeholder="mystore123"
                           readOnly
                           className={errors.username ? "border-red-500" : ""}
                         />
+                        <p className="text-xs text-gray-500 mt-1">Prefilled from your account</p>
                         <ErrorMessage field="username" />
                       </div>
                     </div>
@@ -393,6 +429,7 @@ export default function StoreRegistrationForm() {
                           placeholder="Awesome Brand"
                           className={errors.brand_name ? "border-red-500" : ""}
                         />
+                        <p className="text-xs text-gray-500 mt-1">Prefilled from your profile name</p>
                         <ErrorMessage field="brand_name" />
                       </div>
                       <div>
@@ -728,7 +765,7 @@ export default function StoreRegistrationForm() {
                     onClick={handleSubmit}
                     disabled={saveMutation.isPending}
                   >
-                    {saveMutation.isPending ? "Submitting..." : "Submit Store"}
+                    {saveMutation.isPending ? "Submitting..." : (existingStore ? "Update Store" : "Submit Store")}
                   </Button>
                 )}
               </div>

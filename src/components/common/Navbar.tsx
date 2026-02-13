@@ -177,9 +177,9 @@
 // };
 
 // export default Navbar;
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { Heart, ShoppingCart, User } from "lucide-react";
+import { Heart, ShoppingCart, User, Menu, X } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -190,10 +190,12 @@ import { Button } from "../ui/button";
 
 const Navbar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar();
   const { user } = useAuth();
   const isAuthenticated = !!user;
+
 
   const handleSidebarToggle = () => {
     if (window.innerWidth >= 1280) {
@@ -201,6 +203,10 @@ const Navbar: React.FC = () => {
     } else {
       toggleMobileSidebar();
     }
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   useEffect(() => {
@@ -217,56 +223,56 @@ const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex items-center justify-between px-4 py-3 xl:px-6">
+      <div className="flex items-center justify-between px-4 py-3 md:px-6">
 
         {/* LEFT */}
         <div className="flex items-center gap-3">
           {isAuthenticated && (
-                      <button
-            className={`items-center justify-center  w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 flex dark:text-gray-400 lg:h-11 lg:w-11 xl:border ${
-              isMobileOpen ? "bg-gray-100 dark:bg-white/[0.03]" : ""
-            }`}
-            onClick={handleSidebarToggle}
-            aria-label="Toggle Sidebar"
-          >
-            {isMobileOpen ? (
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
-                  fill="currentColor"
-                />
-              </svg>
-            ) : (
-              <svg
-                width="16"
-                height="12"
-                viewBox="0 0 16 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z"
-                  fill="currentColor"
-                />
-              </svg>
-            )}
-          </button>
+            <button
+              className={`items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-99999 dark:border-gray-800 flex dark:text-gray-400 lg:h-11 lg:w-11 md:border ${
+                isMobileOpen ? "bg-gray-100 dark:bg-white/[0.03]" : ""
+              }`}
+              onClick={handleSidebarToggle}
+              aria-label="Toggle Sidebar"
+            >
+              {isMobileOpen ? (
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  width="16"
+                  height="12"
+                  viewBox="0 0 16 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              )}
+            </button>
           )}
 
           {!isAuthenticated && (
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 shrink-0">
               <span className="text-2xl">🐍</span>
-              <span className="font-serif text-xl font-bold text-black dark:text-white">
+              <span className="font-serif text-lg md:text-xl font-bold text-black dark:text-white hidden sm:inline">
                 SerpentMarket
               </span>
             </Link>
@@ -275,45 +281,61 @@ const Navbar: React.FC = () => {
 
         {/* CENTER (Search) */}
         {isAuthenticated && (
-          <div className="hidden xl:block">
+          <div className="hidden xl:block flex-1 mx-6">
             <div className="relative">
               <input
                 ref={inputRef}
                 placeholder="Search..."
-                className="h-11 w-[420px] rounded-lg border border-gray-200 bg-transparent pl-10 pr-16 text-sm text-gray-800 focus:outline-none dark:border-gray-800 dark:text-white"
+                className="h-11 w-full max-w-[420px] rounded-lg border border-gray-200 bg-transparent pl-10 pr-16 text-sm text-gray-800 focus:outline-none dark:border-gray-800 dark:text-white"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                Ctrl + K
-              </span>
+
             </div>
           </div>
         )}
 
         {/* RIGHT */}
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon">
+        <div className="flex items-center gap-2 md:gap-3">
+          <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Heart className="h-5 text-gray-500 hover:text-red-500 w-5" />
           </Button>
-<Link to="/cart">
-          <Button variant="ghost" size="icon">
-            <ShoppingCart className="h-5 text-gray-500 hover:text-blue-500 w-5" />
-          </Button>
-</Link>
+
+          <Link to="/cart">
+            <Button variant="ghost" size="icon" className="hidden sm:flex">
+              <ShoppingCart className="h-5 text-gray-500 hover:text-blue-500 w-5" />
+            </Button>
+          </Link>
 
           <ThemeToggleButton />
 
           {!isAuthenticated ? (
             <>
-              <Link to="/login">
-                <Button variant="outline" className="gap-2">
+              {/* Desktop: Show buttons inline */}
+              <Link to="/login" className="hidden md:inline-block">
+                <Button variant="outline" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
-                  Sign In
+                  <span className="hidden lg:inline">Sign In</span>
                 </Button>
               </Link>
 
-              <Link to="/register">
-                <Button>Join Community</Button>
+              <Link to="/register" className="hidden md:inline-block">
+                <Button size="sm">
+                  <span className="hidden lg:inline">Join Community</span>
+                  <span className="lg:hidden">Join</span>
+                </Button>
               </Link>
+
+              {/* Mobile: Show hamburger menu */}
+              <button
+                onClick={toggleMobileMenu}
+                className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                ) : (
+                  <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                )}
+              </button>
             </>
           ) : (
             <>
@@ -322,6 +344,36 @@ const Navbar: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile Menu for Guest Users */}
+      {!isAuthenticated && isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 animate-in fade-in slide-in-from-top-2">
+          <div className="space-y-3">
+            <Link to="/login" className="block w-full">
+              <Button variant="outline" className="w-full gap-2 justify-center">
+                <User className="h-4 w-4" />
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/register" className="block w-full">
+              <Button className="w-full justify-center">
+                Join Community
+              </Button>
+            </Link>
+
+            <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-800">
+              <Button variant="ghost" size="icon" className="flex-1">
+                <Heart className="h-5 text-gray-500" />
+              </Button>
+              <Link to="/cart" className="flex-1">
+                <Button variant="ghost" size="icon" className="w-full h-10">
+                  <ShoppingCart className="h-5 text-gray-500" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
