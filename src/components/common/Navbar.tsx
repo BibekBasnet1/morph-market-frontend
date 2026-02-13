@@ -221,11 +221,6 @@ const Navbar: React.FC = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Close mobile menu when navigating
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [user]);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
       <div className="flex items-center justify-between px-4 py-3 md:px-6">
@@ -293,9 +288,7 @@ const Navbar: React.FC = () => {
                 placeholder="Search..."
                 className="h-11 w-full max-w-[420px] rounded-lg border border-gray-200 bg-transparent pl-10 pr-16 text-sm text-gray-800 focus:outline-none dark:border-gray-800 dark:text-white"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                Ctrl + K
-              </span>
+
             </div>
           </div>
         )}
