@@ -32,7 +32,7 @@ const SellersListPage = () => {
       key: "name",
       header: "Seller",
       render: (seller) => (
-        <div>
+        <div className="dark:text-white">
           <p className="font-medium">{seller.name}</p>
           <p className="text-sm text-muted-foreground">{seller.email}</p>
         </div>
@@ -42,7 +42,7 @@ const SellersListPage = () => {
       key: "username",
       header: "Username",
       render: (seller) => (
-        <span className="text-sm">@{seller.username}</span>
+        <span className="text-sm dark:text-white">@{seller.username}</span>
       ),
     },
     {
@@ -210,7 +210,7 @@ const SellersListPage = () => {
 
   if (isError) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 dark:text-white">
         <div>
           <h1 className="text-3xl font-bold">Sellers</h1>
           <p className="text-muted-foreground">Manage and view all sellers</p>
@@ -231,7 +231,7 @@ const SellersListPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dark:text-white">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Sellers</h1>

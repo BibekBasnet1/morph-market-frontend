@@ -160,7 +160,7 @@ const BuyersListPage = () => {
 
   if (isError) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 dark:text-gray-200">
         <div>
           <h1 className="text-3xl font-bold">Buyers</h1>
           <p className="text-muted-foreground">Manage and view all buyers</p>
@@ -178,7 +178,7 @@ const BuyersListPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dark:text-gray-200">
       <div>
         <h1 className="text-3xl font-bold">Buyers</h1>
         <p className="text-muted-foreground">Manage and view all buyers</p>

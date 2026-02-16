@@ -114,7 +114,7 @@ const SellerReviewPage = () => {
 
   if (isError || !sellerDetail) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen dark:text-white items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2 text-foreground dark:text-foreground">Seller Not Found</h2>
@@ -133,7 +133,7 @@ const SellerReviewPage = () => {
   const hasStores = sellerDetail.stores && sellerDetail.stores.length > 0;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-6">
+    <div className="space-y-6 dark:text-gray-200 max-w-7xl mx-auto p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
@@ -154,7 +154,7 @@ const SellerReviewPage = () => {
       </div>
 
       {/* User Information Card */}
-      <Card className="bg-card dark:bg-card border-border dark:border-border">
+      <Card className="bg-card dark:text-gray-200 dark:bg-card border-border dark:border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-foreground dark:text-foreground">
             <User className="h-5 w-5" />

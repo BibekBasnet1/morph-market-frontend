@@ -145,7 +145,7 @@ const AddMaturityPage = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 dark:text-white max-w-5xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Maturities</h2>

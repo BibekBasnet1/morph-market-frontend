@@ -91,14 +91,14 @@ const QuickNav: React.FC = () => {
   return (
     <>
       {/* Small hint button in corner */}
-      <div className="fixed right-4 bottom-6 z-50 hidden  sm:block">
+      {/* <div className="fixed right-4 bottom-6 z-50 hidden  sm:block">
         <button
           onClick={() => setOpen(true)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 text-sm shadow">
           <LucideSearch className="w-4 h-4 text-gray-700 dark:text-gray-200" />
           <span className="text-xs text-gray-700 dark:text-gray-200">Search (Ctrl+K)</span>
         </button>
-      </div>
+      </div> */}
 
       {open && (
         <div className="fixed inset-0 z-50 z-[99] flex items-start justify-center p-4">
