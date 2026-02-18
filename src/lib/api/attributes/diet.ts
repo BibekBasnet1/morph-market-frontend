@@ -17,7 +17,7 @@ export const DietService = {
   },
 
   update: async (id: number, payload: FormData): Promise<Diet> => {
-    const res = await api.post(`/admin/diets/${id}`, payload);
+    const res = await api.put(`/admin/diets/${id}`, payload);
     return res.data.data;
   },
 

@@ -13,8 +13,26 @@ import { slugify } from "../../lib/slugify";
 import { Modal } from "../../components/ui/modal";
 import type { Diet } from "../../types";
 
+// Fallback images for diets by name
+const dietImages: Record<string, string> = {
+  meat: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=400&fit=crop",
+  eggs: "https://images.unsplash.com/photo-1582722872981-82a63300c9c6?w=400&h=400&fit=crop",
+  grass: "https://images.unsplash.com/photo-1583693033351-e8f0b3e24c3e?w=400&h=400&fit=crop",
+  anything: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop",
+};
+
 const AddDietPage = () => {
   const queryClient = useQueryClient();
+
+  // Helper to get diet image from API or fallback
+  const getDietImage = (diet: Diet) => {
+    return (
+      (diet as any)?.image_urls?.url ||
+      (diet as any)?.image_urls?.thumb ||
+      dietImages[(diet.name || "").toLowerCase()] ||
+      "https://placehold.co/200x200"
+    );
+  };
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -24,7 +42,7 @@ const AddDietPage = () => {
     name: "",
     slug: "",
     description: "",
-    // image: null as File | null,
+    image: null as File | null,
   });
 
   const openAddModal = () => {
@@ -38,7 +56,7 @@ const AddDietPage = () => {
       name: diet.name,
       slug: diet.slug,
       description: diet.description,
-      // image: null,
+      image: null,
     });
     setIsOpen(true);
   };
@@ -61,14 +79,17 @@ const AddDietPage = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", slug: ""});
+    setForm({ name: "", description: "", slug: "", image:null});
     setEditingId(null);
   };
 
-  const { data: diets = [], isLoading } = useQuery({
+  const { data: dietsData = [], isLoading } = useQuery({
     queryKey: ["diets"],
     queryFn: DietService.getAll,
   });
+
+  // Handle both array and paginated response
+  const diets = Array.isArray(dietsData) ? dietsData : (dietsData?.data || []);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -76,7 +97,7 @@ const AddDietPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      // if (form.image) formData.append("image", form.image);
+      if (form.image) formData.append("image", form.image);
 
       if (editingId) {
         const updated = await DietService.update(editingId, formData);
@@ -163,17 +184,28 @@ const AddDietPage = () => {
       )}
 
       <div className="grid gap-4">
-        {diets.map(diet => (
+        {diets.map((diet:any) => (
           <Card key={diet.id}>
-            <CardContent className="p-4 flex items-start justify-between">
-              <div>
-                <h3 className="font-medium">{diet.name}</h3>
-                <p className="text-sm text-muted-foreground">
+            <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+              {/* Image */}
+              <div className="w-full sm:w-24 h-24 rounded overflow-hidden bg-muted flex-shrink-0">
+                <img
+                  src={getDietImage(diet)}
+                  alt={diet.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-lg">{diet.name}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
                   {diet.description}
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              {/* Actions */}
+              <div className="flex gap-2 flex-shrink-0">
                 <Button
                   size="icon"
                   variant="outline"
@@ -256,16 +288,64 @@ const AddDietPage = () => {
             />
           </div>
 
-          {/* <div>
+          <div>
             <Label>Image</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={e =>
-                handleChange("image", e.target.files?.[0] || null)
-              }
-            />
-          </div> */}
+            <div className="border-2 border-dashed rounded-lg p-4 text-center">
+              {form.image ? (
+                <div className="space-y-2">
+                  <img
+                    src={URL.createObjectURL(form.image)}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover rounded mx-auto"
+                  />
+                  <p className="text-sm text-muted-foreground">{form.image.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleChange("image", null)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : editingId ? (
+                <div className="space-y-2">
+                  <img
+                    src={getDietImage(diets.find((d:any) => d.id === editingId)!)}
+                    alt="Current"
+                    className="w-24 h-24 object-cover rounded mx-auto"
+                  />
+                  <p className="text-sm text-muted-foreground">Current image</p>
+                  <label className="cursor-pointer">
+                    <p className="text-xs text-blue-500 hover:underline">
+                      Click to replace
+                    </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={e =>
+                        handleChange("image", e.target.files?.[0] || null)
+                      }
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <label className="cursor-pointer">
+                  <p className="text-sm text-muted-foreground">
+                    Click to upload image
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e =>
+                      handleChange("image", e.target.files?.[0] || null)
+                    }
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="secondary" onClick={closeModal}>
