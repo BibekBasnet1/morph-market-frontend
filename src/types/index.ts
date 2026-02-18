@@ -269,7 +269,18 @@ export interface Product {
   maturity_level?: Maturity | string | null;
   tag?: Tag | string | null;
   trait_ids?: number[];
+  traits?: string[];
   availability?: any[];
+
+  image_urls?: {
+    thumbnail?: {
+      url: string | null;
+      thumb?: string | null;
+      preview?: string | null;
+    };
+    gallery?: (string | { url: string })[];
+  };
+  gallery?: (string | { url: string })[];
 
   specifications?: {
     length?: number | null;
@@ -279,6 +290,7 @@ export interface Product {
   };
 
   min_price?: string;
+  sku?: string;
 }
 
 

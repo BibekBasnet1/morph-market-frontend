@@ -54,10 +54,10 @@ const navItems: NavItem[] = [
   {
     name: "Products",
     icon: <ShoppingCart size={20} />,
-    roles: ["seller"],
+    roles: ["seller","buyer"],
     subItems: [
-      { name: "All Products", path: "/products", roles: ["seller"] },
-      { name: "Add Product", path: "/products/add", roles: ["seller"] },
+      { name: "All Products", path: "/products", roles: ["seller","buyer"] },
+      { name: "Add Product", path: "/products/add", roles: ["seller","buyer"] },
     ],
   },
     {
@@ -389,11 +389,11 @@ const hasAccess = (allowedRoles: RoleName[]) =>
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8  flex ${
+        className={`py-8 px-2 flex flex-shrink-0 items-center gap-2 w-full mt-[45px] xl:mt-0 ${
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
         }`}
       >
-        <Link to="/">
+        <Link to="/" className="flex items-center gap-2 w-full">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               {/* <img
@@ -411,9 +411,9 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                 height={40}
               /> */}
                   
-             <span className="text-2xl">🐍</span>
-             <span className="font-serif text-xl font-bold text-black dark:text-white">
-               SerpentMarket
+             <span className="text-2xl flex-shrink-0">🐍</span>
+             <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">
+               ExoticPetsMarket
              </span>
             </>
           ) : (

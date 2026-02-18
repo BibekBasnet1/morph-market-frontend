@@ -1,19 +1,17 @@
 import { Link, useParams } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ProductService } from "../../lib/api/products";
-import { CartService } from "../../lib/api/cart";
-// import type { Product } from "../../types";
-import type { AddToCartPayload } from "../../types/CartTypes";
+import type { ProductDetails } from "../../types/ProductDetailsType";
 import { Button } from "../../components/ui/button";
 import { useState } from 'react';
 import PaymentMethodsModal from '../../components/payments/PaymentMethodsModal';
-import { toast } from "react-hot-toast";
-import type { Pricing, ProductDetails } from "../../types/ProductDetailsType";
-// removed unused Compass import
+import { useAddToCart } from "../../hooks/useAddToCart";
 
 const ProductDetailsPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const queryClient = useQueryClient();
+  const { handleAddToCart, addToCartMutation } = useAddToCart();
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   /* ---------------- Product Query ---------------- */
 const {
@@ -26,48 +24,20 @@ const {
   enabled: !!slug,
 });
 
-  const [showPayment, setShowPayment] = useState(false);
-
   const renderValue = (value: any) => {
   if (value === null || value === undefined || value === "") return "N/A";
   return value;
 };
 
-
-
-  /* ---------------- Add to Cart ---------------- */
-  const addToCartMutation = useMutation({
-    mutationFn: (payload: AddToCartPayload) =>
-      CartService.create(payload),
-    onSuccess: () => {
-      toast.success("Added to cart");
-      queryClient.invalidateQueries({ queryKey: ["carts"] });
-    },
-    onError: () => {
-      toast.error("Failed to add to cart");
-    },
-  });
-
-  if (isLoading) {
-    return <p className="p-6">Loading product...</p>;
-  }
-
-  if (isError || !product) {
-    return <p className="p-6">Product not found</p>;
-  }
-
-  /* ---------------- Helpers ---------------- */
-
-  const isGuestUser = (): boolean => {
-    try {
-      const auth = JSON.parse(localStorage.getItem("auth-storage") || "{}");
-      return !auth?.user || !auth?.token;
-    } catch {
-      return true;
-    }
+  // Helper function to safely get string value from object or string
+  const getStringValue = (value: any): string => {
+    if (!value) return "N/A";
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && value.name) return value.name;
+    return "N/A";
   };
 
-const getFinalPrice = (pricing: Pricing): number => {
+  const getFinalPrice = (pricing: any): number => {
   if (pricing.sale_price && pricing.sale_price > 0) {
     return pricing.sale_price;
   }
@@ -79,66 +49,22 @@ const getFinalPrice = (pricing: Pricing): number => {
   return pricing.price;
 };
 
+  if (isLoading) {
+    return <p className="p-6">Loading product...</p>;
+  }
+
+  if (isError || !product) {
+    return <p className="p-6">Product not found</p>;
+  }
+
+  /* ---------------- Helpers ---------------- */
+
   const modalItems = product?.availability?.[0]
     ? [{ product_id: product.id, store_id: product.availability[0].store.id, quantity: 1, product_name: product.name, price: getFinalPrice(product.availability[0].pricing) }]
     : [];
 
-
-const addToLocalCart = ({
-  product,
-  price,
-}: {
-  product: ProductDetails;
-  price: number;
-}) => {
-  const existing: any[] = JSON.parse(
-    localStorage.getItem("cart-products") || "[]"
-  );
-
-  const index = existing.findIndex(
-    (item) => item.product_id === product.id
-  );
-
-  if (index !== -1) {
-    existing[index].quantity += 1;
-    existing[index].updated_at = new Date().toISOString();
-  } else {
-    existing.push({
-      id: Date.now(),
-      user_id: null,
-      product_id: product.id,
-      product_slug: product.slug,
-      quantity: 1,
-      price,
-      status: "active",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      product,
-    });
-  }
-
-  localStorage.setItem("cart-products", JSON.stringify(existing));
-};
-
-const handleAddToCart = () => {
-  const availability = product.availability?.[0];
-  if (!availability) return;
-
-  const price = getFinalPrice(availability.pricing);
-
-  const payload: AddToCartPayload = {
-    product_id: product.id,
-    quantity: 1,
-  };
-
-  if (isGuestUser()) {
-    addToLocalCart({ product, price });
-    toast.success("Added to cart");
-    return;
-  }
-
-  addToCartMutation.mutate(payload);
-};
+  const mainImageUrl = selectedImage || product?.image_urls?.thumbnail?.url || product?.image;
+  const galleryImages = product?.image_urls?.gallery || product?.gallery || [];
 
 
 
@@ -154,10 +80,34 @@ const handleAddToCart = () => {
         {/* Image & Thumbnails */}
         <div>
           <img
-            src={product.image ?? "https://placehold.co/800x500"}
+            src={mainImageUrl ?? "https://placehold.co/800x500"}
             alt={product.name}
             className="w-full h-[420px] object-cover rounded-xl"
           />
+
+          {/* Gallery Thumbnails */}
+          {galleryImages && galleryImages.length > 0 && (
+            <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
+              {galleryImages.map((img: any, i: number) => {
+                const imageUrl = typeof img === "string" ? img : img?.url;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(imageUrl)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
+                      selectedImage === imageUrl ? "ring-2 ring-blue-500" : ""
+                    }`}
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`Gallery ${i}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* <div className="flex gap-3 mt-4">
             {[1, 2, 3, 4].map((i) => (
@@ -171,8 +121,8 @@ const handleAddToCart = () => {
 
         {/* Overview */}
         <section>
-          <div className=" flex justify-between">
-          <h2 className="text-lg font-semibold mb-2">Overview</h2>
+          <div className="flex justify-between flex-col space-y-3">
+          <h2 className="text-lg font-semibold">Overview</h2>
           <p className="text-sm text-gray-500 italic">
             "{renderValue(product.description)}"
           </p>
@@ -202,13 +152,13 @@ const handleAddToCart = () => {
 
             <div>
               <p className="text-muted-foreground">Category</p>
-              <p className="font-medium">{renderValue(product.category)}</p>
+              <p className="font-medium">{getStringValue(product.category)}</p>
             </div>
 
             <div>
               <p className="text-muted-foreground">Traits</p>
               <span className="inline-block mt-1 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs">
-                {product.traits?.join(", ") || "N/A"}
+                {Array.isArray(product.traits) ? product.traits.map((t: any) => getStringValue(t)).join(", ") : getStringValue(product.traits) || "N/A"}
               </span>
             </div>
 
@@ -231,7 +181,7 @@ const handleAddToCart = () => {
             <div>
               <p className="text-gray-500 text-md mb-1">Provenance</p>
               <p className="font-medium flex items-center gap-2">
-                <Compass /> <span>Origin: {renderValue(product.origin)}</span>
+                <Compass /> <span>Origin: {getStringValue(product.origin)}</span>
               </p>
             </div>
 
@@ -241,7 +191,7 @@ const handleAddToCart = () => {
               </p>
               <p className="font-medium">
                 Genetic markers consistent with documented{" "}
-                <strong>{product.traits?.join(", ")}</strong> lineage patterns.
+                <strong>{Array.isArray(product.traits) ? product.traits.map((t: any) => getStringValue(t)).join(", ") : getStringValue(product.traits)}</strong> lineage patterns.
               </p>
             </div>
           </div>
@@ -266,7 +216,7 @@ const handleAddToCart = () => {
               </span>
 
               <Button
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCart({ product, price })}
                 disabled={addToCartMutation.isPending}
               >
                 {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}

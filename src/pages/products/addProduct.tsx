@@ -50,6 +50,7 @@ const AddProductPage = () => {
     trait_ids: [] as number[],
     description: "",
     image: null as File | null,
+    gallery_images: [] as File[],
   });
 
   const handleChange = (key: string, value: any) => {
@@ -85,6 +86,9 @@ const AddProductPage = () => {
       if (form.tag_id) fd.append("tag_id", form.tag_id.toString());
       form.trait_ids.forEach((id) => fd.append("trait_ids[]", id.toString()));
       if (form.image) fd.append("image", form.image);
+      
+      // Add gallery images
+      form.gallery_images.forEach((img) => fd.append("images[]", img));
 
       return ProductService.create(fd);
     },
@@ -287,12 +291,118 @@ const AddProductPage = () => {
       name: "Image",
       icon: ImageIcon,
       content: (
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleChange("image", e.target.files ? e.target.files[0] : null)}
-          className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-        />
+        <div className="grid gap-6">
+          {/* Main Image */}
+          <div className="space-y-2">
+            <Label>Main Product Image <span className="text-green-500">*</span></Label>
+            <div className="border-2 border-dashed rounded-lg p-4 text-center">
+              {form.image ? (
+                <div className="space-y-2">
+                  <img
+                    src={URL.createObjectURL(form.image)}
+                    alt="Preview"
+                    className="w-32 h-32 object-cover rounded mx-auto"
+                  />
+                  <p className="text-sm text-gray-500">{form.image.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleChange("image", null)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <label className="cursor-pointer">
+                  <ImageIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Click to upload main image
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleChange("image", e.target.files ? e.target.files[0] : null)}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Gallery Images */}
+          <div className="space-y-2">
+            <Label>Gallery Images (Optional)</Label>
+            <div className="border-2 border-dashed rounded-lg p-4">
+              {form.gallery_images.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    {form.gallery_images.map((img, idx) => (
+                      <div key={idx} className="relative">
+                        <img
+                          src={URL.createObjectURL(img)}
+                          alt={`Gallery ${idx}`}
+                          className="w-full h-24 object-cover rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleChange(
+                              "gallery_images",
+                              form.gallery_images.filter((_, i) => i !== idx)
+                            )
+                          }
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const input = document.getElementById("gallery-add-more") as HTMLInputElement;
+                        input?.click();
+                      }}
+                      className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
+                      Add more images
+                    </button>
+                    <input
+                      id="gallery-add-more"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const newFiles = e.target.files ? Array.from(e.target.files) : [];
+                        handleChange("gallery_images", [...form.gallery_images, ...newFiles]);
+                      }}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <label className="cursor-pointer block text-center">
+                  <ImageIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Click to upload gallery images (multiple)
+                  </p>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      const files = e.target.files ? Array.from(e.target.files) : [];
+                      handleChange("gallery_images", files);
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+        </div>
       ),
     },
   ];

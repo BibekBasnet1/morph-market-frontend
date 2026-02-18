@@ -102,11 +102,12 @@ console.log("Carts:", carts);
   };
 
   const totalAmount = carts.reduce(
-    (sum, item) => sum + Number(item.price) * item.quantity,
+    (sum, item) => sum + Number(item.price),
     0
   );
+  // const estimatedTax = totalAmount * 0.01;
+  // const shippingFee = 45;
 
-  const estimatedTax = totalAmount * 0.01;
 
 if (!carts.length) {
   return (
@@ -138,7 +139,7 @@ if (!carts.length) {
     <div className="mb-6">
       <h1 className="text-3xl font-semibold">Your Shopping Cart</h1>
       <p className="text-sm text-muted-foreground mt-1">
-        You have {carts.length} item ready for safe delivery.
+        You have {carts.length} item{carts.length !== 1 ? 's' : ''} in your cart.
       </p>
     </div>
 
@@ -149,8 +150,7 @@ if (!carts.length) {
           <CardContent className="p-0">
             {/* Table Header */}
             <div className="grid grid-cols-12 px-6 py-4 text-xs font-semibold text-muted-foreground border-b">
-              <div className="col-span-7">PRODUCT DETAILS</div>
-              <div className="col-span-2 text-center">QTY</div>
+              <div className="col-span-9">PRODUCT DETAILS</div>
               <div className="col-span-3 text-right">PRICE</div>
             </div>
 
@@ -163,7 +163,7 @@ if (!carts.length) {
                   className="grid grid-cols-12 gap-4 px-6 py-5 border-b last:border-b-0 items-center"
                 >
                   {/* Product */}
-                  <div className="col-span-7 flex gap-4">
+                  <div className="col-span-9 flex gap-4">
                     <img
                       src={product?.image ?? "https://placehold.co/100x100"}
                       alt={product?.name}
@@ -185,33 +185,6 @@ if (!carts.length) {
                       >
                         Remove from cart
                       </button>
-                    </div>
-                  </div>
-
-                  {/* Quantity */}
-                  <div className="col-span-2 flex justify-center">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          updateQuantity(item, item.quantity - 1)
-                        }
-                      >
-                        −
-                      </Button>
-                      <span className="min-w-[20px] text-center">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          updateQuantity(item, item.quantity + 1)
-                        }
-                      >
-                        +
-                      </Button>
                     </div>
                   </div>
 
@@ -276,22 +249,24 @@ if (!carts.length) {
                 <span>Subtotal</span>
                 <span>${totalAmount.toFixed(2)}</span>
               </div>
-
+{/* 
               <div className="flex justify-between">
                 <span>Estimated Shipping</span>
-                <span>$45.00</span>
+                <span>${shippingFee.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span>Tax (Estimated)</span>
                 <span>${estimatedTax.toFixed(2)}</span>
-              </div>
+              </div> */}
 
               <hr />
 
               <div className="flex justify-between text-lg font-bold">
                 <span>Order Total</span>
-                <span>${(totalAmount + 87).toFixed(2)}</span>
+                {/* <span>${(totalAmount + shippingFee + estimatedTax).toFixed(2)}</span> */}
+                <span>${(totalAmount).toFixed(2)}</span>
+
               </div>
             </div>
 

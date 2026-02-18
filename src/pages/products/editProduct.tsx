@@ -52,6 +52,9 @@ const EditProductPage = () => {
     trait_ids: [] as number[],
     description: "",
     image: null as File | null,
+    gallery_images: [] as File[],
+    existing_image_url: "" as string,
+    existing_gallery_urls: [] as string[],
   });
 
   const getId = (val: any) => {
@@ -91,12 +94,15 @@ const EditProductPage = () => {
         age: "",
         maturity_level_id: getId(product.maturity_level),
         origin_id: getId(product.origin),
-        diet_ids: product.diet ? [getId(product.diet)] : [],
-        tag_id: 0,
+        diet_ids: Array.isArray(product.diets) ? product.diets.map((d: any) => getId(d)) : (product.diet ? [getId(product.diet)] : []),
+        tag_id: product.tag ? getId(product.tag) : 0,
         tag_ids: [],
-        trait_ids: [],
+        trait_ids: Array.isArray(product.traits) ? product.traits.map((t: any) => typeof t === 'object' ? getId(t) : t) : (product.trait_ids || []),
         description: product.description || "",
         image: null,
+        gallery_images: [],
+        existing_image_url: product.image_urls?.thumbnail?.url || "",
+        existing_gallery_urls: product.image_urls?.gallery?.map((g: any) => g.url || g) || [],
       });
     }
   }, [product]);
@@ -117,6 +123,7 @@ const EditProductPage = () => {
 
       Object.entries(form).forEach(([key, value]) => {
         if (Array.isArray(value)) return;
+        if (key.startsWith("existing_")) return;
         if (value !== null && value !== undefined && value !== 0 && value !== "") {
           fd.append(key, value.toString());
         }
@@ -126,6 +133,7 @@ const EditProductPage = () => {
       if (form.tag_id) fd.append("tag_id", form.tag_id.toString());
       form.trait_ids.forEach((id) => fd.append("trait_ids[]", id.toString()));
       if (form.image) fd.append("image", form.image);
+      form.gallery_images.forEach((img) => fd.append("images[]", img));
 
       return ProductService.update(productId, fd);
     },
@@ -176,7 +184,7 @@ const EditProductPage = () => {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Price *</Label>
             <Input
               type="number"
@@ -184,7 +192,7 @@ const EditProductPage = () => {
               onChange={(e) => handleChange("price", e.target.value)}
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             />
-          </div>
+          </div> */}
 
           <div>
             <Label>Gender</Label>
@@ -296,30 +304,143 @@ const EditProductPage = () => {
       name: "Image",
       icon: ImageIcon,
       content: (
-        <div className="space-y-4">
-          {product?.image && !form.image && (
-            <div className="mb-4">
-              <Label>Current Image</Label>
-              <div className="mt-2">
-                <img
-                  src={product.image}
-                  alt="Current product image"
-                  className="max-w-xs h-auto rounded border dark:border-gray-700"
-                />
+        <div className="grid gap-6">
+          {/* Main Image */}
+          <div className="space-y-2">
+            <Label>Main Product Image</Label>
+            <div className="border-2 border-dashed rounded-lg p-4 text-center">
+              {form.image ? (
+                <div className="space-y-2">
+                  <img
+                    src={URL.createObjectURL(form.image)}
+                    alt="Preview"
+                    className="w-32 h-32 object-cover rounded mx-auto"
+                  />
+                  <p className="text-sm text-gray-500">{form.image.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => handleChange("image", null)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove New Image
+                  </button>
+                </div>
+              ) : form.existing_image_url ? (
+                <div className="space-y-2">
+                  <img
+                    src={form.existing_image_url}
+                    alt="Current product image"
+                    className="w-32 h-32 object-cover rounded mx-auto"
+                  />
+                  <p className="text-sm text-gray-500">Current Image</p>
+                  <label className="cursor-pointer">
+                    <p className="text-xs text-blue-500 hover:underline">
+                      Click to replace
+                    </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleChange("image", e.target.files ? e.target.files[0] : null)}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <label className="cursor-pointer">
+                  <ImageIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Click to upload main image
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleChange("image", e.target.files ? e.target.files[0] : null)}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Gallery Images */}
+          <div className="space-y-2">
+            <Label>Gallery Images</Label>
+            <div className="border-2 border-dashed rounded-lg p-4">
+              <div className="space-y-3">
+                {/* Existing Gallery Images */}
+                {form.existing_gallery_urls.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Current Gallery</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {form.existing_gallery_urls.map((url, idx) => (
+                        <div key={`existing-${idx}`} className="relative">
+                          <img
+                            src={url}
+                            alt={`Gallery ${idx}`}
+                            className="w-full h-24 object-cover rounded"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Gallery Images */}
+                {form.gallery_images.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">New Images</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {form.gallery_images.map((img, idx) => (
+                        <div key={`new-${idx}`} className="relative">
+                          <img
+                            src={URL.createObjectURL(img)}
+                            alt={`New Gallery ${idx}`}
+                            className="w-full h-24 object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleChange(
+                                "gallery_images",
+                                form.gallery_images.filter((_, i) => i !== idx)
+                              )
+                            }
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload More */}
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById("gallery-add-more") as HTMLInputElement;
+                      input?.click();
+                    }}
+                    className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    Add Gallery Images
+                  </button>
+                  <input
+                    id="gallery-add-more"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      const newFiles = e.target.files ? Array.from(e.target.files) : [];
+                      handleChange("gallery_images", [...form.gallery_images, ...newFiles]);
+                    }}
+                    className="hidden"
+                  />
+                </div>
               </div>
             </div>
-          )}
-          <div>
-            <Label>Upload New Image (optional)</Label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleChange("image", e.target.files ? e.target.files[0] : null)}
-              className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-            />
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Leave empty to keep the current image
-            </p>
           </div>
         </div>
       ),

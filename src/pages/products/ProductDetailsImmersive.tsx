@@ -1,11 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductService } from "../../lib/api/products";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+import { useAddToCart } from "../../hooks/useAddToCart";
 
 const ProductDetailsImmersivePage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [fullScreenImageIndex, setFullScreenImageIndex] = useState(0);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product-details-immersive", slug],
@@ -13,11 +19,58 @@ const ProductDetailsImmersivePage = () => {
     enabled: !!slug,
   });
 
+  const { handleAddToCart, addToCartMutation } = useAddToCart();
+
+  // Helper function to safely get string value from object or string
+  const getStringValue = (value: any): string => {
+    if (!value) return "N/A";
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && value.name) return value.name;
+    return "N/A";
+  };
+
   if (isLoading) return <div className="p-10">Loading...</div>;
   if (!product) return <div className="p-10">Product not found</div>;
 
   const availability = product.availability?.[0];
   const pricing = availability?.pricing;
+
+  const getFinalPrice = (pricing: any): number => {
+    if (pricing?.sale_price && pricing.sale_price > 0) {
+      return pricing.sale_price;
+    }
+    if (pricing?.discount_price && pricing.discount_price > 0) {
+      return pricing.discount_price;
+    }
+    return pricing?.price || 0;
+  };
+
+  const price = getFinalPrice(pricing);
+
+  const mainImageUrl = selectedImage || product.image_urls?.thumbnail?.url || product.image;
+  const galleryImages = product.image_urls?.gallery || product.gallery || [];
+  
+  // Combine all images for full screen view
+  const allImages = [mainImageUrl, ...galleryImages.map((img: any) => typeof img === "string" ? img : img?.url)].filter(Boolean);
+  
+  const handleOpenFullScreen = (imageUrl?: string) => {
+    if (imageUrl) {
+      const currentIndex = allImages.indexOf(imageUrl);
+      setFullScreenImageIndex(currentIndex >= 0 ? currentIndex : 0);
+    } else {
+      const currentIndex = allImages.indexOf(mainImageUrl);
+      setFullScreenImageIndex(currentIndex >= 0 ? currentIndex : 0);
+    }
+    setIsFullScreen(true);
+  };
+
+  const handleNextImage = () => {
+    setFullScreenImageIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const handlePrevImage = () => {
+    setFullScreenImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
 
   const SpecChip = ({ label, value }: { label: string; value: any }) => (
     <div className="rounded-xl border bg-card p-4">
@@ -29,13 +82,18 @@ const ProductDetailsImmersivePage = () => {
   return (
     <div className="min-h-screen text-foreground dark:bg-gray-900 dark:text-white">
       {/* Hero */}
-      <div className="relative h-[72vh]">
+      <div className="relative h-[72vh] cursor-pointer group">
         <img
-          src={product.image}
+          src={mainImageUrl}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover group-hover:opacity-90 transition"
         />
-        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-black/35 group-hover:bg-black/45 transition" />
+        {/* <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+          <div className="bg-white/90 dark:bg-gray-800/90 px-6 py-3 rounded-lg">
+            <p className="text-sm font-medium">Click to view full screen</p>
+          </div>
+        </div> */}
 
         <div className="relative z-10 max-w-7xl mx-auto h-full px-10 flex items-end pb-16">
           <div className="dark:bg-gray-700 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 w-full max-w-4xl">
@@ -60,8 +118,8 @@ const ProductDetailsImmersivePage = () => {
                   </p>
                 )}
               </div>
-              <Button size="lg" className="px-6">
-                Secure Selection
+              <Button onClick={() => handleAddToCart({ product, price })} size="lg" className="px-6">
+                {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
               </Button>
             </div>
           </div>
@@ -88,11 +146,10 @@ const ProductDetailsImmersivePage = () => {
               </h2>
 
               <div className="grid sm:grid-cols-4 gap-4">
-                <SpecChip label="SKU" value={product.sku} />
-                <SpecChip label="Category" value={product.category} />
+                <SpecChip label="Category" value={getStringValue(product.category)} />
                 <SpecChip
                   label="Traits"
-                  value={product.traits?.join(", ") || "N/A"}
+                  value={Array.isArray(product.traits) ? product.traits.map((t: any) => getStringValue(t)).join(", ") : getStringValue(product.traits) || "N/A"}
                 />
                 <SpecChip
                   label="Weight"
@@ -109,9 +166,19 @@ const ProductDetailsImmersivePage = () => {
             <section className="rounded-2xl bg-muted/40 p-6">
               <h3 className="font-semibold mb-2">Lineage & Origin</h3>
               <p className="text-sm text-muted-foreground">
-                Origin: {product.origin || "Unknown"}
+                Origin: {getStringValue(product.origin)}
               </p>
             </section>
+
+            {/* Store Policy */}
+            {availability?.store?.policy && (
+              <section className="rounded-2xl bg-muted/40 p-6">
+                <h3 className="font-semibold mb-3">Store Policy</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {availability.store.policy}
+                </p>
+              </section>
+            )}
           </div>
 
           {/* Right */}
@@ -134,29 +201,98 @@ const ProductDetailsImmersivePage = () => {
         </div>
 
         {/* Gallery */}
-        {product.gallery && product.gallery.length > 0 && (
+        {galleryImages && galleryImages.length > 0 && (
           <div className="py-16">
             <div className="max-w-7xl mx-auto px-10">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold">Immersive Gallery</h3>
-                <span className="text-sm text-muted-foreground">
-                  High-resolution images
-                </span>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {product.gallery?.map((img: string, i: number) => (
-                  <img
-                    key={i}
-                    src={img}
-                    className="rounded-2xl object-cover h-52 w-full hover:scale-[1.02] transition"
-                  />
-                ))}
+                {galleryImages?.map((img: any, i: number) => {
+                  const imageUrl = typeof img === "string" ? img : img?.url;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleOpenFullScreen(imageUrl)}
+                      className="rounded-2xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer"
+                    >
+                      <img
+                        src={imageUrl}
+                        className="w-full h-52 object-cover hover:opacity-80 transition"
+                      />
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Full Screen Immersive View */}
+      {isFullScreen && (
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+          {/* Close Button */}
+          <button
+            onClick={() => setIsFullScreen(false)}
+            className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Main Image */}
+          <div className="relative w-full h-full flex items-center justify-center px-4">
+            <img
+              src={allImages[fullScreenImageIndex]}
+              alt={`Image ${fullScreenImageIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+            />
+
+            {/* Navigation Arrows */}
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Image Counter */}
+          {allImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/20 text-white px-4 py-2 rounded-full text-sm">
+              {fullScreenImageIndex + 1} / {allImages.length}
+            </div>
+          )}
+
+          {/* Thumbnail Strip */}
+          {allImages.length > 1 && (
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 max-w-96 px-4">
+              {allImages.map((img: string, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => setFullScreenImageIndex(idx)}
+                  className={`flex-shrink-0 w-12 h-12 rounded overflow-hidden transition-all border-2 ${
+                    fullScreenImageIndex === idx ? "border-white" : "border-transparent opacity-50"
+                  }`}
+                >
+                  <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

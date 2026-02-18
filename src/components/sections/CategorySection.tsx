@@ -18,11 +18,23 @@ const categoryImages: Record<string, string> = {
 const CategorySection = () => {
   const navigate = useNavigate();
 
-  const { data: categories = [] } = useQuery({
+  const { data: categoriesData = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: CategoryService.getAllPublic,
   });
 
+  // Handle both array and paginated response
+  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
+
+  // Helper to get category image URL from API
+  const getCategoryImage = (category: any) => {
+    return (
+      category?.image_urls?.url ||
+      category?.image_urls?.thumb ||
+      categoryImages[category?.name] ||
+      "https://placehold.co/400x400"
+    );
+  };
 
   const handleCategoryClick = (categoryName: string) => {
     navigate(`/marketplace?category=${encodeURIComponent(categoryName)}`);
@@ -43,7 +55,7 @@ const CategorySection = () => {
 
         {/* Categories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category: any) => (
+          {categories.slice(0,8).map((category: any) => (
             <Card
               key={category.id}
               onClick={() => handleCategoryClick(category.name)}
@@ -53,7 +65,7 @@ const CategorySection = () => {
             >
               <div className="relative aspect-square overflow-hidden">
                 <img
-                  src={categoryImages[category.name] || category.image || "https://placehold.co/400x400"}
+                  src={getCategoryImage(category)}
                   alt={category.name}
                   className="w-full h-full object-cover
                              group-hover:scale-110 transition-transform duration-500"

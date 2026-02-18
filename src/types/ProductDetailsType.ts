@@ -33,7 +33,7 @@ export interface Availability {
 
 /* ---------------- Product Details ---------------- */
 export type ProductDetails = Product & {
-  sku: string;
+  sku?: string;
   traits?: string[];
   availability?: Availability[];
-};
+}

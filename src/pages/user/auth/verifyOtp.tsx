@@ -81,7 +81,7 @@ const mutation = useMutation({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/10 px-4 dark:bg-black">
+    <div className="min-h-screen dark:text-white flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/10 px-4 dark:bg-black">
       <div className="w-full max-w-md">
         <Card className="shadow-lg">
           <CardHeader className="text-center space-y-1">

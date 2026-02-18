@@ -201,7 +201,7 @@ const LoginPage = () => {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  New to SerpentMarket?
+                  New to ExoticPetsMarket?
                 </span>
               </div>
             </div>

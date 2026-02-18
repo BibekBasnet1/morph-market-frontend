@@ -167,7 +167,7 @@ const RegisterPage = () => {
               Create Account
             </CardTitle>
             <CardDescription className="text-base text-gray-600 dark:text-gray-400">
-              Join SerpentMarket today
+              Join ExoticPetsMarket today
             </CardDescription>
           </CardHeader>
 

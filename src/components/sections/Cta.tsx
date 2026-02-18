@@ -10,7 +10,7 @@ const Cta = () => {
             Ready to Start Your Reptile Journey?
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-            Join thousands of reptile enthusiasts buying and selling on SerpentMarket. 
+            Join thousands of reptile enthusiasts buying and selling on ExoticPetsMarket. 
             Whether you're a first-time buyer or experienced breeder, we've got you covered.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

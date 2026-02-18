@@ -10,10 +10,18 @@ import { ProductService } from "../../lib/api/products";
 // import { useAuth } from "../../contexts/AuthContext";
 import { Modal } from "../../components/ui/modal";
 
-const AllProductsPage = () => {
+const AllPrivateProductsPage = () => {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [view, setView] = useState<"card" | "table">("card"); // toggle view
+  const [view, setView] = useState<"card" | "table">("card");
+
+  // Helper function to safely get string value from object or string
+  const getStringValue = (value: any): string => {
+    if (!value) return "N/A";
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && value.name) return value.name;
+    return "N/A";
+  };
 
   // const { user } = useAuth();
   // const storeSlug = user?.stores?.[0]?.slug;
@@ -40,9 +48,9 @@ const AllProductsPage = () => {
   });
 
   return (
-    <div className="space-y-6 p-10 mx-auto text-gray-900 dark:text-gray-100">
+    <div className="space-y-6 p-2 sm:p-10 mx-auto text-gray-900 dark:text-gray-100">
       {/* Header */}
-      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-semibold">Products</h2>
         <div className="flex items-center gap-2">
           <Button
@@ -83,13 +91,15 @@ const AllProductsPage = () => {
       {/* Card View */}
       {view === "card" && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product: any) => (
+          {products.map((product: any) => {
+            const imageUrl = product.image_urls?.thumbnail?.url || product.image;
+            return (
             <Card key={product.id} className="bg-white dark:bg-gray-900 border dark:border-gray-800">
               <CardContent className="p-4">
                 {/* Image */}
                 <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-md mb-3 overflow-hidden">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  {imageUrl ? (
+                    <img src={imageUrl} alt={product.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
                       No Image
@@ -101,17 +111,21 @@ const AllProductsPage = () => {
                 <div className="space-y-2">
                   <h3 className="font-medium text-lg">{product.name}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Category: {product.category?.name ?? "N/A"}
+                    Category: {getStringValue(product.category)}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Origin: {product.origin?.name ?? "N/A"}
+                    Origin: {getStringValue(product.origin)}
                   </p>
-                  <p className="text-sm text-muted-foreground dark:text-gray-400">
-                    Diet:{" "}
-                    {product?.diet ? (
-                      <span className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        {product.diet.name}
-                      </span>
+                  <p className="text-sm flex text-muted-foreground dark:text-gray-400">
+                    Diets:{" "}
+                    {product?.diets && product.diets.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {product.diets.map((diet: any) => (
+                          <span key={diet.id} className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {getStringValue(diet)}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
                       "N/A"
                     )}
@@ -119,22 +133,22 @@ const AllProductsPage = () => {
                   <div className="flex flex-wrap gap-2">
                     {product.gender && (
                       <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                        {product.gender.name}
+                        {getStringValue(product.gender)}
                       </span>
                     )}
                     {product.maturity_level && (
                       <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                        {product.maturity_level.name}
+                        {getStringValue(product.maturity_level)}
                       </span>
                     )}
                     {product?.tag && (
                       <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                        {product.tag.name}
+                        {getStringValue(product.tag)}
                       </span>
                     )}
-                    {product?.traits && (
+                    {product?.traits && product.traits.length > 0 && (
                       <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                        {product.traits.map((t: any) => t.name).join(", ")}
+                        {Array.isArray(product.traits) ? product.traits.map((t: any) => getStringValue(t)).join(", ") : getStringValue(product.traits)}
                       </span>
                     )}
                   </div>
@@ -158,7 +172,8 @@ const AllProductsPage = () => {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -192,12 +207,14 @@ const AllProductsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-              {products.map((product: any) => (
+              {products.map((product: any) => {
+                const imageUrl = product.image_urls?.thumbnail?.url || product.image;
+                return (
                 <tr key={product.id}>
                   <td className="px-4 py-2">
-                    {product.image ? (
+                    {imageUrl ? (
                       <img
-                        src={product.image}
+                        src={imageUrl}
                         alt={product.name}
                         className="w-16 h-16 object-cover rounded"
                       />
@@ -208,19 +225,21 @@ const AllProductsPage = () => {
                     )}
                   </td>
                   <td className="px-4 py-2">{product.name}</td>
-                  <td className="px-4 py-2">{product.category?.name ?? "N/A"}</td>
-                  <td className="px-4 py-2">{product.origin?.name ?? "N/A"}</td>
+                  <td className="px-4 py-2">{getStringValue(product.category)}</td>
+                  <td className="px-4 py-2">{getStringValue(product.origin)}</td>
                   <td className="px-4 py-2">
-                    {product?.diet ? (
-                      <span className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        {product.diet.name}
-                      </span>
+                    {product?.diets && product.diets.length > 0 ? (
+                      product.diets.map((diet: any) => (
+                        <span key={diet.id} className="inline-block text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mr-1">
+                          {getStringValue(diet)}
+                        </span>
+                      ))
                     ) : (
                       "N/A"
                     )}
                   </td>
                   <td className="px-4 py-2">
-                    {product?.traits?.map((t: any) => t.name).join(", ") || "N/A"}
+                    {product?.traits?.length > 0 ? (Array.isArray(product.traits) ? product.traits.map((t: any) => getStringValue(t)).join(", ") : getStringValue(product.traits)) : "N/A"}
                   </td>
                   <td className="px-4 py-2 flex items-center gap-2">
                     <Link to={`/products/edit/${product.id}`}>
@@ -237,7 +256,8 @@ const AllProductsPage = () => {
                     </Button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -277,4 +297,4 @@ const AllProductsPage = () => {
   );
 };
 
-export default AllProductsPage;
+export default AllPrivateProductsPage;

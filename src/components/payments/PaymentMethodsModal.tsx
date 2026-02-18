@@ -328,20 +328,22 @@ console.log("item.name", items) ;
                     <span className="text-gray-400">Items Subtotal ({items.length})</span>
                     <span className="text-gray-800 dark:text-white">${(items.reduce((sum, item) => sum + (item.price || 0), 0)).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  {/* <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Shipping & Handling</span>
                     <span className="text-gray-800 dark:text-white">${shippingAndHandling.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
+                  </div> */}
+                  {/* <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Estimated Tax</span>
                     <span className="text-gray-800 dark:text-white">${estimatedTax.toFixed(2)}</span>
-                  </div>
+                  </div> */}
 
                   <div className="border-t border-gray-700 pt-4 mt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold">Total</span>
                       <span className="text-3xl font-bold text-green-400">
-                        ${(items.reduce((sum, item) => sum + (item.price || 0), 0) + shippingAndHandling + estimatedTax).toFixed(2)}
+                        {/* ${(items.reduce((sum, item) => sum + (item.price || 0), 0) + shippingAndHandling + estimatedTax).toFixed(2)} */}
+                        ${(items.reduce((sum, item) => sum + (item.price || 0), 0)).toFixed(2)}
+
                       </span>
                     </div>
                   </div>
@@ -386,7 +388,7 @@ console.log("item.name", items) ;
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <p className="text-xs text-gray-400 leading-relaxed">
-                      By clicking "Place Order & Pay," you agree to SerpentMarket's{' '}
+                      By clicking "Place Order & Pay," you agree to ExoticPetsMarket's{' '}
                       <a href="#" className="text-green-400 underline">Terms of Service</a> and{' '}
                       <a href="#" className="text-green-400 underline">Privacy Notice</a>.
                     </p>

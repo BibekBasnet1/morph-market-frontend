@@ -95,7 +95,7 @@
 //              <Link to="/" className="flex items-center gap-2">
 //              <span className="text-2xl">🐍</span>
 //              <span className="font-serif text-xl font-bold text-black dark:text-white">
-//                SerpentMarket
+//                ExoticPetsMarket
 //              </span>
 //              </Link>
 //            </div>
@@ -267,7 +267,7 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center gap-2">
               <span className="text-2xl">🐍</span>
               <span className="font-serif text-xl font-bold text-black dark:text-white">
-                SerpentMarket
+                ExoticPetsMarket
               </span>
             </Link>
           )}

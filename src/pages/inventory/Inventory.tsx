@@ -19,15 +19,17 @@ import Select from "../../components/ui/select";
 import { Card, CardContent } from "../../components/ui/card";
 import { MoreVertical, Plus, Filter, X } from "lucide-react";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useAuth } from "../../contexts/AuthContext";
 
 const InventoryPage = () => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  // const { user } = useAuth();
+  const { user } = useAuth();
 
-  // Get the first store's slug for the user
-  // const storeSlug = user?.stores?.[0]?.slug;
+  // Check if current user is a buyer (not seller)
+  const isBuyer = user?.roles.some((role) => role.name === "buyer") && 
+                  !user?.roles.some((role) => role.name === "seller");
 
   // Helper to safely extract id from string or object
   const getId = (val: any) => {
@@ -198,44 +200,44 @@ const InventoryPage = () => {
   const recentlySold = normalized.filter((it) => (it as any).status === "sold" || !(it as any).active).length;
 
   return (
-    <div className="p-6">
-      <div className="flex items-start justify-between mb-6">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             Inventory
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
             Manage your active listings and reptile collection.
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
           <Button className="text-gray-900 dark:text-gray-100" variant="ghost" size="sm" onClick={() => setIsAdvancedView((v) => !v)}>
             {isAdvancedView ? "Card View" : "Advanced View"}
           </Button>
           <Button variant="primary" size="md" onClick={() => navigate('/add-listing')}>
-            <Plus className="mr-2" /> Add New Listing
+            <Plus className="h-4 w-4 mr-2" /> Add New Listing
           </Button>
         </div>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="rounded-lg border border-gray-200 bg-white p-4
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4
                 dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{totalItems}</p>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Items</p>
+          <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">{totalItems}</p>
           <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+12 this month</p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4
+        <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4
                 dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Available</p>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{available}</p>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">{Math.round((available / Math.max(1, totalItems)) * 100)}% of total inventory</p>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Available</p>
+          <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">{available}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">{Math.round((available / Math.max(1, totalItems)) * 100)}% of total</p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4
+        <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4
                 dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Recently Sold</p>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{recentlySold}</p>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Recently Sold</p>
+          <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">{recentlySold}</p>
           <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Last 7 days</p>
         </div>
       </div>
@@ -243,13 +245,13 @@ const InventoryPage = () => {
       {/* Filters */}
       <Card className="mb-6 border border-gray-200 bg-white
                  dark:border-gray-700 dark:bg-gray-900">
-        <CardContent className="p-4 space-y-4">
+        <CardContent className="p-3 sm:p-4 space-y-4">
 
           {/* Primary Filters */}
-          <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 sm:items-center">
             <Input
               placeholder="Search products..."
-              className="w-full md:w-72"
+              className="w-full sm:flex-1 sm:min-w-[200px]"
               value={filters.search ?? ""}
               onChange={(e) =>
                 updateFilters({ search: e.target.value || undefined })
@@ -266,11 +268,11 @@ const InventoryPage = () => {
               onChange={(v) => updateFilters({ category_id: v ? Number(v) : undefined })}
             />
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <Input
                 type="number"
                 placeholder="Min price"
-                className="w-24"
+                className="flex-1 sm:w-24"
                 value={filters.price_min ?? ""}
                 onChange={(e) =>
                   updateFilters({
@@ -281,7 +283,7 @@ const InventoryPage = () => {
               <Input
                 type="number"
                 placeholder="Max price"
-                className="w-24"
+                className="flex-1 sm:w-24"
                 value={filters.price_max ?? ""}
                 onChange={(e) =>
                   updateFilters({
@@ -293,7 +295,7 @@ const InventoryPage = () => {
 
             <Button
               variant="outline"
-              className="ml-auto"
+              className="w-full sm:w-auto"
               onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               <Filter className="h-4 w-4 mr-2" />
@@ -308,7 +310,7 @@ const InventoryPage = () => {
 
           {/* Advanced Filters */}
           {showMoreFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 border-t pt-4">
               <Select
                 placeholder="Gender"
                 options={genders.map((g: any) => ({
@@ -355,7 +357,7 @@ const InventoryPage = () => {
 
               <Button
                 variant="ghost"
-                className="md:col-span-4 justify-self-end"
+                className="sm:col-span-2 lg:col-span-4 w-full"
                 onClick={clearFilters}
               >
                 Clear all filters
@@ -367,7 +369,7 @@ const InventoryPage = () => {
 
       {/* Active Filters */}
       {activeFiltersCount > 0 && (
-        <div className="flex dark:text-gray-100 flex-wrap gap-2 mb-6">
+        <div className="flex dark:text-gray-100 flex-wrap gap-1 sm:gap-2 mb-6">
           {Object.entries(filters).map(([key, value]) => {
             if (!value) return null;
 
@@ -397,7 +399,7 @@ const InventoryPage = () => {
             return (
               <span
                 key={key}
-                className="flex items-center gap-1 px-3 py-1 text-xs rounded-full bg-muted"
+                className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs rounded-full bg-muted"
               >
                 {key.replace("_", " ")}: {displayValue}
                 <button onClick={() => updateFilters({ [key]: undefined })}>
@@ -466,10 +468,10 @@ const InventoryPage = () => {
               <div className="text-center text-muted-foreground py-12">No listings found</div>
             ) : (
               filtered.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 rounded-md border
-                border-gray-200 bg-white p-4
+                <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-md border
+                border-gray-200 bg-white p-3 sm:p-4
                 dark:border-gray-700 dark:bg-gray-900">
-                  <div className="w-28 h-20 rounded overflow-hidden bg-muted flex-shrink-0">
+                  <div className="w-full sm:w-24 h-20 rounded overflow-hidden bg-muted flex-shrink-0">
                     {item.product?.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.product.image} alt={item.product?.name} className="w-full h-full object-cover" />
@@ -477,28 +479,30 @@ const InventoryPage = () => {
                       <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">No Image</div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">{item.product?.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">ID: {(item as any).sku ?? `BP-${item.id}`}{getName(item.product?.category) ? ` • ${getName(item.product?.category)}` : ''}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-base sm:text-lg text-gray-900 dark:text-gray-100 truncate">{item.product?.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">ID: {(item as any).sku ?? `BP-${item.id}`}{getName(item.product?.category) ? ` • ${getName(item.product?.category)}` : ''}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">{getPrice(item) ? `$${Number(getPrice(item)).toLocaleString()}` : '—'}</p>
-                        <div className="mt-2 flex items-center gap-3 justify-end">
-                          <Badge variant={(item as any).active ? 'default' : 'destructive'}>{(item as any).active ? 'AVAILABLE' : 'SOLD'}</Badge>
-                          <Switch
-                            defaultChecked={Boolean((item as any).active)}
-                            disabled={updateProductMutation.isPending}
-                            onChange={(checked: boolean) => {
-                              updateProductMutation.mutate({
-                                item: item,
-                                active: checked,
-                              });
-                            }}
-                          />
-                          <button className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <MoreVertical />
+                      <div className="flex sm:flex-col items-center justify-between sm:text-right gap-2 sm:gap-1">
+                        <p className="font-semibold text-sm sm:text-base">{getPrice(item) ? `$${Number(getPrice(item)).toLocaleString()}` : '—'}</p>
+                        <div className="flex items-center gap-2 sm:gap-3 justify-end flex-wrap">
+                          <Badge variant={(item as any).active ? 'default' : 'destructive'} className="text-xs">{(item as any).active ? 'AVAILABLE' : 'SOLD'}</Badge>
+                          {!isBuyer && (
+                            <Switch
+                              defaultChecked={Boolean((item as any).active)}
+                              disabled={updateProductMutation.isPending}
+                              onChange={(checked: boolean) => {
+                                updateProductMutation.mutate({
+                                  item: item,
+                                  active: checked,
+                                });
+                              }}
+                            />
+                          )}
+                          <button className="p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
                           </button>
                         </div>
                       </div>

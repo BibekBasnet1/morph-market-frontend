@@ -113,7 +113,7 @@ const InventoryModal = memo(({
             />
           </div>
 
-          <div>
+          <div className="hidden">
             <Label>Stock</Label>
             <Input
               type="number"
@@ -122,7 +122,7 @@ const InventoryModal = memo(({
             />
           </div>
 
-          <div>
+          <div className="hidden">
             <Label>Quantity</Label>
             <Input
               type="number"
@@ -239,6 +239,10 @@ const AddListingPage = () => {
     }
   };
 
+  const getProductImage = (product: any) => {
+    return product?.image_urls?.thumbnail?.url || product?.image || "/placeholder.jpg";
+  };
+
 
 
   const updateItem = (
@@ -307,7 +311,7 @@ const AddListingPage = () => {
                 `}
               >
                 <img
-                  src={product.image || "/placeholder.jpg"}
+                  src={getProductImage(product)}
                   className="h-40 w-full object-cover"
                 />
                 <div className="p-4">
@@ -400,7 +404,7 @@ const AddListingPage = () => {
                       />
                     </div>
 
-                    <div>
+                    <div className="hidden">
                       <Label>Stock</Label>
                       <Input
                         type="text"
@@ -411,7 +415,7 @@ const AddListingPage = () => {
                       />
                     </div>
 
-                    <div>
+                    <div className="hidden">
                       <Label>Quantity</Label>
                       <Input
                         type="text"

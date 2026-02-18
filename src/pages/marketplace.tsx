@@ -27,9 +27,17 @@ const AllProductsPage = () => {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
+  const [ready, setReady] = useState(false);
 
   const navigate = useNavigate();
-console.log(setPage);
+
+  // Helper function to safely get string value from object or string
+  const getStringValue = (value: any): string => {
+    if (!value) return "N/A";
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && value.name) return value.name;
+    return "N/A";
+  };
   const updateFilters = (payload: Partial<ProductFilters>) => {
     setFilters((prev) => ({ ...prev, ...payload }));
   };
@@ -53,7 +61,8 @@ const {
       page,
        filters: { ...filters, search: debouncedSearch },
     }),
-    placeholderData: (prev) => prev,
+    // placeholderData: (prev) => prev,
+      enabled: ready,
 });
 
 
@@ -66,6 +75,8 @@ const products = data?.data ?? [];
     queryFn: CategoryService.getAllPublic,
   });
 
+  
+
   // Auto-filter by category from URL params
   useEffect(() => {
     const categoryName = searchParams.get("category");
@@ -77,6 +88,7 @@ const products = data?.data ?? [];
         setFilters((prev) => ({ ...prev, category_id: category.id }));
       }
     }
+    setReady(true);
   }, [searchParams, categories]);
 
   const { data: genders = [] } = useQuery({
@@ -292,9 +304,9 @@ const products = data?.data ?? [];
       return (
         <span
           key={key}
-          className="flex items-center gap-1 px-3 py-1 text-xs rounded-full bg-muted"
+          className="flex items-center bg-gray-600 gap-1 px-3 py-1 text-xs rounded-full bg-muted"
         >
-          {key.replace("_", " ")}: {displayValue}
+          {displayValue}
           <button onClick={() => updateFilters({ [key]: undefined })}>
             <X className="h-3 w-3" />
           </button>
@@ -312,65 +324,12 @@ const products = data?.data ?? [];
         </p>
       )}
 
-      {/* Products Grid */}
-      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((product: any) => (
-          <Card
-            key={product.id}
-            className="hover:shadow-md transition cursor-pointer dark:border-gray-600"
-          >
-            <CardContent className="p-4">
-
-              <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full flex items-center justify-center text-sm">
-                   <img
-                    src={"https://placehold.co/600x400"}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  </div>
-                )}
-              </div>
-
-              <h3 className="font-medium truncate">{product.name}</h3>
-
-              <p className="text-sm text-muted-foreground">
-                {product.category?.name ?? "Uncategorized"}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mt-2">
-                {product.gender && (
-                  <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800">
-                    {product.gender.name}
-                  </span>
-                )}
-
-                {product.diet && (
-                  <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
-                    {product.diet.name}
-                  </span>
-                )}
-                {product.maturity_level && (
-                  <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
-                    {product.maturity_level.name}
-                  </span>
-                )}
-              </div>
-
-            </CardContent>
-          </Card>
-        ))}
-      </div> */}
-      {/* Products Grid */}
-<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-  {products.map((product: any) => (
+<div className="grid gap-4 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+  {products.map((product: any) => {
+    const imageUrl = product.image_urls?.thumbnail?.url || product.image;
+    const price = product.availability?.[0]?.pricing?.price || product.price;
+    
+    return (
     <Card
       key={product.slug}
       className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[250px] flex flex-col"
@@ -381,9 +340,9 @@ const products = data?.data ?? [];
         <div className="space-y-3 flex-1">
           {/* Image */}
           <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
-            {product.image ? (
+            {imageUrl ? (
               <img
-                src={product.image}
+                src={imageUrl}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -403,13 +362,13 @@ const products = data?.data ?? [];
             <div className=" flex justify-between">
 
           <div className="text-sm text-muted-foreground space-y-3">
-            <p>Category: {product.category ?? "Uncategorized"}</p>
-            {product.gender && <p>Gender: {product.gender}</p>}
+            <p>Category: {getStringValue(product.category)}</p>
+            {product.gender && <p>Gender: {getStringValue(product.gender)}</p>}
             {/* {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet}</span></p>}
             {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level}</span></p>}
             {product.tag && <p>Tag: <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-800">{product.tag}</span></p>} */}
           </div>
-          <p className="font-semibold">{product?.price ? `$${product.price}` : ""}</p>
+          <p className="font-semibold">{price ? `$${price}` : ""}</p>
             </div>
         </div>
 
@@ -424,7 +383,8 @@ const products = data?.data ?? [];
 
       </CardContent>
     </Card>
-  ))}
+    );
+  })}
 </div>
 
 
