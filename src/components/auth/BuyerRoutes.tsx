@@ -13,6 +13,7 @@ import AddProductPage from "../../pages/products/addProduct";
 import AllPrivateProductsPage from "../../pages/products/allProducts";
 import EditProductPage from "../../pages/products/editProduct";
 import ActivityLogsPage from "../../pages/activityLog/activityLog";
+import BuyerOrders from "../../pages/order/buyerOrders";
 
 
 const BuyerRoutes = () => (
@@ -83,6 +84,11 @@ const BuyerRoutes = () => (
                                           <Route path="activity-logs" element={
                     <ProtectedRoute allowedRoles={['seller','buyer']}>
                       <ActivityLogsPage />
+                    </ProtectedRoute>
+                  } />
+<Route path="orders" element={
+                    <ProtectedRoute allowedRoles={['buyer']}>
+                      <BuyerOrders />
                     </ProtectedRoute>
                   } />
     </Route>

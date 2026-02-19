@@ -202,7 +202,7 @@ export const BuyerActivityLogs = () => {
     <Card className="border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <CardHeader className="border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex text-lg items-center gap-2">
+          <CardTitle className="flex text-lg dark:text-gray-300 items-center gap-2">
             <Clock className="w-5 h-5" />
             Activity Logs
           </CardTitle>

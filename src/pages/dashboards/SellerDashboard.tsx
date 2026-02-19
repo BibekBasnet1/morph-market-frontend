@@ -1,7 +1,5 @@
 import BuyerActivityLogs from "../../components/buyer/ActivityLogs";
-import PopularProductsCard from "../../components/ecommerce/PopularComponent";
-import SellerRecentActivity from "../../components/ecommerce/SellerRecentActivityComponent";
-import SellerStatsCards from "../../components/ecommerce/SellerStatsComponent";
+import SellerOrders from "../../components/buyer/SellerOrders";
 
 const SellerDashboard = () => {
   return (
@@ -13,10 +11,7 @@ const SellerDashboard = () => {
         <BuyerActivityLogs />
       </div>
           <div className=" col-span-6 h-full">
-        <SellerRecentActivity />
-      </div>
-      <div className=" col-span-6">
-        <PopularProductsCard />
+        <SellerOrders />
       </div>
       
 </section>

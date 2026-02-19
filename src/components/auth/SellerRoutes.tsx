@@ -15,6 +15,7 @@ const EditProductPage = lazy(() => import("../../pages/products/editProduct"));
 
 const StorePage = lazy(() => import("../../pages/store/store"));
 const AddListingPage = lazy(() => import("../../pages/inventory/AddListing"));
+const SellerOrders = lazy(()=>import("../../pages/order/sellerOrders"))
 
 const SellerRoutes = () => (
   <Routes>
@@ -65,6 +66,12 @@ const SellerRoutes = () => (
             <Route path="activity-log" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <ActivityLogPage />
+        </ProtectedRoute>
+      } />
+      
+            <Route path="seller/orders" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <SellerOrders />
         </ProtectedRoute>
       } />
       <Route path="products/edit/:id" element={

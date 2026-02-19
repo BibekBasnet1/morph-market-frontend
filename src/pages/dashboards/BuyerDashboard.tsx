@@ -2,6 +2,7 @@
 // import SellingsCard from "../../components/ecommerce/SellingComponent";
 // import BuyingsCard from "../../components/ecommerce/BuyingComponent";
 import BuyerActivityLogs from "../../components/buyer/ActivityLogs";
+import BuyerOrders from "../../components/buyer/BuyerOrders";
 import PopularProductsCard from "../../components/ecommerce/PopularComponent";
 
 const BuyerDashboard = () => {
@@ -18,9 +19,12 @@ const BuyerDashboard = () => {
      <div className="col-span-12 xl:col-span-6">
         <BuyerActivityLogs />
       </div>
-      <div className="col-span-12 xl:col-span-6">
-        <PopularProductsCard />
+           <div className="col-span-12 xl:col-span-6">
+        <BuyerOrders />
       </div>
+      {/* <div className="col-span-12 xl:col-span-6">
+        <PopularProductsCard />
+      </div> */}
 
       {/* <div className="col-span-12 xl:col-span-5">
         <DemographicCard />

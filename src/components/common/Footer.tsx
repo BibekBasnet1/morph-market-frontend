@@ -139,7 +139,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border dark:border-gray-700 mt-8 pt-8 text-center text-sm text-muted-foreground dark:text-gray-400">
-          © 2024 ExoticPetsMarket. All rights reserved.
+          © 2026 ExoticPetsMarket. All rights reserved.
         </div>
       </div>
     </footer>

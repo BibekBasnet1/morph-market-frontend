@@ -96,7 +96,7 @@ const ActivityLogsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="p-4 mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">

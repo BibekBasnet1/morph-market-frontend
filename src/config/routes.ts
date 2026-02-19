@@ -117,7 +117,13 @@ export const ROUTES: RouteConfig[] = [
     path: '/orders',
     label: 'Orders',
     icon: 'ShoppingCart',
-    roles: ['admin', 'seller'],
+    roles: ['admin','buyer'],
+  },
+    {
+    path: '/seller/orders',
+    label: 'Seller Orders',
+    icon: 'ShoppingCart',
+    roles: ['admin','seller'],
   },
   {
     path: '/analytics',

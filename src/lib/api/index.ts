@@ -2,3 +2,4 @@ export { CategoryService } from "./categories";
 export { AuthService } from "./auth";
 export { InventoryService } from "./inventories";
 export { ActivityLogService } from "./activityLogs";
+export {OrderService} from "./orders"
