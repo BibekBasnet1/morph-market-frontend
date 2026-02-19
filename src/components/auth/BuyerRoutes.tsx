@@ -12,6 +12,8 @@ import AddListingPage from "../../pages/inventory/AddListing";
 import AddProductPage from "../../pages/products/addProduct";
 import AllPrivateProductsPage from "../../pages/products/allProducts";
 import EditProductPage from "../../pages/products/editProduct";
+import ActivityLogsPage from "../../pages/activityLog/activityLog";
+
 
 const BuyerRoutes = () => (
   <Routes>
@@ -78,6 +80,11 @@ const BuyerRoutes = () => (
                             <EditProductPage />
                           </ProtectedRoute>
                         } />
+                                          <Route path="activity-logs" element={
+                    <ProtectedRoute allowedRoles={['seller','buyer']}>
+                      <ActivityLogsPage />
+                    </ProtectedRoute>
+                  } />
     </Route>
   </Routes>
 );

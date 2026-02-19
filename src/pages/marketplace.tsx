@@ -304,7 +304,7 @@ const products = data?.data ?? [];
       return (
         <span
           key={key}
-          className="flex items-center bg-gray-600 gap-1 px-3 py-1 text-xs rounded-full bg-muted"
+          className="flex items-center text-white bg-gray-600 gap-1 px-3 py-1 text-xs rounded-full bg-muted"
         >
           {displayValue}
           <button onClick={() => updateFilters({ [key]: undefined })}>

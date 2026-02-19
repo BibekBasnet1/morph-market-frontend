@@ -99,7 +99,7 @@ const ActivityLogsPage = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
             <Clock className="w-8 h-8" />
             Activity Logs
           </h1>
@@ -155,9 +155,9 @@ const ActivityLogsPage = () => {
                             <p className="font-semibold text-gray-900 dark:text-gray-100">
                               {log.description}
                             </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {/* <p className="text-sm text-gray-600 dark:text-gray-400">
                               by {log.causer.name} ({log.causer.email})
-                            </p>
+                            </p> */}
                           </div>
                           {log.event && (
                             <Badge
@@ -165,7 +165,6 @@ const ActivityLogsPage = () => {
                               className="flex-shrink-0"
                             >
                               <span className="flex items-center gap-1">
-                                {getEventIcon(log.event)}
                                 {log.event.charAt(0).toUpperCase() +
                                   log.event.slice(1)}
                               </span>
@@ -177,7 +176,7 @@ const ActivityLogsPage = () => {
                         {log.subject_type && (
                           <div className="mb-2">
                             <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded">
-                              {log.subject_type} #{log.subject_id}
+                              {log.subject_type}
                             </span>
                           </div>
                         )}
@@ -191,7 +190,7 @@ const ActivityLogsPage = () => {
                         </div>
 
                         {/* Properties Summary */}
-                        {log.properties &&
+                        {/* {log.properties &&
                           (log.log_name === "product" ||
                             log.log_name === "inventory") && (
                             <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
@@ -209,7 +208,7 @@ const ActivityLogsPage = () => {
                                 </pre>
                               </details>
                             </div>
-                          )}
+                          )} */}
                       </div>
                     </div>
                   </div>

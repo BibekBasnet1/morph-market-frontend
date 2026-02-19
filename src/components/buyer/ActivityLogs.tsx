@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { ActivityLogService, type ActivityLog } from "../../lib/api/activityLogs";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Package, ShoppingCart, CreditCard, FileText, Plus, Edit, Trash2, Clock } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { Package, ShoppingCart, CreditCard, FileText, Plus, Edit, Trash2, Clock, ArrowRight } from "lucide-react";
 import Spinner from "../../components/ui/spinner";
 
 const formatDate = (dateString: string) => {
@@ -105,14 +107,11 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
               <p className="font-semibold text-gray-900 dark:text-gray-100">
                 {log.description}
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                by {log.causer.name} ({log.causer.email})
-              </p>
             </div>
             {log.event && (
               <Badge variant={getEventBadgeVariant(log.event)} className="flex-shrink-0">
                 <span className="flex items-center gap-1">
-                  {getEventIcon(log.event)}
+                  {/* {getEventIcon(log.event)} */}
                   {log.event.charAt(0).toUpperCase() + log.event.slice(1)}
                 </span>
               </Badge>
@@ -123,7 +122,7 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
           {log.subject_type && (
             <div className="mb-2">
               <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-2 py-1 rounded">
-                {log.subject_type} #{log.subject_id}
+                {log.subject_type}
               </span>
             </div>
           )}
@@ -156,7 +155,11 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
   );
 };
 
+const PREVIEW_LIMIT = 3;
+
 export const BuyerActivityLogs = () => {
+  const navigate = useNavigate();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["buyer-activity-logs"],
     queryFn: () => ActivityLogService.getBuyerLogs(1),
@@ -166,7 +169,7 @@ export const BuyerActivityLogs = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Activity Logs</CardTitle>
+          <CardTitle className="text-lg">Activity Logs</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex justify-center items-center py-12">
@@ -192,15 +195,29 @@ export const BuyerActivityLogs = () => {
     );
   }
 
-  const logs = data?.data || [];
+  const logs = (data?.data || []).slice(0, PREVIEW_LIMIT);
+  const total = data?.meta?.total ?? 0;
 
   return (
     <Card className="border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <CardHeader className="border-b border-gray-200 dark:border-gray-700">
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="w-5 h-5" />
-          Activity Logs
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex text-lg items-center gap-2">
+            <Clock className="w-5 h-5" />
+            Activity Logs
+          </CardTitle>
+          {total > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              onClick={() => navigate("/activity-logs")}
+            >
+              View All
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="pt-6">
         {logs.length === 0 ? (
@@ -212,14 +229,6 @@ export const BuyerActivityLogs = () => {
             {logs.map((log) => (
               <ActivityLogItem key={log.id} log={log} />
             ))}
-          </div>
-        )}
-
-        {/* Pagination Info */}
-        {data?.meta && (
-          <div className="mt-6 text-xs text-gray-600 dark:text-gray-400 text-center">
-            Showing {data.meta.from} to {data.meta.to} of {data.meta.total}{" "}
-            activities
           </div>
         )}
       </CardContent>

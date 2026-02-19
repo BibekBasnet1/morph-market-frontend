@@ -1,9 +1,8 @@
 
 // import SellingsCard from "../../components/ecommerce/SellingComponent";
 // import BuyingsCard from "../../components/ecommerce/BuyingComponent";
+import BuyerActivityLogs from "../../components/buyer/ActivityLogs";
 import PopularProductsCard from "../../components/ecommerce/PopularComponent";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
-import BuyerActivityLogs from "../../components/ecommerce/BuyerActivityLogs";
 
 const BuyerDashboard = () => {
  return (
@@ -16,18 +15,18 @@ const BuyerDashboard = () => {
       <div className="col-span-12 xl:col-span-4">
         <BuyingsCard />
       </div> */}
-
+     <div className="col-span-12 xl:col-span-6">
+        <BuyerActivityLogs />
+      </div>
       <div className="col-span-12 xl:col-span-4">
         <PopularProductsCard />
       </div>
 
-      <div className="col-span-12 xl:col-span-5">
+      {/* <div className="col-span-12 xl:col-span-5">
         <DemographicCard />
-      </div>
+      </div> */}
 
-      <div className="col-span-12">
-        <BuyerActivityLogs />
-      </div>
+ 
     </div>
     </>
   );

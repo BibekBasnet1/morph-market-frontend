@@ -10,6 +10,7 @@ import QuickNav from "./components/common/QuickNav";
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import ActivityLogsPage from "./pages/activityLog/activityLog";
 
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
@@ -23,7 +24,6 @@ const VerifyOtpPage = lazy(() => import("./pages/user/auth/verifyOtp"));
 const NotFound = lazy(() => import("./pages/not-found/notFound"));
 const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
 const CartPage = lazy(()=> import("./pages/cart/cart"))
-const ActivityLogPage = lazy(() => import("./pages/activityLog/activityLog"));
 const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
 
 const queryClient = new QueryClient({
@@ -54,7 +54,7 @@ const AppRoutes = () => {
     { path: "/register", load: RegisterPage },
     { path: "/verifyOtp", load: VerifyOtpPage },
     { path: "/cart", load: CartPage },
-    { path: "/activity-log", load: ActivityLogPage },
+    { path: "/activity-log", load: ActivityLogsPage },
     { path: "/products/:slug/details", load: ProductDetailsImmersive },
   ];
 

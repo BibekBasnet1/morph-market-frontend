@@ -94,7 +94,7 @@ const EditProductPage = () => {
         age: "",
         maturity_level_id: getId(product.maturity_level),
         origin_id: getId(product.origin),
-        diet_ids: Array.isArray(product.diets) ? product.diets.map((d: any) => getId(d)) : (product.diet ? [getId(product.diet)] : []),
+        diet_ids: Array.isArray(product?.diets) ? product?.diets.map((d: any) => getId(d)) : (product.diet ? [getId(product.diet)] : []),
         tag_id: product.tag ? getId(product.tag) : 0,
         tag_ids: [],
         trait_ids: Array.isArray(product.traits) ? product.traits.map((t: any) => typeof t === 'object' ? getId(t) : t) : (product.trait_ids || []),
