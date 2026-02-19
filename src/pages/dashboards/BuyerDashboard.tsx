@@ -18,7 +18,7 @@ const BuyerDashboard = () => {
      <div className="col-span-12 xl:col-span-6">
         <BuyerActivityLogs />
       </div>
-      <div className="col-span-12 xl:col-span-4">
+      <div className="col-span-12 xl:col-span-6">
         <PopularProductsCard />
       </div>
 

@@ -10,7 +10,7 @@ const products = [
 const PopularProductsCard = () => {
   return (
     <Card
-      className="border border-gray-200 bg-white text-gray-900
+      className="border border-gray-200 h-full bg-white text-gray-900
                  dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
     >
       <CardHeader>

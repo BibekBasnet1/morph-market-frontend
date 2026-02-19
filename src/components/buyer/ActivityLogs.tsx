@@ -95,7 +95,7 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
     >
       <div className="flex items-start gap-4">
         {/* Icon */}
-        <div className="flex-shrink-0 mt-1 p-2 bg-white dark:bg-gray-700 rounded-lg">
+        <div className=" text-sm flex-shrink-0 mt-1 p-2 bg-white dark:bg-gray-700 rounded-lg">
           {getIconForLogType(log.log_name)}
         </div>
 
@@ -133,7 +133,7 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
           </div>
 
           {/* Properties Summary */}
-          {log.properties && log.log_name === "product" && (
+          {/* {log.properties && log.log_name === "product" && (
             <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
               <details className="cursor-pointer">
                 <summary className="hover:text-gray-900 dark:hover:text-gray-200">
@@ -148,7 +148,7 @@ const ActivityLogItem = ({ log }: { log: ActivityLog }) => {
                 </pre>
               </details>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
