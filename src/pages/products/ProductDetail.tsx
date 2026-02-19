@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ProductService } from "../../lib/api/products";
 import type { ProductDetails } from "../../types/ProductDetailsType";
@@ -6,9 +6,12 @@ import { Button } from "../../components/ui/button";
 import { useState } from 'react';
 import PaymentMethodsModal from '../../components/payments/PaymentMethodsModal';
 import { useAddToCart } from "../../hooks/useAddToCart";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ProductDetailsPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { handleAddToCart, addToCartMutation } = useAddToCart();
   const [showPayment, setShowPayment] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -241,7 +244,13 @@ const {
                 )}
               </div>
 
-              <Button className="w-full" onClick={() => setShowPayment(true)}>Purchase Now</Button>
+              <Button className="w-full" onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  setShowPayment(true);
+                }
+              }}>Purchase Now</Button>
               <Button variant="outline" className="w-full">
                 Contact Breeder
               </Button>
