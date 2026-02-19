@@ -22,7 +22,7 @@ export const StoreService = {
   },
 
   getMyStore: async() => {
-    const response = await api.get('/buyers/stores/my-store');
+    const response = await api.get('/buyer/stores/user/my-store');
     return response.data.data;
   },
 };

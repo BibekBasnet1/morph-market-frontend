@@ -20,18 +20,19 @@ export const ROUTES: RouteConfig[] = [
     icon: 'Package',
     roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },
-  // {
-  //   path: '/buyers/:id/review',
-  //   label: 'Buyer Review',
-  //   icon: 'Package',
-  //   roles: ['admin', 'superadmin'],
-  // },
   //     {
   //   path: '/activity-log',
   //   label: 'Activity Log',
   //   icon: 'Activity',
   //   roles: ['admin', 'seller', 'buyer', 'superadmin'],
   // },
+
+  {
+    path: '/activity-logs',
+    label: 'Activity Logs',
+    icon: 'History',
+    roles: ['seller', 'buyer'],
+  },
 
   {
     path: '/inventory',

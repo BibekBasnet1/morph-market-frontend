@@ -51,7 +51,7 @@ const InventoryPage = () => {
   };
 
   const { data: inventoriesRaw, isLoading } = useQuery({
-    queryKey: ["inventories"],
+    queryKey: ["inventories", "my-products"],
     queryFn: () => InventoryService.getAllPrivate(),
     // enabled: !!storeSlug,
   });
@@ -107,7 +107,7 @@ const InventoryPage = () => {
       return InventoryService.update(item.id, formData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inventories"] });
+      queryClient.invalidateQueries({ queryKey: ["inventories", "my-products"] });
     },
   });
 

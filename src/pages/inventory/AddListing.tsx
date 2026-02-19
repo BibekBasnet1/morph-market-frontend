@@ -177,7 +177,8 @@ const AddListingPage = () => {
         const item = inventoryData[productId];
 
         const formData = new FormData();
-        formData.append("store_id", (user?.stores?.[0]?.id || "").toString());
+        const storeId = user?.stores?.[0]?.id || "";
+        formData.append("store_id", storeId.toString());
         formData.append("product_id", productId.toString());
         formData.append("price", item.price.toString());
         formData.append("stock", item.stock.toString());
@@ -204,7 +205,7 @@ const AddListingPage = () => {
     },
     onSuccess: () => {
       toast.success("Inventory created successfully");
-      queryClient.invalidateQueries({ queryKey: ["inventories"] });
+      queryClient.invalidateQueries({ queryKey: ["inventories", "my-products"] });
       navigate("/inventory");
     },
     onError: () => {

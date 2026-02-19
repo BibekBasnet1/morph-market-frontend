@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Star, Clock, Shield } from "lucide-react";
 import { ProductService } from "../../lib/api/products";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
@@ -184,17 +184,55 @@ const ProductDetailsImmersivePage = () => {
           {/* Right */}
           <div className="space-y-6">
             <Card className="sticky top-24">
-              <CardContent className="p-6 space-y-4">
+              <CardContent className="p-6 space-y-6">
                 <p className="text-xs uppercase text-muted-foreground">
                   Breeder Information
                 </p>
-                <p className="font-semibold text-lg">
-                  {availability?.store?.name}
-                </p>
+                
+                {/* Store Name */}
+                <div>
+                  <p className="font-semibold text-lg">
+                    {availability?.store?.name}
+                  </p>
+                  {availability?.store?.brand_name && (
+                    <p className="text-sm text-muted-foreground">
+                      {availability.store.brand_name}
+                    </p>
+                  )}
+                </div>
 
-                <Button variant="outline" className="w-full">
-                  Message Breeder
-                </Button>
+                {/* Rating */}
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="font-semibold">
+                    {availability?.store?.rating || 0} rating
+                  </span>
+                </div>
+
+                {/* Verified Badge */}
+                {availability?.store?.verified && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-sm font-medium">Verified Seller</span>
+                  </div>
+                )}
+
+                {/* Response Time */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Response Time</p>
+                    <p className="font-medium">~2 Hours</p>
+                  </div>
+                </div>
+
+                {/* Store Link */}
+                <Link
+                  to={`/store/${availability?.store?.slug}`}
+                  className="block text-center bg-primary text-primary-foreground font-medium py-2 rounded-lg hover:bg-primary/90 transition"
+                >
+                  Visit Store Profile →
+                </Link>
               </CardContent>
             </Card>
           </div>

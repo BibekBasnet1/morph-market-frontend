@@ -4,6 +4,7 @@ import { ProductService } from "../../lib/api/products";
 import type { ProductDetails } from "../../types/ProductDetailsType";
 import { Button } from "../../components/ui/button";
 import { useState } from 'react';
+import { Star, Clock, Shield } from 'lucide-react';
 import PaymentMethodsModal from '../../components/payments/PaymentMethodsModal';
 import { useAddToCart } from "../../hooks/useAddToCart";
 import { useAuth } from "../../contexts/AuthContext";
@@ -265,33 +266,50 @@ const {
         />
 
         {/* Breeder Info */}
-        <div className="border rounded-xl p-6 space-y-4">
+        <div className="border rounded-xl p-6 space-y-6">
           <p className="text-xs text-muted-foreground">
             BREEDER INFORMATION
           </p>
 
+          {/* Store Name */}
           <div>
-            <p className="font-semibold">
+            <p className="font-semibold text-lg">
               {product.availability?.[0]?.store?.name}
             </p>
-            <p className="text-sm text-muted-foreground">
-              ⭐ {product.availability?.[0]?.store?.rating} rating
-            </p>
+            {product.availability?.[0]?.store?.brand_name && (
+              <p className="text-sm text-muted-foreground">
+                {product.availability?.[0]?.store?.brand_name}
+              </p>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          {/* Rating */}
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-semibold">
+              {product.availability?.[0]?.store?.rating || 0} rating
+            </span>
+          </div>
+
+          {/* Verified Badge */}
+          {product.availability?.[0]?.store?.verified && (
+            <div className="flex items-center gap-2 text-green-600">
+              <Shield className="w-4 h-4" />
+              <span className="text-sm font-medium">Verified Seller</span>
+            </div>
+          )}
+
+          {/* Response Time */}
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-muted-foreground" />
             <div>
-              <p className="text-muted-foreground">Response Time</p>
+              <p className="text-xs text-muted-foreground">Response Time</p>
               <p className="font-medium">~2 Hours</p>
             </div>
-
-            <div>
-              <p className="text-muted-foreground">Verified Sales</p>
-              <p className="font-medium">1,200+</p>
-            </div>
           </div>
 
-          <a href={`/store/${product.availability?.[0]?.store?.slug}`} className="text-primary font-medium text-sm">
+          {/* Store Link */}
+          <a href={`/store/${product.availability?.[0]?.store?.slug}`} className="block text-center bg-primary text-primary-foreground font-medium py-2 rounded-lg hover:bg-primary/90 transition">
             Visit Store Profile →
           </a>
         </div>

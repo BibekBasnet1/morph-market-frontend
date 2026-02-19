@@ -95,6 +95,43 @@ export default function StoreRegistrationForm() {
     }
   }, [user]);
 
+useEffect(() => {
+  if (existingStore && !isStoreLoading) {
+    console.log("existingStore:", existingStore); // add this temporarily
+
+    setFormData(prev => ({
+      ...prev,
+      user_id: existingStore.owner?.id?.toString() ?? prev.user_id, // fix: was existingStore.user_id (doesn't exist)
+      name: existingStore.name ?? "",
+      slug: existingStore.slug ?? "",
+      email: existingStore.email ?? prev.email,
+      username: existingStore.username ?? prev.username,
+      brand_name: existingStore.brand_name ?? "",
+      phone: existingStore.phone ?? "",
+      policy: existingStore.policy ?? "",
+      about: existingStore.about ?? "",
+      contact_visible: existingStore.contact_visible ?? true,
+      is_active: existingStore.is_active ?? true,
+      is_verified: existingStore.is_verified ?? false,
+      shipping_type: existingStore.shipping_type ?? "national",
+      store_hours: existingStore.store_hours?.map((h: any) => ({
+        day: h.day,
+        open_time: h.open_time ?? "09:00",
+        close_time: h.close_time ?? "18:00",
+        is_open: h.is_open ?? false,
+      })) ?? prev.store_hours,
+      address: {
+        country_id: existingStore.address?.country_id ?? "",
+        state_id: existingStore.address?.state_id ?? "",
+        address_line_1: existingStore.address?.address_line_1 ?? "",
+        address_line_2: existingStore.address?.address_line_2 ?? "",
+        city: existingStore.address?.city ?? "",
+        zip_code: existingStore.address?.zip_code ?? ""
+      }
+    }));
+  }
+}, [existingStore, isStoreLoading]);
+
   const saveMutation = useMutation({
     mutationFn: (data: FormData) => StoreService.create(data),
     onSuccess: () => toast.success("Store registered successfully"),
@@ -269,7 +306,7 @@ export default function StoreRegistrationForm() {
   return (
     <div className="min-h-screen dark:text-white dark:bg-gray-900 bg-gray-50 py-8 px-4">
       <div className=" mx-auto">
-        <h1>Create your store</h1>
+        <h1>{existingStore && !isStoreLoading ? "Edit your store" : "Create your store"}</h1>
 
         {isSubmitted ? (
           <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 p-6 rounded-lg flex items-center gap-4">
@@ -658,48 +695,48 @@ export default function StoreRegistrationForm() {
                   <p className="text-gray-600 mb-6">Step 6 of 6: Verify your information</p>
 
                   <div className="space-y-4">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 mb-3">Store Information</h3>
+                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Store Information</h3>
                       <div className="grid grid-cols-2 gap-2 text-sm">
-                        <p className="text-gray-600">Name:</p>
-                        <p className="text-gray-900">{formData.name || "-"}</p>
-                        <p className="text-gray-600">Slug:</p>
-                        <p className="text-gray-900">{formData.slug || "-"}</p>
-                        <p className="text-gray-600">Email:</p>
-                        <p className="text-gray-900">{user?.user?.email ? user?.user?.email : formData.email}</p>
-                        <p className="text-gray-600">Username:</p>
-                        <p className="text-gray-900">{formData.username || "-"}</p>
-                        <p className="text-gray-600">Brand:</p>
-                        <p className="text-gray-900">{formData.brand_name || "-"}</p>
-                        <p className="text-gray-600">Phone:</p>
-                        <p className="text-gray-900">{formData.phone || "-"}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Name:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.name || "-"}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Slug:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.slug || "-"}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Email:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{user?.user?.email ? user?.user?.email : formData.email}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Username:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.username || "-"}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Brand:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.brand_name || "-"}</p>
+                        <p className="text-gray-600 dark:text-gray-300">Phone:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.phone || "-"}</p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 mb-3">Address</h3>
-                      <div className="text-sm text-gray-900">
+                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Address</h3>
+                      <div className="text-sm text-gray-900 dark:text-gray-300">
                         <p>{formData.address.address_line_1}</p>
                         {formData.address.address_line_2 && <p>{formData.address.address_line_2}</p>}
                         <p>{formData.address.city}, {formData.address.zip_code}</p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 mb-3">Settings</h3>
+                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Settings</h3>
                       <div className="grid grid-cols-2 gap-2 text-sm">
-                        <p className="text-gray-600">Shipping:</p>
-                        <p className="text-gray-900">{formData.shipping_type}</p>
-                        <p className="text-gray-600">Verified:</p>
-                        <p className="text-gray-900">{formData.is_verified ? "Yes" : "No"}</p>
+                        <p className="text-gray-600 dark:text-white">Shipping:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.shipping_type}</p>
+                        <p className="text-gray-600 dark:text-white">Verified:</p>
+                        <p className="text-gray-900 dark:text-gray-300">{formData.is_verified ? "Yes" : "No"}</p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 mb-3">Operating Hours</h3>
+                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Operating Hours</h3>
                       <div className="space-y-1 text-sm">
                         {formData.store_hours.map((hour, idx) => (
-                          <p key={idx} className="text-gray-900 capitalize">
+                          <p key={idx} className="text-gray-900 dark:text-gray-300 capitalize">
                             {hour.day}: {hour.is_open ? `${hour.open_time} - ${hour.close_time}` : "Closed"}
                           </p>
                         ))}
