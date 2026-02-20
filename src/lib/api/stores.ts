@@ -12,10 +12,13 @@ export const StoreService = {
     return res.data.data;
   },
 
-  update: async (id: number, payload: FormData): Promise<StoreForm> => {
-    const res = await api.post(`/buyer/stores/${id}`, payload);
-    return res.data.data;
-  },
+update: async (id: number, payload: FormData): Promise<StoreForm> => {
+  payload.append("_method", "PUT");
+  const res = await api.post(`/buyer/stores/${id}`, payload, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data.data;
+},
 
   remove: async (id: number): Promise<void> => {
     await api.delete(`/buyer/stores/${id}`);

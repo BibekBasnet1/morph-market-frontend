@@ -22,25 +22,33 @@ import { z } from "zod";
 import { CountryService } from "../../lib/api/countries";
 import Select from "../../components/ui/select";
 
+const DEFAULT_STORE_HOURS = [
+  { day: "monday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "tuesday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "wednesday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "thursday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "friday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "saturday", open_time: "09:00", close_time: "18:00", is_open: true },
+  { day: "sunday", open_time: "09:00", close_time: "18:00", is_open: false },
+];
+
 export default function StoreRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const user = useAuth();
 
   const {
     data: existingStore,
     isLoading: isStoreLoading,
-    isError: storeError
   } = useQuery({
     queryKey: ["my-store"],
-    queryFn: StoreService.getMyStore,   
+    queryFn: StoreService.getMyStore,
     retry: 1,
-    staleTime: 5 * 60 * 1000,  
+    staleTime: 5 * 60 * 1000,
   });
 
-  const { data: countries = [], isLoading } = useQuery({
+  const { data: countries = [], isLoading: isCountriesLoading } = useQuery({
     queryKey: ["countries"],
     queryFn: CountryService.getAll,
   });
@@ -49,6 +57,7 @@ export default function StoreRegistrationForm() {
     value: c.id,
     label: c.name,
   }));
+
   const [formData, setFormData] = useState<StoreForm>({
     user_id: "",
     name: "",
@@ -65,15 +74,7 @@ export default function StoreRegistrationForm() {
     is_active: true,
     is_verified: false,
     shipping_type: "national",
-    store_hours: [
-      { day: "monday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "tuesday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "wednesday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "thursday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "friday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "saturday", open_time: "09:00", close_time: "18:00", is_open: true },
-      { day: "sunday", open_time: "09:00", close_time: "18:00", is_open: false }
-    ],
+    store_hours: DEFAULT_STORE_HOURS,
     address: {
       country_id: "",
       state_id: "",
@@ -84,58 +85,75 @@ export default function StoreRegistrationForm() {
     }
   });
 
+  // Prefill from auth user
   useEffect(() => {
     if (user?.user) {
       setFormData(prev => ({
         ...prev,
-        email: user?.user?.email ?? "",
-        username: user?.user?.username ?? "",
-        user_id: user?.user?.id ?? "",
+        email: user.user?.email ?? prev.email,
+        username: user.user?.username ?? prev.username,
+        user_id: user.user?.id ?? prev.user_id,
       }));
     }
   }, [user]);
 
-useEffect(() => {
-  if (existingStore && !isStoreLoading) {
-    console.log("existingStore:", existingStore); // add this temporarily
+  // Prefill from existing store — matches actual API data structure
+  useEffect(() => {
+    if (!existingStore || isStoreLoading) return;
+
+    const store = existingStore;
+
+    // Merge store_hours: keep all 7 days from defaults, overlay with API data
+    const mergedHours = DEFAULT_STORE_HOURS.map((defaultHour) => {
+      const apiHour = store.store_hours?.find(
+        (h: any) => h.day === defaultHour.day
+      );
+      if (apiHour) {
+        return {
+          day: apiHour.day,
+          open_time: apiHour.open_time ?? defaultHour.open_time,
+          close_time: apiHour.close_time ?? defaultHour.close_time,
+          is_open: apiHour.is_open ?? false,
+        };
+      }
+      return defaultHour;
+    });
 
     setFormData(prev => ({
       ...prev,
-      user_id: existingStore.owner?.id?.toString() ?? prev.user_id, // fix: was existingStore.user_id (doesn't exist)
-      name: existingStore.name ?? "",
-      slug: existingStore.slug ?? "",
-      email: existingStore.email ?? prev.email,
-      username: existingStore.username ?? prev.username,
-      brand_name: existingStore.brand_name ?? "",
-      phone: existingStore.phone ?? "",
-      policy: existingStore.policy ?? "",
-      about: existingStore.about ?? "",
-      contact_visible: existingStore.contact_visible ?? true,
-      is_active: existingStore.is_active ?? true,
-      is_verified: existingStore.is_verified ?? false,
-      shipping_type: existingStore.shipping_type ?? "national",
-      store_hours: existingStore.store_hours?.map((h: any) => ({
-        day: h.day,
-        open_time: h.open_time ?? "09:00",
-        close_time: h.close_time ?? "18:00",
-        is_open: h.is_open ?? false,
-      })) ?? prev.store_hours,
+      user_id: store.owner?.id?.toString() ?? prev.user_id,
+      name: store.name ?? prev.name,
+      slug: store.slug ?? prev.slug,
+      email: store.email ?? prev.email,
+      username: store.username ?? prev.username,
+      brand_name: store.brand_name ?? prev.brand_name,
+      phone: store.phone ?? "",
+      policy: store.policy ?? "",
+      about: store.about ?? "",
+      contact_visible: store.contact_visible ?? true,
+      is_active: store.is_active ?? true,
+      is_verified: store.is_verified ?? false,
+      shipping_type: store.shipping_type ?? "national",
+      store_hours: mergedHours,
+      // cover_photo and logo are file uploads — don't prefill File objects from URL strings
+      cover_photo: null,
+      logo: null,
       address: {
-        country_id: existingStore.address?.country_id ?? "",
-        state_id: existingStore.address?.state_id ?? "",
-        address_line_1: existingStore.address?.address_line_1 ?? "",
-        address_line_2: existingStore.address?.address_line_2 ?? "",
-        city: existingStore.address?.city ?? "",
-        zip_code: existingStore.address?.zip_code ?? ""
-      }
+        country_id: store.address?.country_id ?? "",
+        state_id: store.address?.state_id ?? "",
+        address_line_1: store.address?.address_line_1 ?? "",
+        address_line_2: store.address?.address_line_2 ?? "",
+        city: store.address?.city ?? "",
+        zip_code: store.address?.zip_code ?? "",
+      },
     }));
-  }
-}, [existingStore, isStoreLoading]);
+  }, [existingStore, isStoreLoading]);
 
-  const saveMutation = useMutation({
-    mutationFn: (data: FormData) => StoreService.create(data),
-    onSuccess: () => toast.success("Store registered successfully"),
-    onError: () => toast.error("Failed to register store"),
+  // Use update mutation (store already exists)
+  const updateMutation = useMutation({
+    mutationFn: (data: FormData) => StoreService.update(existingStore?.id, data),
+    onSuccess: () => toast.success("Store updated successfully"),
+    onError: () => toast.error("Failed to update store"),
   });
 
   const steps = [
@@ -149,7 +167,6 @@ useEffect(() => {
 
   const validateStep = (step: number): boolean => {
     setErrors({});
-
     try {
       switch (step) {
         case 0:
@@ -199,10 +216,8 @@ useEffect(() => {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1);
-      }
+    if (validateStep(currentStep) && currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
@@ -214,25 +229,21 @@ useEffect(() => {
   };
 
   const handleChange = (field: keyof StoreForm, value: any) => {
-    setFormData({ ...formData, [field]: value });
-
     if (field === "name" && typeof value === "string") {
       setFormData(prev => ({ ...prev, name: value, slug: slugify(value) }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
     }
-
-    // Clear error for this field
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
   const handleAddressChange = (field: string, value: any) => {
-    setFormData({
-      ...formData,
-      address: { ...formData.address, [field]: value }
-    });
-
-    // Clear error for this field
+    setFormData(prev => ({
+      ...prev,
+      address: { ...prev.address, [field]: value }
+    }));
     const errorKey = `address.${field}`;
     if (errors[errorKey]) {
       setErrors(prev => ({ ...prev, [errorKey]: "" }));
@@ -242,60 +253,75 @@ useEffect(() => {
   const handleStoreHoursChange = (index: number, field: string, value: any) => {
     const newStoreHours = [...formData.store_hours];
     newStoreHours[index] = { ...newStoreHours[index], [field]: value };
-    setFormData({ ...formData, store_hours: newStoreHours });
+    setFormData(prev => ({ ...prev, store_hours: newStoreHours }));
   };
 
   const handleFileChange = (field: "cover_photo" | "logo", file: File | null) => {
-    setFormData({ ...formData, [field]: file });
-
-    // Clear error for this field
+    setFormData(prev => ({ ...prev, [field]: file }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
-  const handleSubmit = () => {
-    // Validate entire form
-    const result = storeSchema.safeParse(formData);
+const handleSubmit = () => {
+  // Validate only non-media steps since images are optional on update
+  const stepsToValidate = [0, 1, 2, 4];
+  let hasErrors = false;
 
-    if (!result.success) {
-      const newErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue: any) => {
-        const path = issue.path.join('.');
-        newErrors[path] = issue.message;
-      });
-      setErrors(newErrors);
-      toast.error("Please fix all validation errors");
-      return;
+  for (const step of stepsToValidate) {
+    if (!validateStep(step)) {
+      hasErrors = true;
+      setCurrentStep(step); // jump to the failing step
+      break;
     }
+  }
 
-    const formDataToSend = new FormData();
+  if (hasErrors) return;
 
-    Object.keys(formData).forEach((key) => {
-      const value = formData[key as keyof StoreForm];
+  const formDataToSend = new FormData();
+  formDataToSend.append("_method", "PUT");
 
-      if (key === 'store_hours') {
-        formData.store_hours.forEach((hour, index) => {
-          formDataToSend.append(`store_hours[${index}][day]`, hour.day);
-          formDataToSend.append(`store_hours[${index}][open_time]`, hour.open_time);
-          formDataToSend.append(`store_hours[${index}][close_time]`, hour.close_time);
-          formDataToSend.append(`store_hours[${index}][is_open]`, hour.is_open ? "1" : "0");
-        });
-      } else if (key === 'address') {
-        Object.keys(formData.address).forEach((addressKey) => {
-          formDataToSend.append(`address[${addressKey}]`, formData.address[addressKey as keyof typeof formData.address]);
-        });
-      } else if (key === 'cover_photo' || key === 'logo') {
-        if (value) {
-          formDataToSend.append(key, value as File);
-        }
-      } else {
-        formDataToSend.append(key, value as string);
-      }
-    });
+  formDataToSend.append("user_id", String(formData.user_id));
+  formDataToSend.append("name", formData.name);
+  formDataToSend.append("slug", formData.slug);
+  formDataToSend.append("email", formData.email);
+  formDataToSend.append("username", formData.username);
+  formDataToSend.append("brand_name", formData.brand_name);
+  formDataToSend.append("phone", formData.phone ?? "");
+  formDataToSend.append("about", formData.about ?? "");
+  formDataToSend.append("policy", formData.policy ?? "");
+  formDataToSend.append("contact_visible", formData.contact_visible ? "1" : "0");
+  formDataToSend.append("is_active", formData.is_active ? "1" : "0");
+  formDataToSend.append("is_verified", formData.is_verified ? "1" : "0");
+  formDataToSend.append("shipping_type", formData.shipping_type);
 
-    saveMutation.mutate(formDataToSend);
-  };
+  // Only append images if a new file was selected
+  if (formData.cover_photo instanceof File) {
+    formDataToSend.append("cover_photo", formData.cover_photo);
+  }
+  if (formData.logo instanceof File) {
+    formDataToSend.append("logo", formData.logo);
+  }
+
+  // Store hours — include the id from existingStore so Laravel updates, not inserts
+  formData.store_hours.forEach((hour, index) => {
+    const existingHour = existingStore?.store_hours?.[index];
+   if (existingHour?.id) {
+  formDataToSend.append(`store_hours[${index}][id]`, String(existingHour.id));
+}
+    formDataToSend.append(`store_hours[${index}][day]`, hour.day);
+    formDataToSend.append(`store_hours[${index}][open_time]`, hour.open_time);
+    formDataToSend.append(`store_hours[${index}][close_time]`, hour.close_time);
+    formDataToSend.append(`store_hours[${index}][is_open]`, hour.is_open ? "1" : "0");
+  });
+
+  // Address
+  Object.entries(formData.address).forEach(([key, val]) => {
+    formDataToSend.append(`address[${key}]`, val ?? "");
+  });
+
+  updateMutation.mutate(formDataToSend);
+};
 
   const ErrorMessage = ({ field }: { field: string }) => {
     return errors[field] ? (
@@ -303,475 +329,485 @@ useEffect(() => {
     ) : null;
   };
 
+  if (isStoreLoading) {
+    return (
+      <div className="min-h-screen dark:text-white dark:bg-gray-900 bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Loading store details...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen dark:text-white dark:bg-gray-900 bg-gray-50 py-8 px-4">
-      <div className=" mx-auto">
-        <h1>{existingStore && !isStoreLoading ? "Edit your store" : "Create your store"}</h1>
+      <div className="mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Edit Your Store</h1>
 
-        {isSubmitted ? (
-          <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 p-6 rounded-lg flex items-center gap-4">
-            <AlertCircle className="w-6 h-6" />
-            <div>
-              <p className="font-semibold">Store Registration Pending</p>
-              <p>Your store request has been submitted and is pending review. You will be notified once it is approved.</p>
-            </div>
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-500 transition-all duration-300 ease-in-out"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
           </div>
-        ) : (
-          <>
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        </div>
+
+        {/* Stepper */}
+        <div className="flex justify-between mb-8">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            const isActive = index === currentStep;
+            const isCompleted = index < currentStep;
+
+            return (
+              <div key={index} className="flex flex-col items-center flex-1">
                 <div
-                  className="h-full bg-green-500 transition-all duration-300 ease-in-out"
-                  style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Stepper */}
-            <div className="flex justify-between mb-8">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                const isActive = index === currentStep;
-                const isCompleted = index < currentStep;
-
-                return (
-                  <div key={index} className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${isActive
-                        ? "bg-green-500 text-white shadow-lg"
-                        : isCompleted
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-200 text-gray-500"
-                        }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span
-                      className={`text-xs font-medium text-center ${isActive ? "text-green-600" : isCompleted ? "text-green-600" : "text-gray-500"
-                        }`}
-                    >
-                      {step.name}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Form Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
-              {/* Step 0: Store Info */}
-              {currentStep === 0 && (
-                <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Store Information</h2>
-                  <p className="text-gray-600 mb-6">Step 1 of 6: Basic store details</p>
-
-                  <div className="space-y-4">
-                    <div>
-                      <Label>Store Name *</Label>
-                      <Input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => handleChange("name", e.target.value)}
-                        placeholder="My Awesome Store"
-                        className={errors.name ? "border-red-500" : ""}
-                      />
-                      <ErrorMessage field="name" />
-                    </div>
-
-                    <div>
-                      <Label>Slug *</Label>
-                      <Input
-                        type="text"
-                        value={formData.slug}
-                        onChange={(e) => handleChange("slug", e.target.value)}
-                        placeholder="my-awesome-store"
-                        readOnly
-                        className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Auto-generated from store name</p>
-                      <ErrorMessage field="slug" />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label>Email *</Label>
-                        <Input
-                          type="email"
-                          value={user?.user?.email}
-                          onChange={(e) => handleChange("email", e.target.value)}
-                          placeholder="store@example.com"
-                          readOnly
-                          className={errors.email ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="email" />
-                      </div>
-                      <div>
-                        <Label>Username *</Label>
-                        <Input
-                          type="text"
-                          value={user?.user?.username}
-                          onChange={(e) => handleChange("username", e.target.value)}
-                          placeholder="mystore123"
-                          readOnly
-                          className={errors.username ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="username" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label>Brand Name *</Label>
-                        <Input
-                          type="text"
-                          value={formData.brand_name}
-                          onChange={(e) => handleChange("brand_name", e.target.value)}
-                          placeholder="Awesome Brand"
-                          className={errors.brand_name ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="brand_name" />
-                      </div>
-                      <div>
-                        <Label>Phone</Label>
-                        <Input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={(e) => handleChange("phone", e.target.value)}
-                          placeholder="+1234567890"
-                          className={errors.phone ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="phone" />
-                      </div>
-                    </div>
-                  </div>
+                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
+                    isActive
+                      ? "bg-green-500 text-white shadow-lg"
+                      : isCompleted
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
                 </div>
-              )}
+                <span
+                  className={`text-xs font-medium text-center ${
+                    isActive || isCompleted ? "text-green-600" : "text-gray-500"
+                  }`}
+                >
+                  {step.name}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-              {/* Step 1: Address */}
-              {currentStep === 1 && (
+        {/* Form Content */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+
+          {/* Step 0: Store Info */}
+          {currentStep === 0 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Store Information</h2>
+              <p className="text-gray-600 mb-6">Step 1 of 6: Basic store details</p>
+
+              <div className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Address</h2>
-                  <p className="text-gray-600 mb-6">Step 2 of 6: Store location details</p>
+                  <Label>Store Name *</Label>
+                  <Input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    placeholder="My Awesome Store"
+                    className={errors.name ? "border-red-500" : ""}
+                  />
+                  <ErrorMessage field="name" />
+                </div>
 
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* <div>
-                    <Label>Country</Label>
+                <div>
+                  <Label>Slug *</Label>
+                  <Input
+                    type="text"
+                    value={formData.slug}
+                    readOnly
+                    placeholder="my-awesome-store"
+                    className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Auto-generated from store name</p>
+                  <ErrorMessage field="slug" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Email *</Label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      readOnly
+                      placeholder="store@example.com"
+                      className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
+                    />
+                    <ErrorMessage field="email" />
+                  </div>
+                  <div>
+                    <Label>Username *</Label>
                     <Input
                       type="text"
-                      value={formData.address.country_id}
-                      onChange={(e) => handleAddressChange("country_id", e.target.value)}
-                      placeholder="e.g. US"
-                      className={errors["address.country_id"] ? "border-red-500" : ""}
+                      value={formData.username}
+                      readOnly
+                      placeholder="mystore123"
+                      className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                     />
+                    <ErrorMessage field="username" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Brand Name *</Label>
+                    <Input
+                      type="text"
+                      value={formData.brand_name}
+                      onChange={(e) => handleChange("brand_name", e.target.value)}
+                      placeholder="Awesome Brand"
+                      className={errors.brand_name ? "border-red-500" : ""}
+                    />
+                    <ErrorMessage field="brand_name" />
+                  </div>
+                  <div>
+                    <Label>Phone</Label>
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      placeholder="+1234567890"
+                      className={errors.phone ? "border-red-500" : ""}
+                    />
+                    <ErrorMessage field="phone" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 1: Address */}
+          {currentStep === 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Address</h2>
+              <p className="text-gray-600 mb-6">Step 2 of 6: Store location details</p>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Country</Label>
+                    {isCountriesLoading ? (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Loading countries...</p>
+                    ) : (
+                      <Select
+                        options={countryOptions}
+                        value={formData.address.country_id}
+                        placeholder="Select a country"
+                        onChange={(val: any) => handleAddressChange("country_id", val)}
+                      />
+                    )}
                     <ErrorMessage field="address.country_id" />
-                  </div> */}
-
-                      <div>
-                        <Label>Country</Label>
-                        {isLoading ? (
-                          <p className="text-gray-500 dark:text-gray-400 text-sm">Loading countries...</p>
-                        ) : (
-                          <Select
-                            options={countryOptions}
-                            value={formData.address.country_id}
-                            placeholder="Select a country"
-                            onChange={(val: any) => handleAddressChange("country_id", val)}
-                          />
-                        )}
-                        <ErrorMessage field="address.country_id" />
-                      </div>
-                      <div>
-                        <Label>State</Label>
-                        <Input
-                          type="text"
-                          value={formData.address.state_id}
-                          onChange={(e) => handleAddressChange("state_id", e.target.value)}
-                          placeholder="e.g.Ohio"
-                          className={errors["address.state_id"] ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="address.state_id" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label>Address Line 1</Label>
-                      <Input
-                        type="text"
-                        value={formData.address.address_line_1}
-                        onChange={(e) => handleAddressChange("address_line_1", e.target.value)}
-                        placeholder="123 Main Street"
-                        className={errors["address.address_line_1"] ? "border-red-500" : ""}
-                      />
-                      <ErrorMessage field="address.address_line_1" />
-                    </div>
-
-                    <div>
-                      <Label>Address Line 2</Label>
-                      <Input
-                        type="text"
-                        value={formData.address.address_line_2}
-                        onChange={(e) => handleAddressChange("address_line_2", e.target.value)}
-                        placeholder="Suite 100"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label>City</Label>
-                        <Input
-                          type="text"
-                          value={formData.address.city}
-                          onChange={(e) => handleAddressChange("city", e.target.value)}
-                          placeholder="New York"
-                          className={errors["address.city"] ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="address.city" />
-                      </div>
-                      <div>
-                        <Label>Zip Code</Label>
-                        <Input
-                          type="text"
-                          value={formData.address.zip_code}
-                          onChange={(e) => handleAddressChange("zip_code", e.target.value)}
-                          placeholder="10001"
-                          className={errors["address.zip_code"] ? "border-red-500" : ""}
-                        />
-                        <ErrorMessage field="address.zip_code" />
-                      </div>
-                    </div>
+                  </div>
+                  <div>
+                    <Label>State</Label>
+                    <Input
+                      type="text"
+                      value={formData.address.state_id}
+                      onChange={(e) => handleAddressChange("state_id", e.target.value)}
+                      placeholder="e.g. Ohio"
+                      className={errors["address.state_id"] ? "border-red-500" : ""}
+                    />
+                    <ErrorMessage field="address.state_id" />
                   </div>
                 </div>
-              )}
 
-              {/* Step 2: Details */}
-              {currentStep === 2 && (
                 <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Store Details</h2>
-                  <p className="text-gray-600 mb-6">Step 3 of 6: Additional information</p>
+                  <Label>Address Line 1</Label>
+                  <Input
+                    type="text"
+                    value={formData.address.address_line_1}
+                    onChange={(e) => handleAddressChange("address_line_1", e.target.value)}
+                    placeholder="123 Main Street"
+                    className={errors["address.address_line_1"] ? "border-red-500" : ""}
+                  />
+                  <ErrorMessage field="address.address_line_1" />
+                </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <Label>About Store</Label>
-                      <Textarea
-                        value={formData.about}
-                        onChange={(e) => handleChange("about", e.target.value)}
-                        placeholder="Tell us about your store..."
-                        rows={4}
-                        className={errors.about ? "border-red-500" : ""}
-                      />
-                      <ErrorMessage field="about" />
-                    </div>
+                <div>
+                  <Label>Address Line 2</Label>
+                  <Input
+                    type="text"
+                    value={formData.address.address_line_2}
+                    onChange={(e) => handleAddressChange("address_line_2", e.target.value)}
+                    placeholder="Suite 100"
+                  />
+                </div>
 
-                    <div>
-                      <Label>Store Policy</Label>
-                      <Textarea
-                        value={formData.policy}
-                        onChange={(e) => handleChange("policy", e.target.value)}
-                        placeholder="Store policies and terms..."
-                        rows={4}
-                        className={errors.policy ? "border-red-500" : ""}
-                      />
-                      <ErrorMessage field="policy" />
-                    </div>
-
-                    <div>
-                      <Label>Shipping Type</Label>
-                      <select
-                        value={formData.shipping_type}
-                        onChange={(e) => handleChange("shipping_type", e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                      >
-                        <option value="local_pickup">Local</option>
-                        <option value="regional">Regional</option>
-                        <option value="national">National</option>
-                        <option value="international">International</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-3">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.contact_visible}
-                          onChange={(e) => handleChange("contact_visible", e.target.checked)}
-                          className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Contact Visible</span>
-                      </label>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>City</Label>
+                    <Input
+                      type="text"
+                      value={formData.address.city}
+                      onChange={(e) => handleAddressChange("city", e.target.value)}
+                      placeholder="New York"
+                      className={errors["address.city"] ? "border-red-500" : ""}
+                    />
+                    <ErrorMessage field="address.city" />
+                  </div>
+                  <div>
+                    <Label>Zip Code</Label>
+                    <Input
+                      type="text"
+                      value={formData.address.zip_code}
+                      onChange={(e) => handleAddressChange("zip_code", e.target.value)}
+                      placeholder="10001"
+                      className={errors["address.zip_code"] ? "border-red-500" : ""}
+                    />
+                    <ErrorMessage field="address.zip_code" />
                   </div>
                 </div>
-              )}
+              </div>
+            </div>
+          )}
 
-              {/* Step 3: Media */}
-              {currentStep === 3 && (
+          {/* Step 2: Details */}
+          {currentStep === 2 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Store Details</h2>
+              <p className="text-gray-600 mb-6">Step 3 of 6: Additional information</p>
+
+              <div className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Media Upload</h2>
-                  <p className="text-gray-600 mb-6">Step 4 of 6: Upload store images</p>
+                  <Label>About Store</Label>
+                  <Textarea
+                    value={formData.about}
+                    onChange={(e) => handleChange("about", e.target.value)}
+                    placeholder="Tell us about your store..."
+                    rows={4}
+                    className={errors.about ? "border-red-500" : ""}
+                  />
+                  <ErrorMessage field="about" />
+                </div>
 
-                  <div className="space-y-6">
-                    <div>
-                      <Label>Cover Photo</Label>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange("cover_photo", e.target.files?.[0] || null)}
-                        className={errors.cover_photo ? "border-red-500" : ""}
+                <div>
+                  <Label>Store Policy</Label>
+                  <Textarea
+                    value={formData.policy}
+                    onChange={(e) => handleChange("policy", e.target.value)}
+                    placeholder="Store policies and terms..."
+                    rows={4}
+                    className={errors.policy ? "border-red-500" : ""}
+                  />
+                  <ErrorMessage field="policy" />
+                </div>
+
+                <div>
+                  <Label>Shipping Type</Label>
+                  <select
+                    value={formData.shipping_type}
+                    onChange={(e) => handleChange("shipping_type", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                  >
+                    <option value="local_pickup">Local</option>
+                    <option value="regional">Regional</option>
+                    <option value="national">National</option>
+                    <option value="international">International</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.contact_visible}
+                      onChange={(e) => handleChange("contact_visible", e.target.checked)}
+                      className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Contact Visible</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Media */}
+          {currentStep === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Media Upload</h2>
+              <p className="text-gray-600 mb-6">Step 4 of 6: Upload store images</p>
+
+              <div className="space-y-6">
+                <div>
+                  <Label>Cover Photo</Label>
+                  {existingStore?.cover_photo && (
+                    <div className="mb-2">
+                      <p className="text-xs text-gray-500 mb-1">Current cover photo:</p>
+                      <img
+                        src={existingStore.cover_photo}
+                        alt="Current cover"
+                        className="h-24 object-cover rounded-lg border"
                       />
-                      {formData.cover_photo && (
-                        <p className="mt-2 text-sm text-gray-600">Selected: {formData.cover_photo.name}</p>
+                    </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange("cover_photo", e.target.files?.[0] || null)}
+                    className={errors.cover_photo ? "border-red-500" : ""}
+                  />
+                  {formData.cover_photo && (
+                    <p className="mt-2 text-sm text-gray-600">New file: {formData.cover_photo.name}</p>
+                  )}
+                  {!existingStore?.cover_photo && !formData.cover_photo && (
+                    <p className="text-xs text-gray-400 mt-1">No cover photo uploaded yet.</p>
+                  )}
+                  <ErrorMessage field="cover_photo" />
+                </div>
+
+                <div>
+                  <Label>Logo</Label>
+                  {existingStore?.logo && (
+                    <div className="mb-2">
+                      <p className="text-xs text-gray-500 mb-1">Current logo:</p>
+                      <img
+                        src={existingStore.logo}
+                        alt="Current logo"
+                        className="h-16 w-16 object-cover rounded-full border"
+                      />
+                    </div>
+                  )}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange("logo", e.target.files?.[0] || null)}
+                    className={errors.logo ? "border-red-500" : ""}
+                  />
+                  {formData.logo && (
+                    <p className="mt-2 text-sm text-gray-600">New file: {formData.logo.name}</p>
+                  )}
+                  {!existingStore?.logo && !formData.logo && (
+                    <p className="text-xs text-gray-400 mt-1">No logo uploaded yet.</p>
+                  )}
+                  <ErrorMessage field="logo" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Store Hours */}
+          {currentStep === 4 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Store Hours</h2>
+              <p className="text-gray-600 mb-6">Step 5 of 6: Set your operating hours</p>
+
+              <div className="space-y-4">
+                {formData.store_hours.map((hour, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-4 mb-3">
+                      <input
+                        type="checkbox"
+                        checked={hour.is_open}
+                        onChange={(e) => handleStoreHoursChange(index, "is_open", e.target.checked)}
+                        className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                      />
+                      <span className="font-medium text-gray-700 capitalize w-24">{hour.day}</span>
+                      {!hour.is_open && (
+                        <span className="text-sm text-gray-400">Closed</span>
                       )}
-                      <ErrorMessage field="cover_photo" />
                     </div>
 
-                    <div>
-                      <Label>Logo</Label>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange("logo", e.target.files?.[0] || null)}
-                        className={errors.logo ? "border-red-500" : ""}
-                      />
-                      {formData.logo && (
-                        <p className="mt-2 text-sm text-gray-600">Selected: {formData.logo.name}</p>
-                      )}
-                      <ErrorMessage field="logo" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Store Hours */}
-              {currentStep === 4 && (
-                <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Store Hours</h2>
-                  <p className="text-gray-600 mb-6">Step 5 of 6: Set your operating hours</p>
-
-                  <div className="space-y-4">
-                    {formData.store_hours.map((hour, index) => (
-                      <div key={index} className="p-4 border border-gray-200 rounded-lg">
-                        <div className="flex items-center gap-4 mb-3">
-                          <input
-                            type="checkbox"
-                            checked={hour.is_open}
-                            onChange={(e) => handleStoreHoursChange(index, "is_open", e.target.checked)}
-                            className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                    {hour.is_open && (
+                      <div className="grid grid-cols-2 gap-4 ml-8">
+                        <div>
+                          <Label>Open Time</Label>
+                          <Input
+                            type="time"
+                            value={hour.open_time}
+                            onChange={(e) => handleStoreHoursChange(index, "open_time", e.target.value)}
                           />
-                          <span className="font-medium text-gray-700 capitalize w-24">{hour.day}</span>
                         </div>
-
-                        {hour.is_open && (
-                          <div className="grid grid-cols-2 gap-4 ml-8">
-                            <div>
-                              <Label>Open Time</Label>
-                              <Input
-                                type="time"
-                                value={hour.open_time}
-                                onChange={(e) => handleStoreHoursChange(index, "open_time", e.target.value)}
-                              />
-                            </div>
-                            <div>
-                              <Label>Close Time</Label>
-                              <Input
-                                type="time"
-                                value={hour.close_time}
-                                onChange={(e) => handleStoreHoursChange(index, "close_time", e.target.value)}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        <div>
+                          <Label>Close Time</Label>
+                          <Input
+                            type="time"
+                            value={hour.close_time}
+                            onChange={(e) => handleStoreHoursChange(index, "close_time", e.target.value)}
+                          />
+                        </div>
                       </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Review */}
+          {currentStep === 5 && (
+            <div>
+              <h2 className="text-2xl font-bold text-green-600 mb-2">Review & Submit</h2>
+              <p className="text-gray-600 mb-6">Step 6 of 6: Verify your information</p>
+
+              <div className="space-y-4">
+                <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Store Information</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <p className="text-gray-600 dark:text-gray-300">Name:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.name || "-"}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Slug:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.slug || "-"}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Email:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.email || "-"}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Username:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.username || "-"}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Brand:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.brand_name || "-"}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Phone:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.phone || "-"}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Address</h3>
+                  <div className="text-sm text-gray-900 dark:text-gray-300">
+                    {formData.address.address_line_1 ? (
+                      <>
+                        <p>{formData.address.address_line_1}</p>
+                        {formData.address.address_line_2 && <p>{formData.address.address_line_2}</p>}
+                        <p>{formData.address.city}{formData.address.zip_code ? `, ${formData.address.zip_code}` : ""}</p>
+                      </>
+                    ) : (
+                      <p className="text-gray-400">No address provided</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Settings</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <p className="text-gray-600 dark:text-white">Shipping:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.shipping_type}</p>
+                    <p className="text-gray-600 dark:text-white">Contact Visible:</p>
+                    <p className="text-gray-900 dark:text-gray-300">{formData.contact_visible ? "Yes" : "No"}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-transparent p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Operating Hours</h3>
+                  <div className="space-y-1 text-sm">
+                    {formData.store_hours.map((hour, idx) => (
+                      <p key={idx} className="text-gray-900 dark:text-gray-300 capitalize">
+                        {hour.day}: {hour.is_open ? `${hour.open_time} - ${hour.close_time}` : "Closed"}
+                      </p>
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* Step 5: Review */}
-              {currentStep === 5 && (
-                <div>
-                  <h2 className="text-2xl font-bold text-green-600 mb-2">Review & Submit</h2>
-                  <p className="text-gray-600 mb-6">Step 6 of 6: Verify your information</p>
-
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Store Information</h3>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <p className="text-gray-600 dark:text-gray-300">Name:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.name || "-"}</p>
-                        <p className="text-gray-600 dark:text-gray-300">Slug:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.slug || "-"}</p>
-                        <p className="text-gray-600 dark:text-gray-300">Email:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{user?.user?.email ? user?.user?.email : formData.email}</p>
-                        <p className="text-gray-600 dark:text-gray-300">Username:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.username || "-"}</p>
-                        <p className="text-gray-600 dark:text-gray-300">Brand:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.brand_name || "-"}</p>
-                        <p className="text-gray-600 dark:text-gray-300">Phone:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.phone || "-"}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Address</h3>
-                      <div className="text-sm text-gray-900 dark:text-gray-300">
-                        <p>{formData.address.address_line_1}</p>
-                        {formData.address.address_line_2 && <p>{formData.address.address_line_2}</p>}
-                        <p>{formData.address.city}, {formData.address.zip_code}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Settings</h3>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <p className="text-gray-600 dark:text-white">Shipping:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.shipping_type}</p>
-                        <p className="text-gray-600 dark:text-white">Verified:</p>
-                        <p className="text-gray-900 dark:text-gray-300">{formData.is_verified ? "Yes" : "No"}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 dark:bg-transparent dark:text-white p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Operating Hours</h3>
-                      <div className="space-y-1 text-sm">
-                        {formData.store_hours.map((hour, idx) => (
-                          <p key={idx} className="text-gray-900 dark:text-gray-300 capitalize">
-                            {hour.day}: {hour.is_open ? `${hour.open_time} - ${hour.close_time}` : "Closed"}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8">
-                <Button
-                  onClick={handleBack}
-                  disabled={currentStep === 0}
-                  variant="outline"
-                >
-                  ← Back
-                </Button>
-
-                {currentStep < steps.length - 1 ? (
-                  <Button onClick={handleNext}>
-                    Next Step →
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={saveMutation.isPending}
-                  >
-                    {saveMutation.isPending ? "Submitting..." : "Submit Store"}
-                  </Button>
-                )}
               </div>
             </div>
-          </>
-        )}
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8">
+            <Button onClick={handleBack} disabled={currentStep === 0} variant="outline">
+              ← Back
+            </Button>
+
+            {currentStep < steps.length - 1 ? (
+              <Button onClick={handleNext}>Next Step →</Button>
+            ) : (
+              <Button onClick={handleSubmit} disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
