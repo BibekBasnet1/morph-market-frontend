@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Store, MapPin, FileText, Image, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textArea";
@@ -21,6 +21,7 @@ import {
 import { z } from "zod";
 import { CountryService } from "../../lib/api/countries";
 import Select from "../../components/ui/select";
+import { StateService } from "../../lib/api/states";
 
 const DEFAULT_STORE_HOURS = [
   { day: "monday", open_time: "09:00", close_time: "18:00", is_open: true },
@@ -57,6 +58,8 @@ export default function StoreRegistrationForm() {
     value: c.id,
     label: c.name,
   }));
+
+  
 
   const [formData, setFormData] = useState<StoreForm>({
     user_id: "",
@@ -323,6 +326,20 @@ const handleSubmit = () => {
   updateMutation.mutate(formDataToSend);
 };
 
+const { data: states = [], isLoading: isStatesLoading } = useQuery({
+  queryKey: ["states", formData.address.country_id],
+  queryFn: () =>
+    StateService.getByCountry(formData.address.country_id),
+  enabled: !!formData.address.country_id, // only run when country selected
+});
+
+const stateOptions = useMemo(() => {
+  return states.map((state: any) => ({
+    value: state.id,
+    label: state.name,
+  }));
+}, [states]);
+
   const ErrorMessage = ({ field }: { field: string }) => {
     return errors[field] ? (
       <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
@@ -496,13 +513,24 @@ const handleSubmit = () => {
                   </div>
                   <div>
                     <Label>State</Label>
-                    <Input
-                      type="text"
-                      value={formData.address.state_id}
-                      onChange={(e) => handleAddressChange("state_id", e.target.value)}
-                      placeholder="e.g. Ohio"
-                      className={errors["address.state_id"] ? "border-red-500" : ""}
-                    />
+
+                    {!formData.address.country_id ? (
+                      <p className="text-gray-400 text-sm">
+                        Please select a country first
+                      </p>
+                    ) : isStatesLoading ? (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        Loading states...
+                      </p>
+                    ) : (
+                      <Select
+                        options={stateOptions}
+                        value={formData.address.state_id}
+                        placeholder="Select a state"
+                        onChange={(val: any) => handleAddressChange("state_id", val)}
+                      />
+                    )}
+
                     <ErrorMessage field="address.state_id" />
                   </div>
                 </div>
