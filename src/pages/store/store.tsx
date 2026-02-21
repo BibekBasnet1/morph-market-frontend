@@ -245,7 +245,8 @@ export default function StoreRegistrationForm() {
   const handleAddressChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      address: { ...prev.address, [field]: value }
+      address: { ...prev.address, [field]: value },
+       ...(field === "country_id" ? { state_id: "" } : {}),
     }));
     const errorKey = `address.${field}`;
     if (errors[errorKey]) {
@@ -518,19 +519,16 @@ const stateOptions = useMemo(() => {
                       <p className="text-gray-400 text-sm">
                         Please select a country first
                       </p>
-                    ) : isStatesLoading ? (
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
-                        Loading states...
-                      </p>
                     ) : (
                       <Select
                         options={stateOptions}
                         value={formData.address.state_id}
+                        // placeholder={isStatesLoading ? "Select a state" : "Select a state"}
                         placeholder="Select a state"
                         onChange={(val: any) => handleAddressChange("state_id", val)}
+                        disabled={isStatesLoading}
                       />
                     )}
-
                     <ErrorMessage field="address.state_id" />
                   </div>
                 </div>
