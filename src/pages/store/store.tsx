@@ -107,20 +107,30 @@ export default function StoreRegistrationForm() {
     const store = existingStore;
 
     // Merge store_hours: keep all 7 days from defaults, overlay with API data
-    const mergedHours = DEFAULT_STORE_HOURS.map((defaultHour) => {
-      const apiHour = store.store_hours?.find(
-        (h: any) => h.day === defaultHour.day
-      );
-      if (apiHour) {
-        return {
-          day: apiHour.day,
-          open_time: apiHour.open_time ?? defaultHour.open_time,
-          close_time: apiHour.close_time ?? defaultHour.close_time,
-          is_open: apiHour.is_open ?? false,
-        };
-      }
-      return defaultHour;
-    });
+    const parseTime = (time: string | null | undefined, fallback: string): string => {
+      if (!time) return fallback;
+      // Already HH:MM format
+      if (/^\d{2}:\d{2}$/.test(time)) return time;
+      // Parse ISO datetime and extract HH:MM
+      const date = new Date(time);
+      if (isNaN(date.getTime())) return fallback;
+      return date.toISOString().substring(11, 16); // "09:00"
+    };
+
+const mergedHours = DEFAULT_STORE_HOURS.map((defaultHour) => {
+  const apiHour = store.store_hours?.find(
+    (h: any) => h.day === defaultHour.day
+  );
+  if (apiHour) {
+    return {
+      day: apiHour.day,
+      open_time: parseTime(apiHour.open_time, defaultHour.open_time),
+      close_time: parseTime(apiHour.close_time, defaultHour.close_time),
+      is_open: apiHour.is_open ?? false,
+    };
+  }
+  return defaultHour;
+});
 
     setFormData(prev => ({
       ...prev,
