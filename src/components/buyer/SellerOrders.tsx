@@ -322,21 +322,21 @@ const navigate = useNavigate();
           )}
 
           {/* Empty */}
-          {!isLoading && !error && orders.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                <ShoppingBag className="w-7 h-7 text-gray-400" />
-              </div>
-              <p className="font-medium text-gray-700 dark:text-gray-300">No orders yet</p>
-              <p className="text-sm text-gray-400">Your orders will appear here once placed.</p>
+        {!isLoading && !error && orders.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+            <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+              <ShoppingBag className="w-7 h-7 text-gray-400" />
             </div>
-          )}
+            <p className="font-medium text-gray-700 dark:text-gray-300">No orders received yet</p>
+            <p className="text-sm text-gray-400">Orders from your customers will appear here.</p>
+          </div>
+        )}
 
           {/* Orders List */}
           {!isLoading && !error && orders.length > 0 && (
             <>
               <div className="space-y-3">
-                {orders.map((order) => (
+                {orders.map((order:any) => (
                   <OrderCard key={order.id} order={order} />
                 ))}
               </div>

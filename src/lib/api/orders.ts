@@ -25,10 +25,20 @@ export interface OrderMeta {
   per_page: number;
   total: number;
 }
+export interface PaginatedOrders {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+  data: Order[];
+}
 
 export interface OrderResponse {
-  data: Order[];
-  meta: OrderMeta;
+  success: boolean;
+  message: string;
+  data: PaginatedOrders;
 }
 
 export const OrderService = {

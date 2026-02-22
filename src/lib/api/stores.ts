@@ -28,4 +28,13 @@ update: async (id: number, payload: FormData): Promise<StoreForm> => {
     const response = await api.get('/buyer/stores/user/my-store');
     return response.data.data;
   },
+
+async getAllStores(): Promise<StoreForm[]> {
+  const res = await api.get("/stores");
+  return res.data?.data ?? [];
+},
+      async getStoresById(storeId:any): Promise<StoreForm[]> {
+    const res = await api.get(`/stores/${storeId}/products`);
+    return res.data.data;
+  },
 };

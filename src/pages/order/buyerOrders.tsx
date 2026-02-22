@@ -320,7 +320,7 @@ const BuyerOrders = () => {
           {!isLoading && !error && orders.length > 0 && (
             <>
               <div className="space-y-3">
-                {orders.map((order) => (
+                {orders.map((order:any) => (
                   <OrderCard key={order.id} order={order} />
                 ))}
               </div>

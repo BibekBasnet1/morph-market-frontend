@@ -269,8 +269,8 @@ const SellerOrders = () => {
     placeholderData: (prev) => prev,
   });
 
-  const orders = data?.data ?? [];
-  const meta = data?.meta;
+const orders = data?.data?.data ?? [];
+const meta = data?.data;
 
   return (
     <div className=" mx-auto px-4 py-8">

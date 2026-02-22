@@ -63,7 +63,7 @@ const SellerRoutes = () => (
         </ProtectedRoute>
       } />
 
-            <Route path="activity-log" element={
+            <Route path="activity-logs" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <ActivityLogPage />
         </ProtectedRoute>

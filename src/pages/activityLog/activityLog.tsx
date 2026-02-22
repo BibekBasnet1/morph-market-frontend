@@ -218,7 +218,7 @@ const ActivityLogsPage = () => {
 
             {/* Pagination */}
             {meta && meta.last_page > 1 && (
-              <div className="mt-8 flex items-center justify-between">
+              <div className="mt-8 flex gap-4 flex-col md:flex-row items-center justify-between">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Showing {meta.from} to {meta.to} of {meta.total} activities
                 </div>
