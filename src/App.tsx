@@ -12,7 +12,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import ActivityLogsPage from "./pages/activityLog/activityLog";
 import storePage from "./pages/store/storePage";
-import StoreDetails from "./pages/store/storeDetails";
+// import StoreDetails from "./pages/store/storeDetails";
+import StoreDetailsPage from "./pages/store/storeDetails";
 
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
@@ -58,8 +59,8 @@ const AppRoutes = () => {
     { path: "/cart", load: CartPage },
     { path: "/activity-log", load: ActivityLogsPage },
     { path: "/products/:slug/details", load: ProductDetailsImmersive },
-    { path: "/stores", load: storePage },
-    { path: "/stores/:slug", load: StoreDetails },
+    { path: "/store", load: storePage },
+    { path: "/stores/:id", load: StoreDetailsPage },
 
   ];
 

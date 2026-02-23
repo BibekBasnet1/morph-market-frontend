@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { Heart, ShoppingCart, User, Search, X, Menu, Settings, LogOut } from "lucide-react";
+import { Heart, ShoppingCart, User, Search, X, Menu, Settings, LogOut, Castle } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -247,6 +247,17 @@ const Navbar: React.FC = () => {
               Quick Actions
             </p>
             <ul className="space-y-0.5">
+              <li>
+                <Link
+                  to="/marketplace"
+                  onClick={() => setNavDrawerOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <Castle className="w-4 h-4 text-gray-400" />
+                  MarketPlace
+                </Link>
+              </li>
+
               <li>
                 <Link
                   to="/cart"

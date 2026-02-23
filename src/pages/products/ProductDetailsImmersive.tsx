@@ -228,8 +228,8 @@ const ProductDetailsImmersivePage = () => {
 
                 {/* Store Link */}
                 <Link
-                  to={`/store/${availability?.store?.slug}`}
-                  className="block text-center bg-primary text-primary-foreground font-medium py-2 rounded-lg hover:bg-primary/90 transition"
+                  to={`/stores/${availability?.store?.id}`}
+                  className="block text-center text-white bg-primary font-medium py-2 rounded-lg hover:bg-primary/90 transition"
                 >
                   Visit Store Profile →
                 </Link>

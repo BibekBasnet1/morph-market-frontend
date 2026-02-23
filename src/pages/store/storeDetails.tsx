@@ -47,6 +47,9 @@
 //   );
 // }
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { StoreService } from "../../lib/api/stores";
 import {
   Star,
   ShieldCheck,
@@ -68,74 +71,36 @@ import {
   XCircle,
 } from "lucide-react";
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const MOCK_STORE = {
-  id: 2,
-  name: "Desert Dwellers",
-  brand_name: "Desert Dwellers",
-  slug: "desert-dwellers",
-  is_verified: true,
-  is_active: true,
-  rating: 4.9,
-  review_count: 243,
-  inventory_count: 12,
-  about:
-    "Desert Dwellers has been connecting reptile enthusiasts with the world's most exotic and ethically sourced species since 2014. Our commitment to responsible breeding and animal welfare sets us apart. Every animal in our care is raised with respect, proper nutrition, and expert veterinary support.",
-  policy:
-    "All sales are final. Live arrival guaranteed on overnight shipments. We ship Monday–Wednesday to avoid weekend delays. Full refund or replacement issued if animal arrives deceased with photo proof within 2 hours of delivery.",
-  shipping_type: "international",
-  contact_visible: true,
-  phone: "+1 (520) 847-2901",
-  email: "hello@desertdwellers.com",
-  cover_photo: "https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1200&q=80",
-  logo: null,
-  address: {
-    address_line_1: "4421 Saguaro Trail",
-    address_line_2: "Suite 7",
-    city: "Tucson",
-    zip_code: "85701",
-    state: "Arizona",
-    country: "United States",
-  },
-  store_hours: [
-    { day: "monday", open_time: "09:00", close_time: "18:00", is_open: true },
-    { day: "tuesday", open_time: "09:00", close_time: "18:00", is_open: true },
-    { day: "wednesday", open_time: "09:00", close_time: "18:00", is_open: true },
-    { day: "thursday", open_time: "09:00", close_time: "18:00", is_open: true },
-    { day: "friday", open_time: "09:00", close_time: "17:00", is_open: true },
-    { day: "saturday", open_time: "10:00", close_time: "15:00", is_open: true },
-    { day: "sunday", open_time: "09:00", close_time: "18:00", is_open: false },
-  ],
-  owner: {
-    name: "Marcus Webb",
-    joined: "2014",
-    avatar: null,
-  },
-};
-
-const MOCK_PRODUCTS = [
-  { id: 1, name: "Ball Python - Pastel", price: 249, image: "https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=300&q=80", available: true },
-  { id: 2, name: "Bearded Dragon Juvenile", price: 129, image: "https://images.unsplash.com/photo-1602491453631-e2a5ad90a131?w=300&q=80", available: true },
-  { id: 3, name: "Crested Gecko", price: 89, image: "https://images.unsplash.com/photo-1504450874802-0ba2bcd9b5ae?w=300&q=80", available: true },
-  { id: 4, name: "Blue-tongued Skink", price: 399, image: null, available: false },
-  { id: 5, name: "Leopard Gecko – Eclipse", price: 175, image: null, available: true },
-  { id: 6, name: "Red-eyed Treefrog", price: 69, image: null, available: true },
-];
-
-const MOCK_REVIEWS = [
-  { id: 1, author: "Jamie L.", rating: 5, date: "Jan 12, 2026", comment: "Absolutely top-tier experience. My ball python arrived calm and healthy. Communication was prompt and professional throughout." },
-  { id: 2, author: "Tara S.", rating: 5, date: "Dec 3, 2025", comment: "Third time ordering from Desert Dwellers. Consistent quality and stellar packing. Would never go anywhere else." },
-  { id: 3, author: "Carlos M.", rating: 4, date: "Nov 18, 2025", comment: "Great seller overall. The gecko I ordered was exactly as described. Shipping took a day longer than expected but animal was perfect." },
-];
+// NOTE: The page now fetches store + products from the API endpoint
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const DAYS_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 
-function getTodayStatus(hours: typeof MOCK_STORE.store_hours) {
+function formatTime(value?: string) {
+  if (!value) return "";
+  // If ISO timestamp, format to HH:MM (24h)
+  if (value.includes("T")) {
+    // Parse as UTC and display UTC hours:minutes to avoid local timezone shifts
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+    const hh = String(d.getUTCHours()).padStart(2, "0");
+    const mm = String(d.getUTCMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  }
+  // If already in HH:MM or HH:MM:SS format, return first 5 chars
+  const match = value.match(/^(\d{1,2}:\d{2})/);
+  if (match) return match[1].padStart(5, "0");
+  // Fallback: try parsing as date
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  return value;
+}
+
+function getTodayStatus(hours: any[] = []) {
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
   const todayHours = hours.find(h => h.day === today);
   if (!todayHours || !todayHours.is_open) return { open: false, label: "Closed today" };
-  return { open: true, label: `Open today · ${todayHours.open_time} – ${todayHours.close_time}` };
+  return { open: true, label: `Open today · ${formatTime(todayHours.open_time)} – ${formatTime(todayHours.close_time)}` };
 }
 
 function StarRow({ rating, size = 14 }: { rating: number; size?: number }) {
@@ -172,7 +137,7 @@ function ShippingBadge({ type }: { type: string }) {
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-function ProductCard({ product }: { product: typeof MOCK_PRODUCTS[0] }) {
+function ProductCard({ product }: { product: { id: number; name: string; price: number | string; image?: string | null; available?: boolean } }) {
   const [liked, setLiked] = useState(false);
   return (
     <div
@@ -219,7 +184,7 @@ function ProductCard({ product }: { product: typeof MOCK_PRODUCTS[0] }) {
   );
 }
 
-function ReviewCard({ review }: { review: typeof MOCK_REVIEWS[0] }) {
+function ReviewCard({ review }: { review: { id: number; author: string; rating: number; date: string; comment: string } }) {
   return (
     <div className="bg-white rounded-2xl p-4" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
       <div className="flex items-start justify-between mb-2">
@@ -236,13 +201,28 @@ function ReviewCard({ review }: { review: typeof MOCK_REVIEWS[0] }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function StoreDetailsPage() {
-  const store = MOCK_STORE;
-  const [activeTab, setActiveTab] = useState<"listings" | "reviews" | "about">("listings");
-  const todayStatus = getTodayStatus(store.store_hours);
+  const { id } = useParams();
+  const [activeTab, setActiveTab] = useState<"listings" | "about">("listings");
 
+  const { data: storeData, isLoading } = useQuery({
+    queryKey: ["store-products", id],
+    queryFn: () => StoreService.getStoresById(id),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">Loading store...</div>
+    );
+  }
+
+  const store = storeData ?? {};
+  const todayStatus = getTodayStatus(store.store_hours || []);
+
+  const inventoryCount = (store.inventories || []).length;
   const tabs = [
-    { key: "listings", label: `Listings (${store.inventory_count})` },
-    { key: "reviews",  label: `Reviews (${store.review_count})` },
+    { key: "listings", label: `Listings (${inventoryCount})` },
+    // { key: "reviews",  label: `Reviews (${store.total_reviews ?? 0})` },
     { key: "about",    label: "About & Policy" },
   ] as const;
 
@@ -250,8 +230,6 @@ export default function StoreDetailsPage() {
     <div
       className="min-h-screen"
       style={{
-        background: "linear-gradient(160deg, #f4f8f5 0%, #e8f0e8 40%, #c8dac8 100%)",
-        fontFamily: "'Georgia', serif",
       }}
     >
       {/* Back nav */}
@@ -316,8 +294,8 @@ export default function StoreDetailsPage() {
 
           {/* Name + meta */}
           <div className="flex-1 pb-1">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h1 className="text-2xl font-bold text-gray-900" style={{ letterSpacing: "-0.02em" }}>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <h1 className="text-2xl font-bold text-white" style={{ letterSpacing: "-0.02em" }}>
                 {store.name}
               </h1>
               {store.is_verified && (
@@ -332,9 +310,9 @@ export default function StoreDetailsPage() {
             </div>
             <div className="flex items-center gap-3 flex-wrap" style={{ fontFamily: "sans-serif" }}>
               <div className="flex items-center gap-1.5">
-                <StarRow rating={store.rating} size={13} />
-                <span className="text-sm font-semibold text-gray-700">{store.rating.toFixed(2)}</span>
-                <span className="text-xs text-gray-400">({store.review_count} reviews)</span>
+                <StarRow rating={Number(store.rating) || 0} size={13} />
+                <span className="text-sm font-semibold text-gray-700">{(Number(store.rating) || 0).toFixed(2)}</span>
+                <span className="text-xs text-gray-400">({store.total_reviews ?? store.review_count ?? 0} reviews)</span>
               </div>
               <span className="text-gray-300">·</span>
               <span
@@ -346,7 +324,7 @@ export default function StoreDetailsPage() {
               <span className="text-gray-300">·</span>
               <span className="text-xs text-gray-500 flex items-center gap-1">
                 <Package className="w-3.5 h-3.5" />
-                {store.inventory_count} items available
+                {inventoryCount} items available
               </span>
             </div>
           </div>
@@ -399,25 +377,34 @@ export default function StoreDetailsPage() {
             {/* Listings */}
             {activeTab === "listings" && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {MOCK_PRODUCTS.map(p => <ProductCard key={p.id} product={p} />)}
+                {(store.inventories || []).map((inv: any) => {
+                  const prod = inv.product || {};
+                  const card = {
+                    id: prod.id ?? inv.inventory_id,
+                    name: prod.name ?? prod.title ?? "",
+                    price: inv.price ?? inv.sale_price ?? prod.price ?? 0,
+                    image: prod.image_urls?.thumbnail?.url || prod.image || null,
+                    available: Boolean(inv.active),
+                  };
+                  return <ProductCard key={card.id} product={card} />;
+                })}
               </div>
             )}
 
             {/* Reviews */}
-            {activeTab === "reviews" && (
+            {/* {activeTab === "reviews" && (
               <div className="space-y-3">
-                {/* Summary */}
                 <div
                   className="bg-white rounded-2xl p-5 flex items-center gap-6"
                   style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)", fontFamily: "sans-serif" }}
                 >
                   <div className="text-center">
-                    <p className="text-5xl font-bold text-gray-900" style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.03em" }}>
-                      {store.rating}
-                    </p>
-                    <StarRow rating={store.rating} size={16} />
-                    <p className="text-xs text-gray-400 mt-1">{store.review_count} reviews</p>
-                  </div>
+                      <p className="text-5xl font-bold text-gray-900" style={{ fontFamily: "Georgia, serif", letterSpacing: "-0.03em" }}>
+                        {Number(store.rating) || 0}
+                      </p>
+                      <StarRow rating={Number(store.rating) || 0} size={16} />
+                      <p className="text-xs text-gray-400 mt-1">{store.total_reviews ?? 0} reviews</p>
+                    </div>
                   <div className="flex-1 space-y-1.5">
                     {[5,4,3,2,1].map(n => (
                       <div key={n} className="flex items-center gap-2">
@@ -435,9 +422,9 @@ export default function StoreDetailsPage() {
                     ))}
                   </div>
                 </div>
-                {MOCK_REVIEWS.map(r => <ReviewCard key={r.id} review={r} />)}
+                {(store.reviews || []).map((r: any) => <ReviewCard key={r.id} review={r} />)}
               </div>
-            )}
+            )} */}
 
             {/* About */}
             {activeTab === "about" && (
@@ -508,14 +495,18 @@ export default function StoreDetailsPage() {
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#e6f4ea" }}>
                   <MapPin className="w-3.5 h-3.5" style={{ color: "#1a6b3a" }} />
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {store.address.address_line_1}
-                  {store.address.address_line_2 && `, ${store.address.address_line_2}`}
-                  <br />
-                  {store.address.city}, {store.address.state} {store.address.zip_code}
-                  <br />
-                  {store.address.country}
-                </p>
+                {store.address ? (
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {store.address.address_line_1}
+                    {store.address.address_line_2 && `, ${store.address.address_line_2}`}
+                    <br />
+                    {store.address.city}, {store.address.state} {store.address.zip_code}
+                    <br />
+                    {store.address.country}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-600 leading-relaxed">Address not provided</p>
+                )}
               </div>
             </div>
 
@@ -542,13 +533,13 @@ export default function StoreDetailsPage() {
                       }}
                     >
                       <span className="text-gray-600 capitalize">{day}</span>
-                      {hour?.is_open ? (
-                        <span style={{ color: "#1a6b3a" }}>
-                          {hour.open_time} – {hour.close_time}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">Closed</span>
-                      )}
+                            {hour?.is_open ? (
+                              <span style={{ color: "#1a6b3a" }}>
+                                {formatTime(hour.open_time)} – {formatTime(hour.close_time)}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">Closed</span>
+                            )}
                     </div>
                   );
                 })}
@@ -581,11 +572,11 @@ export default function StoreDetailsPage() {
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
                 style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)" }}
               >
-                {store.owner.name.charAt(0)}
+                {(store.owner?.name || store.owner?.username || "").charAt(0)}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">{store.owner.name}</p>
-                <p className="text-xs text-gray-400">Store owner · Member since {store.owner.joined}</p>
+                <p className="text-sm font-semibold text-gray-800">{store.owner?.name ?? store.owner?.username ?? "Store Owner"}</p>
+                <p className="text-xs text-gray-400">Store owner · Member since {store.owner?.joined ?? (store.owner?.created_at ? new Date(store.owner.created_at).getFullYear() : "—")}</p>
               </div>
             </div>
 

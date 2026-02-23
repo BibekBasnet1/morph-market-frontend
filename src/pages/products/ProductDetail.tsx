@@ -309,7 +309,7 @@ const {
           </div>
 
           {/* Store Link */}
-          <a href={`/store/${product.availability?.[0]?.store?.slug}`} className="block text-center bg-primary text-primary-foreground font-medium py-2 rounded-lg hover:bg-primary/90 transition">
+          <a href={`/stores/${product.availability?.[0]?.store?.id}`} className="block text-center bg-primary text-white font-medium py-2 rounded-lg hover:bg-primary/90 transition">
             Visit Store Profile →
           </a>
         </div>

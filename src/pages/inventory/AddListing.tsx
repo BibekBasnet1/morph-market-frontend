@@ -11,9 +11,9 @@ import { InventoryService } from "../../lib/api";
 import { toast } from "react-hot-toast";
 
 type InventoryItem = {
-  price: number;
-  sale_price?: number;
-  discount_price?: number;
+  price: number | string;
+  sale_price?: number | string;
+  discount_price?: number | string;
   discount_start_date?: string;
   discount_end_date?: string;
   stock: number;
@@ -231,7 +231,7 @@ const AddListingPage = () => {
       setInventoryData((prev) => ({
         ...prev,
         [productId]: {
-          price: product?.price || 0,
+          price: product?.price ? product.price : "",
           stock: 1,
           quantity: 1,
           active: true,
@@ -348,7 +348,7 @@ const AddListingPage = () => {
                         type="text"
                         value={item.price}
                         onChange={(e) =>
-                          updateItem(id, "price", +e.target.value)
+                          updateItem(id, "price", e.target.value ? +e.target.value : "")
                         }
                       />
                     </div>
