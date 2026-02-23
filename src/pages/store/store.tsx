@@ -36,6 +36,8 @@ const DEFAULT_STORE_HOURS = [
 export default function StoreRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string>("");
+  const [logoPreview, setLogoPreview] = useState<string>("");
 
   const user = useAuth();
 
@@ -160,6 +162,14 @@ const mergedHours = DEFAULT_STORE_HOURS.map((defaultHour) => {
         zip_code: store.address?.zip_code ?? "",
       },
     }));
+
+    // Prefill image previews from API response
+    if (store.image_urls?.cover_photo?.url) {
+      setCoverPhotoPreview(store.image_urls.cover_photo.url);
+    }
+    if (store.image_urls?.logo?.url) {
+      setLogoPreview(store.image_urls.logo.url);
+    }
   }, [existingStore, isStoreLoading]);
 
   // Use update mutation (store already exists)
@@ -662,11 +672,11 @@ const stateOptions = useMemo(() => {
               <div className="space-y-6">
                 <div>
                   <Label>Cover Photo</Label>
-                  {existingStore?.cover_photo && (
+                  {coverPhotoPreview && (
                     <div className="mb-2">
                       <p className="text-xs text-gray-500 mb-1">Current cover photo:</p>
                       <img
-                        src={existingStore.cover_photo}
+                        src={coverPhotoPreview}
                         alt="Current cover"
                         className="h-24 object-cover rounded-lg border"
                       />
@@ -681,7 +691,7 @@ const stateOptions = useMemo(() => {
                   {formData.cover_photo && (
                     <p className="mt-2 text-sm text-gray-600">New file: {formData.cover_photo.name}</p>
                   )}
-                  {!existingStore?.cover_photo && !formData.cover_photo && (
+                  {!coverPhotoPreview && !formData.cover_photo && (
                     <p className="text-xs text-gray-400 mt-1">No cover photo uploaded yet.</p>
                   )}
                   <ErrorMessage field="cover_photo" />
@@ -689,11 +699,11 @@ const stateOptions = useMemo(() => {
 
                 <div>
                   <Label>Logo</Label>
-                  {existingStore?.logo && (
+                  {logoPreview && (
                     <div className="mb-2">
                       <p className="text-xs text-gray-500 mb-1">Current logo:</p>
                       <img
-                        src={existingStore.logo}
+                        src={logoPreview}
                         alt="Current logo"
                         className="h-16 w-16 object-cover rounded-full border"
                       />
@@ -708,7 +718,7 @@ const stateOptions = useMemo(() => {
                   {formData.logo && (
                     <p className="mt-2 text-sm text-gray-600">New file: {formData.logo.name}</p>
                   )}
-                  {!existingStore?.logo && !formData.logo && (
+                  {!logoPreview && !formData.logo && (
                     <p className="text-xs text-gray-400 mt-1">No logo uploaded yet.</p>
                   )}
                   <ErrorMessage field="logo" />
