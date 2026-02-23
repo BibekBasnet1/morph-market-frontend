@@ -301,8 +301,8 @@ export interface ProductFilters {
   diet_id?: number;
   gender_id?: number;
   maturity_level_id?: number;
-  price_min?: number;
-  price_max?: number;
+  min_price?: number;
+  max_price?: number;
 }
 
 export interface InventoryItem {

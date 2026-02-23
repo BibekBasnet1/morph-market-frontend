@@ -160,9 +160,10 @@ const products = data?.data ?? [];
                 type="number"
                 placeholder="Min price"
                 className="w-24"
+                value={filters.min_price ?? ""}
                 onChange={(e) =>
                   updateFilters({
-                    price_min: Number(e.target.value) || undefined,
+                    min_price: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
               />
@@ -170,9 +171,10 @@ const products = data?.data ?? [];
                 type="number"
                 placeholder="Max price"
                 className="w-24"
+                value={filters.max_price ?? ""}
                 onChange={(e) =>
                   updateFilters({
-                    price_max: Number(e.target.value) || undefined,
+                    max_price: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
               />

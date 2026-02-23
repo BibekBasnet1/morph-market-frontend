@@ -183,17 +183,17 @@ const InventoryPage = () => {
     }
 
     // Apply price filters
-    if (filters.price_min !== undefined) {
+    if (filters.min_price !== undefined) {
       result = result.filter((it) => {
         const price = getPrice(it);
-        return price && Number(price) >= filters.price_min!;
+        return price && Number(price) >= filters.min_price!;
       });
     }
 
-    if (filters.price_max !== undefined) {
+    if (filters.max_price !== undefined) {
       result = result.filter((it) => {
         const price = getPrice(it);
-        return price && Number(price) <= filters.price_max!;
+        return price && Number(price) <= filters.max_price!;
       });
     }
 
@@ -286,10 +286,10 @@ const InventoryPage = () => {
                 type="number"
                 placeholder="Min price"
                 className="flex-1 sm:w-24"
-                value={filters.price_min ?? ""}
+                value={filters.min_price ?? ""}
                 onChange={(e) =>
                   updateFilters({
-                    price_min: e.target.value ? Number(e.target.value) : undefined,
+                    min_price: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
               />
@@ -297,10 +297,10 @@ const InventoryPage = () => {
                 type="number"
                 placeholder="Max price"
                 className="flex-1 sm:w-24"
-                value={filters.price_max ?? ""}
+                value={filters.max_price ?? ""}
                 onChange={(e) =>
                   updateFilters({
-                    price_max: e.target.value ? Number(e.target.value) : undefined,
+                    max_price: e.target.value ? Number(e.target.value) : undefined,
                   })
                 }
               />
