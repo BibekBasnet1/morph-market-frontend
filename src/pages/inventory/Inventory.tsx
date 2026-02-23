@@ -520,9 +520,9 @@ const InventoryPage = () => {
                               }}
                             />
                           )}
-                          <button className="p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                          {/* <button className="p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
                             <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </button>
+                          </button> */}
                         </div>
                       </div>
                     </div>
