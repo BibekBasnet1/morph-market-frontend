@@ -50,6 +50,19 @@ const InventoryPage = () => {
     return (item as any).sale_price || (item as any).price || item.product?.min_price || 0;
   };
 
+  // Helper to get a usable product image URL from API shape
+  const getProductImage = (product: any) => {
+    if (!product) return "";
+    // Prefer simple `image` prop if present, otherwise check `image_urls` shape
+    return (
+      product.image ||
+      product.image_urls?.thumbnail?.url ||
+      product.image_urls?.small?.url ||
+      product.image_urls?.original?.url ||
+      ""
+    );
+  };
+
   const { data: inventoriesRaw, isLoading } = useQuery({
     queryKey: ["inventories", "my-products"],
     queryFn: () => InventoryService.getAllPrivate(),
@@ -419,26 +432,29 @@ const InventoryPage = () => {
               {
                 key: "product",
                 header: "Product",
-                render: (item: InventoryItem) => (
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-14 bg-muted rounded overflow-hidden flex-shrink-0">
-                      {item.product?.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 dark:bg-gray-800
-                          flex items-center justify-center
-                          text-xs text-gray-500 dark:text-gray-400">
-                          No Image
-                        </div>
-                      )}
+                render: (item: InventoryItem) => {
+                  const img = getProductImage(item.product);
+                  return (
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-14 bg-muted rounded overflow-hidden flex-shrink-0">
+                        {img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={img} alt={item.product?.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 dark:bg-gray-800
+                            flex items-center justify-center
+                            text-xs text-gray-500 dark:text-gray-400">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.product?.name}</p>
+                        <p className="text-sm text-muted-foreground">{item.product?.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{item.product?.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.product?.description}</p>
-                    </div>
-                  </div>
-                ),
+                  );
+                },
               },
               {
                 key: "price",
@@ -472,12 +488,15 @@ const InventoryPage = () => {
                 border-gray-200 bg-white p-3 sm:p-4
                 dark:border-gray-700 dark:bg-gray-900">
                   <div className="w-full sm:w-24 h-20 rounded overflow-hidden bg-muted flex-shrink-0">
-                    {item.product?.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.product.image} alt={item.product?.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">No Image</div>
-                    )}
+                    {(() => {
+                      const img = getProductImage(item.product);
+                      return img ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={img} alt={item.product?.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">No Image</div>
+                      );
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
