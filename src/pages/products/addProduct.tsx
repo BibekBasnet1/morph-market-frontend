@@ -26,6 +26,19 @@ import { OriginService } from "../../lib/api/attributes/origin";
 import { GenderService } from "../../lib/api/attributes/gender";
 import { slugify } from "../../lib/slugify";
 
+const generateRandomId = () => {
+  try {
+    if (typeof crypto !== "undefined" && (crypto as any).randomUUID) {
+      return (crypto as any).randomUUID().replace(/-/g, "").slice(0, 8);
+    }
+  } catch (e) {
+    // fall through to fallback
+  }
+  return Math.random().toString(36).substring(2, 10);
+};
+
+const generateSlug = (name: string) => `${slugify(name)}-${generateRandomId()}`;
+
 const AddProductPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -55,7 +68,7 @@ const AddProductPage = () => {
 
   const handleChange = (key: string, value: any) => {
     if (key === "name") {
-      setForm((prev) => ({ ...prev, name: value, slug: slugify(value) }));
+      setForm((prev) => ({ ...prev, name: value, slug: generateSlug(value) }));
       return;
     }
     setForm((prev) => ({ ...prev, [key]: value }));

@@ -170,6 +170,7 @@ const AddListingPage = () => {
   });
 
   const products = data?.data ?? [];
+  console.log(products);
 
   const addMutation = useMutation({
     mutationFn: async () => {
@@ -209,7 +210,7 @@ const AddListingPage = () => {
       navigate("/inventory");
     },
     onError: () => {
-      toast.error("Failed to create inventory");
+      toast.error("");
     },
   });
 
