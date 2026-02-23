@@ -7,6 +7,7 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
+import Select from "../../components/ui/select";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Category } from "../../types";
@@ -24,6 +25,7 @@ const AddCategoriesPage = () => {
     name: "",
     slug: "",
     description: "",
+    parent_id: "",
     image: null as File | null,
     preview: "" as string
   });
@@ -39,6 +41,7 @@ const AddCategoriesPage = () => {
       name: category.name,
       slug: category.slug,
       description: category.description,
+      parent_id: (category as any).parent_id ? String((category as any).parent_id) : "",
       image: null,
       preview: (typeof category.image === 'string' ? category.image : "") || ""
     });
@@ -75,7 +78,7 @@ const AddCategoriesPage = () => {
     } catch (e) {
       // ignore
     }
-    setForm({ name: "", description: "", slug: "", image: null, preview: "" });
+    setForm({ name: "", description: "", slug: "", parent_id: "", image: null, preview: "" });
     setEditingId(null);
   };
 
@@ -93,6 +96,9 @@ const AddCategoriesPage = () => {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
+      if (form.parent_id) {
+        formData.append("parent_id", form.parent_id);
+      }
       if (form.image) formData.append("image", form.image);
 
       if (editingId) {
@@ -251,6 +257,21 @@ const AddCategoriesPage = () => {
             <Input
               value={form.name}
               onChange={e => handleChange("name", e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label>Parent Category (Top Category)</Label>
+            <Select
+              placeholder="None (Top-level category)"
+              options={categories
+                .filter((cat: Category) => !(cat as any).parent_id) // Only show top-level categories
+                .map((cat: Category) => ({
+                  value: String(cat.id),
+                  label: cat.name,
+                }))}
+              value={form.parent_id}
+              onChange={(value) => handleChange("parent_id", value || "")}
             />
           </div>
 

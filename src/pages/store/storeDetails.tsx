@@ -56,11 +56,8 @@ import {
   MapPin,
   Phone,
   Mail,
-  Globe,
   Clock,
   Package,
-  ChevronLeft,
-  ChevronRight,
   ArrowLeft,
   Truck,
   MessageCircle,
@@ -71,7 +68,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-// NOTE: The page now fetches store + products from the API endpoint
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const DAYS_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
@@ -233,7 +230,7 @@ export default function StoreDetailsPage() {
       }}
     >
       {/* Back nav */}
-      <div className="max-w-5xl mx-auto px-6 pt-6">
+      <div className=" mx-auto px-6 pt-6">
         <button
           className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-4"
           style={{ fontFamily: "sans-serif" }}
