@@ -12,7 +12,7 @@ const dietImages: Record<string, string> = {
 }
 
 export function FeaturedListings() {
-  const { data: dietsData = [] } = useQuery({
+  const { data: dietsData = [] } = useQuery<any>({
     queryKey: ["diets"],
     queryFn: DietService.getAllPublic,
   })

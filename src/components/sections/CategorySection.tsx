@@ -24,7 +24,7 @@ const CategorySection = () => {
   });
 
   // Handle both array and paginated response
-  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
+  const categories = Array.isArray(categoriesData) ? categoriesData : ((categoriesData as any)?.data || []);
 
   // Helper to get category image URL from API
   const getCategoryImage = (category: any) => {

@@ -1,51 +1,4 @@
-// import { useParams } from "react-router-dom";
-// import { useQuery } from "@tanstack/react-query";
-// import { StoreService } from "../../lib/api/stores";
 
-
-// export default function StoreDetails() {
-//   const { id } = useParams();
-
-//   const { data: products = [], isLoading } = useQuery({
-//     queryKey: ["store-products", id],
-//     queryFn: () => StoreService.getStoresById(id),
-//     enabled: !!id,
-//   });
-
-//   if (isLoading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center">
-//         Loading store...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-b from-[#f3f6f4] to-[#dfe8df] px-6 py-10">
-//       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow p-8">
-//         <h2 className="text-2xl font-bold mb-6">Store Products</h2>
-
-//         {products.length === 0 ? (
-//           <p className="text-gray-500">No products found.</p>
-//         ) : (
-//           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-//             {products.map((product: any) => (
-//               <div
-//                 key={product.id}
-//                 className="border rounded-xl p-4 hover:shadow-md transition"
-//               >
-//                 <h3 className="font-semibold">{product.name}</h3>
-//                 <p className="text-sm text-gray-500 mt-1">
-//                   Rs. {product.price}
-//                 </p>
-//               </div>
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -58,9 +11,7 @@ import {
   Mail,
   Clock,
   Package,
-  ArrowLeft,
   Truck,
-  MessageCircle,
   Share2,
   Heart,
   AlertCircle,
@@ -203,7 +154,7 @@ export default function StoreDetailsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"listings" | "about">("listings");
 
-  const { data: storeData, isLoading } = useQuery({
+  const { data: storeData, isLoading } = useQuery<any>({
     queryKey: ["store-products", id],
     queryFn: () => StoreService.getStoresById(id),
     enabled: !!id,
@@ -520,7 +471,7 @@ export default function StoreDetailsPage() {
               </div>
               <div className="space-y-1.5">
                 {DAYS_ORDER.map(day => {
-                  const hour = store.store_hours.find(h => h.day === day);
+                  const hour = store.store_hours.find((h:any) => h.day === day);
                   const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase() === day;
                   return (
                     <div

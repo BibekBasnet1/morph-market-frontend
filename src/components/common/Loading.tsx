@@ -11,7 +11,7 @@ const Loading = () => {
           🦎
         </div>
       </div>
-      
+
       {/* Engaging Text */}
       <div className="mt-8 flex flex-col items-center">
         <h2 className="text-xl font-bold text-slate-800 tracking-tight">Ready to Pet?</h2>
