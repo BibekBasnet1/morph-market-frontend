@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
 import Select from "../../components/ui/select";
+import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Category } from "../../types";
@@ -19,6 +20,7 @@ const AddCategoriesPage = () => {
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -82,10 +84,19 @@ const AddCategoriesPage = () => {
     setEditingId(null);
   };
 
-  const { data: categories = [], isLoading } = useQuery({
-    queryKey: ["categories"],
+  const { data: categoriesData, isLoading } = useQuery({
+    queryKey: ["categories", page],
+    queryFn: () => CategoryService.getAllPaginated({ page }),
+  });
 
-    queryFn: CategoryService.getAllPublic,
+  // Extract categories array and pagination info
+  const categories = categoriesData?.data ?? [];
+  const totalPages = categoriesData?.last_page ?? 1;
+
+  // Fetch all categories for the parent category dropdown (non-paginated)
+  const { data: allCategories = [] } = useQuery({
+    queryKey: ["allCategories"],
+    queryFn: CategoryService.getAll,
   });
 
 
@@ -216,6 +227,15 @@ const AddCategoriesPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
+
       <Modal
         isOpen={deleteId !== null}
         onClose={closeDeleteModal}
@@ -264,7 +284,7 @@ const AddCategoriesPage = () => {
             <Label>Parent Category (Top Category)</Label>
             <Select
               placeholder="None (Top-level category)"
-              options={categories
+              options={allCategories
                 .filter((cat: Category) => !(cat as any).parent_id) // Only show top-level categories
                 .map((cat: Category) => ({
                   value: String(cat.id),

@@ -1,14 +1,33 @@
 import api from "../client"; // axios instance with interceptors
 import type { Diet } from "../../../types";
 
+type GetAllParams = {
+  page?: number;
+};
+
 export const DietService = {
   async getAll(): Promise<Diet[]> {
     const res = await api.get("/admin/diets");
     return res.data.data.data;
   },
-    async getAllPublic(): Promise<Diet[]> {
+
+  async getAllPaginated({ page = 1 }: GetAllParams = {}) {
+    const res = await api.get("/admin/diets", {
+      params: { page },
+    });
+    return res.data.data;
+  },
+
+  async getAllPublic(): Promise<Diet[]> {
     const res = await api.get("/diets");
     return res.data.data.data;
+  },
+
+  async getAllPublicPaginated({ page = 1 }: GetAllParams = {}) {
+    const res = await api.get("/diets", {
+      params: { page },
+    });
+    return res.data.data;
   },
 
   create: async (payload: FormData): Promise<Diet> => {

@@ -1,15 +1,33 @@
 import api from "../client"; // axios instance with interceptors
 import type { Origin } from "../../../types";
 
+type GetAllParams = {
+  page?: number;
+};
+
 export const OriginService = {
   async getAll(): Promise<Origin[]> {
     const res = await api.get("/admin/origins");
     return res.data.data.data;
   },
 
-    async getAllPublic(): Promise<Origin[]> {
+  async getAllPaginated({ page = 1 }: GetAllParams = {}) {
+    const res = await api.get("/admin/origins", {
+      params: { page },
+    });
+    return res.data.data;
+  },
+
+  async getAllPublic(): Promise<Origin[]> {
     const res = await api.get("/origins");
     return res.data.data.data;
+  },
+
+  async getAllPublicPaginated({ page = 1 }: GetAllParams = {}) {
+    const res = await api.get("/origins", {
+      params: { page },
+    });
+    return res.data.data;
   },
 
   create: async (payload: FormData): Promise<Origin> => {

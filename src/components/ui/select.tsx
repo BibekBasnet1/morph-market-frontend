@@ -1,3 +1,7 @@
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+
 interface Option {
   value: string;
   label: string;
@@ -11,7 +15,7 @@ interface SelectProps {
   className?: string;
   defaultValue?: string;
   disabled?: boolean;
-  
+  searchable?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -20,38 +24,81 @@ const Select: React.FC<SelectProps> = ({
   placeholder = "Select an option",
   onChange,
   className = "",
-  // defaultValue="",
+  disabled = false,
+  searchable = true,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.target.value); // Directly notify parent
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredOptions = options.filter(option =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const selectedLabel = options.find(opt => opt.value === value)?.label || placeholder;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSearchTerm("");
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      searchInputRef.current?.focus();
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsOpen(false);
+      setSearchTerm("");
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex(prev =>
+        prev < filteredOptions.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
+        handleSelect(filteredOptions[highlightedIndex].value);
+      }
+    }
+  };
+
+  const handleSelect = (selectedValue: string) => {
+    onChange(selectedValue);
+    setIsOpen(false);
+    setSearchTerm("");
+    setHighlightedIndex(-1);
   };
 
   return (
-    <div className="relative">
-      <select
-        className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-green-300 focus:outline-hidden focus:ring-3 focus:ring-green-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-green-800 ${
+    <div ref={containerRef} className="relative w-full">
+      <button
+        onClick={() => {
+          if (!disabled) {
+            setIsOpen(!isOpen);
+            setHighlightedIndex(-1);
+          }
+        }}
+        disabled={disabled}
+        className={`h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-green-300 focus:outline-hidden focus:ring-3 focus:ring-green-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-green-800 ${
           value ? "text-gray-800 dark:text-white/90" : "text-gray-400 dark:text-gray-400"
-        } ${className}`}
-        value={value}  // <-- controlled by parent
-        onChange={handleChange}
+        } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} text-left transition-all ${className}`}
       >
-        <option
-          value=""
-          disabled
-          className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-        >
-          {placeholder}
-        </option>
-        {options.map(option => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-          >
-            {option.label}
-          </option>
-        ))}
-      </select>
+        {selectedLabel}
+      </button>
+
       <svg
         className="absolute text-gray-700 dark:text-gray-400 right-3 top-1/2 -translate-y-1/2 pointer-events-none"
         width="20"
@@ -68,9 +115,52 @@ const Select: React.FC<SelectProps> = ({
           strokeLinejoin="round"
         />
       </svg>
+
+      {isOpen && !disabled && (
+        <div className="absolute z-50 w-full mt-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg">
+          {searchable && (
+            <div className="p-2 border-b border-gray-200 dark:border-gray-700">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={e => {
+                  setSearchTerm(e.target.value);
+                  setHighlightedIndex(-1);
+                }}
+                onKeyDown={handleKeyDown}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:text-white"
+              />
+            </div>
+          )}
+
+          <ul className="max-h-60 overflow-y-auto">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option, index) => (
+                <li
+                  key={option.value}
+                  onClick={() => handleSelect(option.value)}
+                  className={`px-4 py-2.5 text-sm cursor-pointer transition-colors ${
+                    index === highlightedIndex || value === option.value
+                      ? "bg-green-100 dark:bg-green-900/30 text-gray-900 dark:text-white font-medium"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                >
+                  {option.label}
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400">
+                No options found
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
-
 
 export default Select;

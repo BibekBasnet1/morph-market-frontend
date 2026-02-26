@@ -24,6 +24,8 @@ import { useNavigate } from "react-router";
 const AllProductsPage = () => {
   const [filters, setFilters] = useState<ProductFilters>({});
   const debouncedSearch = useDebounce(filters.search, 1000);
+  const debouncedMinPrice = useDebounce(filters.min_price, 1000);
+  const debouncedMaxPrice = useDebounce(filters.max_price, 1000);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
@@ -55,11 +57,11 @@ const {
   data,
   isLoading,
 } = useQuery({
-  queryKey: ["products", page, { ...filters, search: debouncedSearch }],
+  queryKey: ["products", page, { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice }],
   queryFn: () =>
     ProductService.getAllPublic({
       page,
-       filters: { ...filters, search: debouncedSearch },
+       filters: { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice },
     }),
     // placeholderData: (prev) => prev,
       enabled: ready,

@@ -7,6 +7,7 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
+import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Maturity } from "../../types";
@@ -19,6 +20,7 @@ const AddMaturityPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -66,10 +68,14 @@ const AddMaturityPage = () => {
     setEditingId(null);
   };
 
-  const { data: maturities = [], isLoading } = useQuery({
-    queryKey: ["maturities"],
-    queryFn: MaturityService.getAll,
+  const { data: maturitiesData, isLoading } = useQuery({
+    queryKey: ["maturities", page],
+    queryFn: () => MaturityService.getAllPaginated({ page }),
   });
+
+  // Extract maturities array and pagination info
+  const maturities = maturitiesData?.data ?? [];
+  const totalPages = maturitiesData?.last_page ?? 1;
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -197,6 +203,14 @@ const AddMaturityPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
 
       <Modal
         isOpen={deleteId !== null}

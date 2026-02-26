@@ -128,6 +128,8 @@ const InventoryPage = () => {
 
   const [filters, setFilters] = useState<ProductFilters>({});
   const debouncedSearch = useDebounce(filters.search, 1000);
+    const debouncedMinPrice = useDebounce(filters.min_price, 1000);
+  const debouncedMaxPrice = useDebounce(filters.max_price, 1000);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const updateFilters = (payload: Partial<ProductFilters>) => {
@@ -183,22 +185,22 @@ const InventoryPage = () => {
     }
 
     // Apply price filters
-    if (filters.min_price !== undefined) {
+    if (debouncedMinPrice !== undefined) {
       result = result.filter((it) => {
         const price = getPrice(it);
-        return price && Number(price) >= filters.min_price!;
+        return price && Number(price) >= debouncedMinPrice!;
       });
     }
 
-    if (filters.max_price !== undefined) {
+    if (debouncedMaxPrice !== undefined) {
       result = result.filter((it) => {
         const price = getPrice(it);
-        return price && Number(price) <= filters.max_price!;
+        return price && Number(price) <= debouncedMaxPrice!;
       });
     }
 
     return result;
-  }, [normalized, debouncedSearch, filters]);
+  }, [normalized, debouncedSearch, debouncedMinPrice, debouncedMaxPrice, filters]);
 
   if (isLoading) {
     return (

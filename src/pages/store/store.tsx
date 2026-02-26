@@ -57,7 +57,7 @@ export default function StoreRegistrationForm() {
   });
 
   const countryOptions = countries.map((c: any) => ({
-    value: c.id,
+    value: c.id.toString(),
     label: c.name,
   }));
 
@@ -81,8 +81,8 @@ export default function StoreRegistrationForm() {
     shipping_type: "national",
     store_hours: DEFAULT_STORE_HOURS,
     address: {
-      country_id: "",
-      state_id: "",
+      country_id: 0,
+      state_id: 0,
       address_line_1: "",
       address_line_2: "",
       city: "",
@@ -341,7 +341,7 @@ const handleSubmit = () => {
 
   // Address
   Object.entries(formData.address).forEach(([key, val]) => {
-    formDataToSend.append(`address[${key}]`, val ?? "");
+    formDataToSend.append(`address[${key}]`, String(val ?? ""));
   });
 
   updateMutation.mutate(formDataToSend);
@@ -356,7 +356,7 @@ const { data: states = [], isLoading: isStatesLoading } = useQuery({
 
 const stateOptions = useMemo(() => {
   return states.map((state: any) => ({
-    value: state.id,
+    value: state.id.toString(),
     label: state.name,
   }));
 }, [states]);
@@ -525,7 +525,7 @@ const stateOptions = useMemo(() => {
                     ) : (
                       <Select
                         options={countryOptions}
-                        value={formData.address.country_id}
+                        value={String(formData.address.country_id)}
                         placeholder="Select a country"
                         onChange={(val: any) => handleAddressChange("country_id", val)}
                       />
@@ -542,8 +542,8 @@ const stateOptions = useMemo(() => {
                     ) : (
                       <Select
                         options={stateOptions}
-                        value={formData.address.state_id}
-                        // placeholder={isStatesLoading ? "Select a state" : "Select a state"}
+                        value={String(formData.address.state_id)}
+                        //placeholder={isStatesLoading ? "Select a state" : "Select a state"}
                         placeholder="Select a state"
                         onChange={(val: any) => handleAddressChange("state_id", val)}
                         disabled={isStatesLoading}

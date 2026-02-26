@@ -7,6 +7,7 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
+import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 import { DietService } from "../../lib/api/attributes/diet";
 import { slugify } from "../../lib/slugify";
@@ -36,6 +37,7 @@ const AddDietPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -83,13 +85,14 @@ const AddDietPage = () => {
     setEditingId(null);
   };
 
-  const { data: dietsData = [], isLoading } = useQuery({
-    queryKey: ["diets"],
-    queryFn: DietService.getAll,
+  const { data: dietsData, isLoading } = useQuery({
+    queryKey: ["diets", page],
+    queryFn: () => DietService.getAllPaginated({ page }),
   });
 
-  // Handle both array and paginated response
-  const diets = Array.isArray(dietsData) ? dietsData : (dietsData?.data || []);
+  // Extract diets array and pagination info
+  const diets = dietsData?.data ?? [];
+  const totalPages = dietsData?.last_page ?? 1;
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -228,6 +231,14 @@ const AddDietPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
 
       <Modal
         isOpen={deleteId !== null}

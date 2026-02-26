@@ -36,5 +36,5 @@ async getAllStores(): Promise<StoreForm[]> {
       async getStoresById(storeId:any): Promise<StoreForm[]> {
     const res = await api.get(`/stores/${storeId}/products`);
     return res.data.data;
-  },
+},
 };

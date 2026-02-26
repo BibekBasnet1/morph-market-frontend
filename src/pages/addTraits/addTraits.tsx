@@ -7,6 +7,7 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
+import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Trait } from "../../types";
@@ -21,6 +22,7 @@ const AddTraitsPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -74,10 +76,14 @@ const AddTraitsPage = () => {
     setEditingId(null);
   };
 
-  const { data: traits = [], isLoading } = useQuery({
-    queryKey: ["traits"],
-    queryFn: TraitsService.getAll,
+  const { data: traitsData, isLoading } = useQuery({
+    queryKey: ["traits", page],
+    queryFn: () => TraitsService.getAllPaginated({ page }),
   });
+
+  // Extract traits array and pagination info
+  const traits = traitsData?.data ?? [];
+  const totalPages = traitsData?.last_page ?? 1;
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -211,6 +217,14 @@ const AddTraitsPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
 
       <Modal
         isOpen={deleteId !== null}

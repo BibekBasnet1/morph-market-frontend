@@ -7,6 +7,7 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
+import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Origin } from "../../types";
@@ -19,6 +20,7 @@ const AddOriginPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({

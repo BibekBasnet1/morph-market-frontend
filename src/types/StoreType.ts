@@ -16,8 +16,8 @@ export interface StoreForm {
   logo: File | null;
   store_hours: { day: string; open_time: string; close_time: string; is_open: boolean }[];
   address: {
-    country_id: string;
-    state_id: string;
+    country_id: number;
+    state_id: number;
     address_line_1: string;
     address_line_2: string;
     city: string;
