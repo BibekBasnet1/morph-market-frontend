@@ -270,8 +270,8 @@ const BuyerOrders = () => {
     placeholderData: (prev) => prev,
   });
 
-  const orders = data?.data ?? [];
-  const meta = data?.meta;
+  const orders = data?.data?.data ?? [];
+  const meta = data?.data;
 
   return (
     <div className=" mx-auto px-4 py-8">
@@ -320,7 +320,7 @@ const BuyerOrders = () => {
           {!isLoading && !error && orders.length > 0 && (
             <>
               <div className="space-y-3">
-                {orders.map((order:any) => (
+                {orders?.map((order:any) => (
                   <OrderCard key={order.id} order={order} />
                 ))}
               </div>

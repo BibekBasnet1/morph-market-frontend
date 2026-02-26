@@ -263,18 +263,31 @@ const Pagination = ({ currentPage, lastPage, total, from, to, onPageChange }: Pa
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const BuyerOrders = () => {
+  console.log("🔷 BuyerOrders component mounted");
   const [page, setPage] = useState(1);
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  console.log("🔷 About to call useQuery");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["buyer-orders", page],
-    queryFn: () => OrderService.getBuyerOrders(page),
+    queryFn: () => {
+      console.log("🔷 Calling OrderService.getBuyerOrders");
+      return OrderService.getBuyerOrders(page);
+    },
     placeholderData: (prev) => prev,
   });
 
-  const orders = data?.data ?? [];
-  const meta = data?.meta;
+  console.log("🔷 Full response data:", data);
+  console.log("🔷 isLoading:", isLoading);
+  console.log("🔷 error:", error);
+
+  const orders = data?.data?.data ?? [];
+  const meta = data?.data;
+
+  console.log("🔷 Extracted orders:", orders);
+  console.log("🔷 Extracted meta:", meta);
+  console.log("🔷 orders.length:", orders.length);
 
   return (
     <div className=" mx-auto h-full">

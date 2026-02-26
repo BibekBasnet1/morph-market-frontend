@@ -164,10 +164,11 @@ const Navbar: React.FC = () => {
             {/* Right nav hamburger — smaller screens only */}
             <button
               onClick={() => setNavDrawerOpen((v) => !v)}
-              className="xl:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-gray-500 border border-gray-200 rounded-lg dark:border-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="xl:hidden flex items-center justify-center text-gray-500 border border-gray-200 p-2 rounded-md dark:border-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-5 h-5" />
+              {/* <Menu className="w-5 h-5" /> */}
+              MENU
             </button>
           </div>
         </div>

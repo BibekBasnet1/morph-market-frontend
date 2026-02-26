@@ -14,7 +14,7 @@ const Loading = () => {
       
       {/* Engaging Text */}
       <div className="mt-8 flex flex-col items-center">
-        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Incubating Results...</h2>
+        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Ready to Pet?</h2>
         <p className="text-slate-500 text-sm animate-pulse">Checking the heat mats</p>
       </div>
     </div>

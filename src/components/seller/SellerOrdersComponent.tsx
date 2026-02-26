@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { OrderService, type Order } from "../../lib/api/orders";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 import {
   ShoppingBag,
   ChevronLeft,
@@ -17,7 +17,7 @@ import {
   ReceiptText,
   ArrowRight,
 } from "lucide-react";
-import Spinner from "../../components/ui/spinner";
+import Spinner from "../ui/spinner";
 import { useNavigate } from "react-router-dom";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -262,19 +262,20 @@ const Pagination = ({ currentPage, lastPage, total, from, to, onPageChange }: Pa
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const SellerOrders = () => {
+const SellerOrdersComponent = () => {
   const [page, setPage] = useState(1);
 const navigate = useNavigate();
 
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["buyer-orders", page],
+    queryKey: ["seller-orders", page],
     queryFn: () => OrderService.getSellerOrders(page),
     placeholderData: (prev) => prev,
   });
 
-  const orders = data?.data ?? [];
-  const meta = data?.meta;
+  // API response: { success, message, data: { current_page, data: Order[], ... } }
+  const orders = data?.data?.data ?? [];
+  const meta = data?.data;
 
   return (
     <div className=" mx-auto h-full">
@@ -290,7 +291,7 @@ const navigate = useNavigate();
               variant="ghost"
               size="sm"
               className="text-sm w-[100px] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              onClick={() => navigate("/orders")}
+              onClick={() => navigate("/seller/orders")}
             >
               View All
               <ArrowRight className="w-4 h-4 ml-1" />
@@ -359,4 +360,4 @@ const navigate = useNavigate();
   );
 };
 
-export default SellerOrders;
+export default SellerOrdersComponent;

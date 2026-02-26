@@ -177,9 +177,9 @@ const App = () => {
               },
               loading: {
                 style: {
-                  background: '#3b82f6',
+                  background: '#10b981',
                   color: '#ffffff',
-                  border: '1px solid #2563eb',
+                  border: '1px solid #059669',
                 },
               },
             }}

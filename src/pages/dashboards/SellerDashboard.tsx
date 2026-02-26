@@ -1,5 +1,5 @@
 import BuyerActivityLogs from "../../components/buyer/ActivityLogs";
-import SellerOrders from "../../components/buyer/SellerOrders";
+import SellerOrdersComponent from "../../components/seller/SellerOrdersComponent";
 
 const SellerDashboard = () => {
   return (
@@ -11,7 +11,7 @@ const SellerDashboard = () => {
         <BuyerActivityLogs />
       </div>
           <div className="col-span-12 md:col-span-6 h-full">
-        <SellerOrders />
+        <SellerOrdersComponent />
       </div>
       
 </section>
