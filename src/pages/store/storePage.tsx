@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { StoreService } from "../../lib/api/stores";
+import SkeletonCards from "../../components/ui/skeleton/SkeletonCards";
 
-export default function StoreDirectory() {
+export default function Shops() {
   const navigate = useNavigate();
 
   const { data: stores = [], isLoading } = useQuery({
@@ -12,16 +13,14 @@ export default function StoreDirectory() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading stores...
-      </div>
+      <SkeletonCards />
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f3f6f4] to-[#dfe8df] px-4 sm:px-8 py-10">
       <div className="max-w-7xl mx-auto mb-10">
-        <h1 className="text-3xl font-bold text-gray-800">Store Directory</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Shops</h1>
         <p className="text-gray-500 mt-2">
           Discover and connect with amazing stores.
         </p>

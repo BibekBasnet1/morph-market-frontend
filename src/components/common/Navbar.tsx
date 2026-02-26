@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
 
   const navLinks = [
     { to: "/", label: "Home" },
-    // { to: "/shop", label: "Shop" },
+    { to: "/store-directory", label: "Shop" },
     // { to: "/about", label: "About" },
     // { to: "/contact", label: "Contact" },
   ];

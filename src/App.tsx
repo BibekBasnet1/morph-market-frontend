@@ -14,6 +14,7 @@ import ActivityLogsPage from "./pages/activityLog/activityLog";
 // import StoreDetails from "./pages/store/storeDetails";
 import StoreDetailsPage from "./pages/store/storeDetails";
 import StoreRegistrationForm from "./pages/store/store";
+import Shops from "./pages/store/storePage";
 
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
@@ -61,6 +62,8 @@ const AppRoutes = () => {
     { path: "/products/:slug/details", load: ProductDetailsImmersive },
     { path: "/store", load: StoreRegistrationForm },
     { path: "/stores/:id/products", load: StoreDetailsPage },
+    { path: "/store-directory", load: Shops },
+
 
   ];
 
