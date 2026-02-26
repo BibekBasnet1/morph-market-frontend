@@ -170,7 +170,7 @@ const AddMaturityPage = () => {
       )}
 
       <div className="grid gap-4">
-        {maturities.map(maturity => (
+        {maturities.map((maturity:any) => (
           <Card key={maturity.id}>
             <CardContent className="p-4 flex items-start justify-between">
               <div>
@@ -283,14 +283,20 @@ const AddMaturityPage = () => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="secondary" onClick={closeModal}>
+            <Button variant="secondary" onClick={closeModal} disabled={saveMutation.isPending}>
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={saveMutation.isPending}
             >
-              {editingId ? "Update" : "Create"}
+              {saveMutation.isPending
+                ? editingId
+                  ? "Updating..."
+                  : "Creating..."
+                : editingId
+                ? "Update"
+                : "Create"}
             </Button>
           </div>
         </div>

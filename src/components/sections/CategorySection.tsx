@@ -53,7 +53,7 @@ const CategorySection = () => {
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.slice(0,8).map((category: any) => (
             <Card
               key={category.id}
@@ -77,7 +77,7 @@ const CategorySection = () => {
 
                 {/* Text */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-2xl font-serif font-semibold text-white mb-1">
+                  <h3 className="text-lg lg:text-2xl font-serif font-semibold text-white mb-1">
                     {category.name}
                   </h3>
                   <p className="text-sm text-white/80">

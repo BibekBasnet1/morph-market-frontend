@@ -170,7 +170,7 @@ const AddTagsPage = () => {
       )}
 
       <div className="grid gap-4">
-        {tags.map(tag => (
+        {tags.map((tag:any) => (
           <Card key={tag.id}>
             <CardContent className="p-4 flex items-center justify-between">
               <div>
@@ -283,14 +283,20 @@ const AddTagsPage = () => {
           </div> */}
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="secondary" onClick={closeModal}>
+            <Button variant="secondary" onClick={closeModal} disabled={saveMutation.isPending}>
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={saveMutation.isPending}
             >
-              {editingId ? "Update" : "Create"}
+              {saveMutation.isPending
+                ? editingId
+                  ? "Updating..."
+                  : "Creating..."
+                : editingId
+                ? "Update"
+                : "Create"}
             </Button>
           </div>
         </div>

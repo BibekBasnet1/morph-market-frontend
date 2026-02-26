@@ -7,7 +7,6 @@ import Label from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Textarea } from "../../components/ui/textArea";
-import Pagination from "../../components/common/Pagination";
 import { Trash2, Edit } from "lucide-react";
 
 import type { Origin } from "../../types";
@@ -271,14 +270,20 @@ const AddOriginPage = () => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="secondary" onClick={closeModal}>
+            <Button variant="secondary" onClick={closeModal} disabled={saveMutation.isPending}>
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={saveMutation.isPending}
             >
-              {editingId ? "Update" : "Create"}
+              {saveMutation.isPending
+                ? editingId
+                  ? "Updating..."
+                  : "Creating..."
+                : editingId
+                ? "Update"
+                : "Create"}
             </Button>
           </div>
         </div>

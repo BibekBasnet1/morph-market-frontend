@@ -102,7 +102,7 @@ const HeroSection = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-primary font-medium tracking-widest uppercase text-sm animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                Premier Reptile Marketplace
+                Premium Reptile Marketplace
               </p>
               {/* <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight animate-fade-in" style={{ animationDelay: "0.4s" }}>
                 Find Your Perfect
@@ -135,11 +135,11 @@ const HeroSection = () => {
             </div> */}
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link to="/marketplace">
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/80 text-lg px-8">
+                <Button size="lg" className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/80 text-lg px-8">
                   Browse Snakes
                 </Button>
                   </Link>
-                <Button size="lg" variant="outline" className="text-lg px-8 hover:bg-white hover:text-black">
+                <Button size="lg" className="text-lg px-8 bg-yellow-200 text-black">
                   Become a Seller
                 </Button>
               </div>

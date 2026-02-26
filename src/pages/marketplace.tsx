@@ -7,6 +7,7 @@ import { Card, CardContent } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import Select from "../components/ui/select";
+import { Skeleton } from "../components/ui/skeleton";
 
 import { ProductService } from "../lib/api/products";
 import { CategoryService } from "../lib/api";
@@ -17,6 +18,7 @@ import { DietService } from "../lib/api/attributes/diet";
 import type { ProductFilters } from "../types";
 import { useDebounce } from "../hooks/useDebounce";
 import { useNavigate } from "react-router";
+import SkeletonCards from "../components/ui/skeleton/SkeletonCards";
 
 
 /* ----------------------------- Component ----------------------------- */
@@ -321,11 +323,9 @@ const products = data?.data ?? [];
 )}
 
 
-      {/* Loading */}
+{/* Loading skeletons */}
       {isLoading && (
-        <p className="text-sm text-muted-foreground">
-          Loading products...
-        </p>
+        <SkeletonCards/>
       )}
 
 <div className="grid gap-4 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
