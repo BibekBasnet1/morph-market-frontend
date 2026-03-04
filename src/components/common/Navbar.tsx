@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Heart, ShoppingCart, User, Search, X, Menu, Settings, LogOut, Castle } from "lucide-react";
+import { useCart } from "../../hooks/useCart";
 
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useAuth } from "../../contexts/AuthContext";
@@ -17,6 +18,8 @@ const Navbar: React.FC = () => {
   const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar();
   const { user, logout } = useAuth();
   const isAuthenticated = !!user;
+
+  const { count: cartCount } = useCart();
 
   const handleSidebarToggle = () => {
     if (window.innerWidth >= 1280) {
@@ -135,10 +138,15 @@ const Navbar: React.FC = () => {
               <Heart className="h-5 w-5 text-gray-500 hover:text-red-500" />
             </Button>
 
-            <Link to="/cart" className="hidden xl:block">
+            <Link to="/cart" className="hidden xl:block relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5 text-gray-500 hover:text-blue-500" />
               </Button>
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             <ThemeToggleButton />
@@ -267,6 +275,11 @@ const Navbar: React.FC = () => {
                 >
                   <ShoppingCart className="w-4 h-4 text-gray-400" />
                   Cart
+                  {cartCount > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
                 </Link>
               </li>
               <li>

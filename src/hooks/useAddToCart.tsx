@@ -50,6 +50,8 @@ export const useAddToCart = () => {
     }
 
     localStorage.setItem("cart-products", JSON.stringify(existing));
+    // notify listeners (navbar, others) that the cart changed in this tab
+    window.dispatchEvent(new Event("cart-updated"));
   };
 
   const addToCartMutation = useMutation({
@@ -71,14 +73,31 @@ export const useAddToCart = () => {
     product: ProductDetails;
     price: number;
   }) => {
+    // prevent duplicates even if button logic missed it
     const payload: AddToCartPayload = {
       product_id: product.id,
       quantity: 1,
     };
 
     if (isGuestUser()) {
+      const existing: any[] = JSON.parse(
+        localStorage.getItem("cart-products") || "[]"
+      );
+      if (existing.find((i) => i.product_id === product.id)) {
+        toast("Already in cart");
+        return;
+      }
+
       addToLocalCart({ product, price });
       toast.success("Added to cart");
+      return;
+    }
+
+    // check api cache
+    const cached: any[] =
+      (queryClient.getQueryData(["carts"]) as any[] | undefined) || [];
+    if (cached.find((i) => i.product_id === product.id)) {
+      toast("Already in cart");
       return;
     }
 

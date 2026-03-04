@@ -74,6 +74,7 @@ console.log("Carts:", carts);
       );
       setLocalCarts(updated);
       saveLocalCarts(updated);
+      window.dispatchEvent(new Event("cart-updated"));
       return;
     }
 
@@ -93,6 +94,7 @@ console.log("Carts:", carts);
       const updated = localCarts.filter((c) => c.id !== item.id);
       setLocalCarts(updated);
       saveLocalCarts(updated);
+      window.dispatchEvent(new Event("cart-updated"));
       toast.success("Item removed");
       return;
     }

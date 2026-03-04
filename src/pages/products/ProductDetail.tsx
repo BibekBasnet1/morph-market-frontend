@@ -8,12 +8,14 @@ import { Star, Clock, Shield } from 'lucide-react';
 import PaymentMethodsModal from '../../components/payments/PaymentMethodsModal';
 import { useAddToCart } from "../../hooks/useAddToCart";
 import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../hooks/useCart";
 
 const ProductDetailsPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { handleAddToCart, addToCartMutation } = useAddToCart();
+  const { carts, removeFromCart, removing } = useCart();
   const [showPayment, setShowPayment] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -219,12 +221,31 @@ const {
                 Recently Listed
               </span>
 
-              <Button
-                onClick={() => handleAddToCart({ product, price })}
-                disabled={addToCartMutation.isPending}
-              >
-                {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
-              </Button>
+              {(() => {
+                const inCart = carts.some((c) => c.product_id === product.id);
+                return (
+                  <Button
+                    variant={inCart ? "destructive" : "primary"}
+                    onClick={() =>
+                      inCart
+                        ? removeFromCart(product.id)
+                        : handleAddToCart({ product, price })
+                    }
+                    disabled={
+                      addToCartMutation.isPending ||
+                      (removing && inCart)
+                    }
+                  >
+                    {addToCartMutation.isPending
+                      ? "Adding..."
+                      : removing && inCart
+                      ? "Removing..."
+                      : inCart
+                      ? "Remove from Cart"
+                      : "Add to Cart"}
+                  </Button>
+                );
+              })()}
 
               </div>
 

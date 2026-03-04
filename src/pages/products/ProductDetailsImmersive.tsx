@@ -6,6 +6,7 @@ import { ProductService } from "../../lib/api/products";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { useAddToCart } from "../../hooks/useAddToCart";
+import { useCart } from "../../hooks/useCart";
 
 const ProductDetailsImmersivePage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -20,6 +21,7 @@ const ProductDetailsImmersivePage = () => {
   });
 
   const { handleAddToCart, addToCartMutation } = useAddToCart();
+  const { carts, removeFromCart, removing } = useCart();
 
   // Helper function to safely get string value from object or string
   const getStringValue = (value: any): string => {
@@ -118,9 +120,33 @@ const ProductDetailsImmersivePage = () => {
                   </p>
                 )}
               </div>
-              <Button onClick={() => handleAddToCart({ product, price })} size="lg" className="px-6">
-                {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
-              </Button>
+              {(() => {
+                const inCart = carts.some((c) => c.product_id === product.id);
+                return (
+                  <Button
+                    variant={inCart ? "destructive" : "primary"}
+                    onClick={() =>
+                      inCart
+                        ? removeFromCart(product.id)
+                        : handleAddToCart({ product, price })
+                    }
+                    size="lg"
+                    className="px-6"
+                    disabled={
+                      addToCartMutation.isPending ||
+                      (removing && inCart)
+                    }
+                  >
+                    {addToCartMutation.isPending
+                      ? "Adding..."
+                      : removing && inCart
+                      ? "Removing..."
+                      : inCart
+                      ? "Remove from Cart"
+                      : "Add to Cart"}
+                  </Button>
+                );
+              })()}
             </div>
           </div>
         </div>
