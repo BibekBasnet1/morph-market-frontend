@@ -328,7 +328,7 @@ const products = data?.data ?? [];
         <SkeletonCards/>
       )}
 
-<div className="grid gap-4 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+<div className="grid gap-4 grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
   {products.map((product: any) => {
     const imageUrl = product.image_urls?.thumbnail?.url || product.image;
     const price = product.availability?.[0]?.pricing?.price || product.price;
