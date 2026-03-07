@@ -127,7 +127,7 @@ function ProductCard({ product, onClick }: { product: { id: number; name: string
       </div>
       <div className="p-3">
         <p className="text-sm font-semibold text-gray-800 leading-snug mb-1">{product.name}</p>
-        <p className="text-base font-bold" style={{ color: "#1a6b3a" }}>${product.price}</p>
+        <p className="text-base font-bold text-primary">${product.price}</p>
       </div>
     </div>
   );
@@ -177,40 +177,24 @@ export default function StoreDetailsPage() {
   ] as const;
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-      }}
-    >
+    <div className="min-h-screen text-foreground">
       {/* Back nav */}
-      {/* <div className=" mx-auto px-6 pt-6">
-        <button
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-4"
-          style={{ fontFamily: "sans-serif" }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Directory
-        </button>
-      </div> */}
-
-      {/* Hero Cover */}
-      <div className=" mx-auto px-6">
+      <div className="mx-auto px-4 sm:px-6">
         <div
-          className="relative w-full rounded-3xl overflow-hidden"
-          style={{ height: 220 }}
+          className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden h-32 sm:h-44 md:h-52"
         >
           {store.image_urls?.cover_photo?.url ? (
             <img src={store.image_urls.cover_photo.url} alt="" className="w-full h-full object-cover" />
           ) : (
             <div
-              className="w-full h-full"
-              style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)" }}
+              className="w-full h-full bg-primary"
+              style={{ background: "linear-gradient(135deg, #259353 0%, #1f6e49 100%)" }}
             />
           )}
           {/* Gradient overlay */}
           <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%)" }}
+            className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+            aria-hidden
           />
 
           {/* Action buttons top-right */}
@@ -225,15 +209,11 @@ export default function StoreDetailsPage() {
       </div>
 
       {/* Profile section */}
-      <div className=" mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-10 mb-6 relative z-10">
+      <div className="mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row md:items-end gap-3 sm:gap-4 -mt-8 sm:-mt-10 mb-4 sm:mb-6 relative z-10">
           {/* Logo */}
           <div
-            className="w-20 h-20 rounded-2xl border-4 border-white flex items-center justify-center flex-shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-            }}
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl border-4 border-white flex items-center justify-center flex-shrink-0 bg-primary shadow-lg"
           >
             {store.image_urls?.logo?.url ? (
               <img src={store.image_urls.logo.url} alt={store.name} className="w-full h-full object-cover rounded-xl" />
@@ -244,21 +224,18 @@ export default function StoreDetailsPage() {
 
           {/* Name + meta */}
           <div className="flex-1 pb-1">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <h1 className="text-2xl font-bold text-white" style={{ letterSpacing: "-0.02em" }}>
+            <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-4">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 {store.name}
               </h1>
               {store.is_verified && (
-                <span
-                  className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: "#e6f4ea", color: "#1a6b3a" }}
-                >
+                <span className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
                   <ShieldCheck className="w-3 h-3" /> Verified
                 </span>
               )}
               <ShippingBadge type={store.shipping_type} />
             </div>
-            <div className="flex items-center gap-3 flex-wrap" style={{ fontFamily: "sans-serif" }}>
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap text-sm">
               <div className="flex items-center gap-1.5">
                 <StarRow rating={Number(store.rating) || 0} size={13} />
                 <span className="text-sm font-semibold text-gray-700">{(Number(store.rating) || 0).toFixed(2)}</span>
@@ -298,26 +275,22 @@ export default function StoreDetailsPage() {
           </div> */}
         </div>
 
-        {/* Main layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-16">
+        {/* Main layout — single column on mobile, sidebar below listings */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 pb-12 sm:pb-16">
 
           {/* Left column — tabs content */}
           <div className="lg:col-span-2 space-y-4">
             {/* Tabs */}
-            <div
-              className="flex gap-1 p-1 rounded-xl"
-              style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(8px)", fontFamily: "sans-serif" }}
-            >
+            <div className="flex gap-1 p-1 rounded-xl bg-white/60 backdrop-blur-md">
               {tabs.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all"
-                  style={{
-                    background: activeTab === tab.key ? "#fff" : "transparent",
-                    color: activeTab === tab.key ? "#1a6b3a" : "#6b7280",
-                    boxShadow: activeTab === tab.key ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                  }}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                    activeTab === tab.key
+                      ? "bg-white text-primary shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -326,7 +299,7 @@ export default function StoreDetailsPage() {
 
             {/* Listings */}
             {activeTab === "listings" && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                 {(store.inventories || []).map((inv: any) => {
                   const prod = inv.product || {};
                   const card = {
@@ -379,17 +352,11 @@ export default function StoreDetailsPage() {
             {/* About */}
             {activeTab === "about" && (
               <div className="space-y-4">
-                <div
-                  className="bg-white rounded-2xl p-5"
-                  style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)", fontFamily: "sans-serif" }}
-                >
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
                   <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">About the Store</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">{store.about}</p>
                 </div>
-                <div
-                  className="bg-white rounded-2xl p-5"
-                  style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)", fontFamily: "sans-serif" }}
-                >
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertCircle className="w-4 h-4 text-amber-500" />
                     <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Store Policy</h3>
@@ -401,22 +368,19 @@ export default function StoreDetailsPage() {
           </div>
 
           {/* Right column — sidebar */}
-          <div className="space-y-4" style={{ fontFamily: "sans-serif" }}>
+          <div className="space-y-4">
 
             {/* Contact */}
             {store.contact_visible && (
-              <div
-                className="bg-white rounded-2xl p-4 space-y-3"
-                style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-              >
+              <div className="bg-white rounded-2xl p-4 space-y-3 shadow-sm">
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</h3>
                 {store.phone && (
                   <a
                     href={`tel:${store.phone}`}
-                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-primary transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "#e6f4ea" }}>
-                      <Phone className="w-3.5 h-3.5" style={{ color: "#1a6b3a" }} />
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10">
+                      <Phone className="w-3.5 h-3.5 text-primary" />
                     </div>
                     {store.phone}
                   </a>
@@ -424,10 +388,10 @@ export default function StoreDetailsPage() {
                 {store.email && (
                   <a
                     href={`mailto:${store.email}`}
-                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-primary transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "#e6f4ea" }}>
-                      <Mail className="w-3.5 h-3.5" style={{ color: "#1a6b3a" }} />
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10">
+                      <Mail className="w-3.5 h-3.5 text-primary" />
                     </div>
                     {store.email}
                   </a>
@@ -436,14 +400,11 @@ export default function StoreDetailsPage() {
             )}
 
             {/* Address */}
-            <div
-              className="bg-white rounded-2xl p-4"
-              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-            >
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Location</h3>
               <div className="flex gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#e6f4ea" }}>
-                  <MapPin className="w-3.5 h-3.5" style={{ color: "#1a6b3a" }} />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10">
+                  <MapPin className="w-3.5 h-3.5 text-primary" />
                 </div>
                 {store.address ? (
                   <p className="text-sm text-gray-600 leading-relaxed">
@@ -461,30 +422,23 @@ export default function StoreDetailsPage() {
             </div>
 
             {/* Hours */}
-            <div
-              className="bg-white rounded-2xl p-4"
-              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-            >
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-3">
                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Store Hours</h3>
                 <Clock className="w-3.5 h-3.5 text-gray-400" />
               </div>
               <div className="space-y-1.5">
                 {DAYS_ORDER.map(day => {
-                  const hour = store.store_hours.find((h:any) => h.day === day);
+                  const hour = (store.store_hours || []).find((h: any) => h.day === day);
                   const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase() === day;
                   return (
                     <div
                       key={day}
-                      className="flex justify-between items-center text-xs py-0.5 rounded-md px-1 -mx-1"
-                      style={{
-                        background: isToday ? "#f0faf4" : "transparent",
-                        fontWeight: isToday ? 600 : 400,
-                      }}
+                      className={`flex justify-between items-center text-xs py-0.5 rounded-md px-1 -mx-1 ${isToday ? "bg-primary/5 font-semibold" : ""}`}
                     >
                       <span className="text-gray-600 capitalize">{day}</span>
                             {hour?.is_open ? (
-                              <span style={{ color: "#1a6b3a" }}>
+                              <span className="text-primary">
                                 {formatTime(hour.open_time)} – {formatTime(hour.close_time)}
                               </span>
                             ) : (
@@ -497,14 +451,11 @@ export default function StoreDetailsPage() {
             </div>
 
             {/* Shipping */}
-            <div
-              className="bg-white rounded-2xl p-4"
-              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-            >
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Shipping</h3>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#e6f4ea" }}>
-                  <Truck className="w-3.5 h-3.5" style={{ color: "#1a6b3a" }} />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10">
+                  <Truck className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div>
                   <ShippingBadge type={store.shipping_type} />
@@ -514,14 +465,8 @@ export default function StoreDetailsPage() {
             </div>
 
             {/* Owner */}
-            <div
-              className="bg-white rounded-2xl p-4 flex items-center gap-3"
-              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-            >
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
-                style={{ background: "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 100%)" }}
-              >
+            <div className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-primary-foreground font-bold flex-shrink-0 bg-primary">
                 {(store.owner?.name || store.owner?.username || "").charAt(0)}
               </div>
               <div>
