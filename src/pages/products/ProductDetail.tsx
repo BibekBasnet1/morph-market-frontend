@@ -275,9 +275,9 @@ const {
                   setShowPayment(true);
                 }
               }}>Purchase Now</Button>
-              <Button variant="outline" className="w-full">
+              {/* <Button variant="outline" className="w-full">
                 Contact Breeder
-              </Button>
+              </Button> */}
             </div>
           );
         })()}
