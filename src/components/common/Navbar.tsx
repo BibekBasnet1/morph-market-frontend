@@ -70,16 +70,16 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        {/* Main row */}
-        <div className="flex items-center justify-between px-3 py-3 sm:px-4 xl:px-6">
+      {/* Navbar — clean white bar with green accents (marketplace-style) */}
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 shadow-sm">
+        <div className="flex items-center justify-between px-3 py-2.5 sm:px-4 xl:px-6">
 
           {/* LEFT: Sidebar toggle + Logo */}
           <div className="flex items-center gap-2 sm:gap-3">
             {isAuthenticated && (
               <button
-                className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-gray-500 border border-gray-200 rounded-lg dark:border-gray-800 dark:text-gray-400 ${
-                  isMobileOpen ? "bg-gray-100 dark:bg-white/[0.03]" : ""
+                className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-gray-600 border border-gray-200 dark:border-gray-700 dark:text-gray-400 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors ${
+                  isMobileOpen ? "bg-primary/10 border-primary/30 text-primary" : ""
                 }`}
                 onClick={handleSidebarToggle}
                 aria-label="Toggle Sidebar"
@@ -94,12 +94,12 @@ const Navbar: React.FC = () => {
 
             <Link
               to="/"
-              className={`flex items-center gap-1.5 sm:gap-2 ${
+              className={`flex items-center gap-1.5 sm:gap-2 group ${
                 isAuthenticated ? "xl:hidden" : ""
               }`}
             >
               <span className="text-xl sm:text-2xl">🐍</span>
-              <span className="font-serif text-base hidden sm:block sm:text-xl font-bold text-black dark:text-white whitespace-nowrap">
+              <span className="font-semibold text-base hidden sm:block sm:text-lg text-primary whitespace-nowrap group-hover:text-primary/90 transition-colors dark:text-primary">
                 ExoticPetsMarket
               </span>
             </Link>
@@ -107,43 +107,45 @@ const Navbar: React.FC = () => {
 
           {/* CENTER: Search */}
           <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm xl:max-w-md mx-4 xl:mx-8">
-            <div className="relative w-full">
+            <div className="relative w-full flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-gray-50 dark:bg-gray-800/50">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 ref={inputRef}
-                placeholder="Search..."
-                className="h-10 w-full rounded-lg border border-gray-200 bg-transparent pl-9 pr-16 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 dark:border-gray-800 dark:text-white dark:focus:border-blue-700"
+                placeholder="Search products..."
+                className="h-10 flex-1 w-full bg-transparent pl-9 pr-20 text-sm text-gray-800 placeholder:text-gray-500 focus:outline-none dark:text-white dark:placeholder:text-gray-400"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hidden lg:block">
-                Ctrl+K
-              </span>
+              <button
+                type="button"
+                className="absolute right-0 top-0 bottom-0 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+                aria-label="Search"
+              >
+                Search
+              </button>
             </div>
           </div>
 
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Mobile search toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/10"
               onClick={() => setMobileSearchOpen((v) => !v)}
               aria-label="Toggle search"
             >
-              <Search className="h-5 w-5 text-gray-500" />
+              <Search className="h-5 w-5" />
             </Button>
 
-            {/* xl+: original UX */}
-            <Button variant="ghost" size="icon" className="hidden xl:flex">
-              <Heart className="h-5 w-5 text-gray-500 hover:text-red-500" />
+            <Button variant="ghost" size="icon" className="hidden xl:flex text-gray-600 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+              <Heart className="h-5 w-5" />
             </Button>
 
             <Link to="/cart" className="hidden xl:block relative">
-              <Button variant="ghost" size="icon">
-                <ShoppingCart className="h-5 w-5 text-gray-500 hover:text-blue-500" />
+              <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/10">
+                <ShoppingCart className="h-5 w-5" />
               </Button>
               {cartCount > 0 && (
-                <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-secondary rounded-full ring-2 ring-white dark:ring-gray-900">
                   {cartCount}
                 </span>
               )}
@@ -154,13 +156,15 @@ const Navbar: React.FC = () => {
             {!isAuthenticated ? (
               <>
                 <Link to="/login" className="hidden xl:block">
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button variant="outline" size="sm" className="gap-1.5 border-gray-300 dark:border-gray-600 hover:border-primary hover:text-primary">
                     <User className="h-4 w-4" />
                     <span className="hidden md:inline">Sign In</span>
                   </Button>
                 </Link>
                 <Link to="/register" className="hidden xl:block">
-                  <Button size="sm">Join Community</Button>
+                  <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm">
+                    Join Community
+                  </Button>
                 </Link>
               </>
             ) : (
@@ -169,13 +173,12 @@ const Navbar: React.FC = () => {
               </div>
             )}
 
-            {/* Right nav hamburger — smaller screens only */}
             <button
               onClick={() => setNavDrawerOpen((v) => !v)}
-              className="xl:hidden flex items-center justify-center font-semibold text-gray-500 p-2 rounded-md dark:border-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="xl:hidden flex items-center justify-center font-semibold text-sm px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20
+              dark:text-white           transition-colors"
               aria-label="Open navigation menu"
             >
-              {/* <Menu className="w-5 h-5" /> */}
               MENU
             </button>
           </div>
@@ -184,12 +187,12 @@ const Navbar: React.FC = () => {
         {/* Mobile search bar */}
         {mobileSearchOpen && (
           <div className="md:hidden px-3 pb-3">
-            <div className="relative">
+            <div className="relative flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 bg-gray-50 dark:bg-gray-800/50">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 autoFocus
-                placeholder="Search..."
-                className="h-10 w-full rounded-lg border border-gray-200 bg-transparent pl-9 pr-4 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:text-white"
+                placeholder="Search products..."
+                className="h-10 w-full bg-transparent pl-9 pr-4 text-sm text-gray-800 focus:outline-none dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -212,16 +215,16 @@ const Navbar: React.FC = () => {
         }`}
       >
         {/* Drawer Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-primary/5">
           <div className="flex items-center gap-2">
             <span className="text-xl">🐍</span>
-            <span className="font-serif font-bold text-gray-900 dark:text-white">
+            <span className="font-semibold dark:text-white">
               ExoticPetsMarket
             </span>
           </div>
           <button
             onClick={() => setNavDrawerOpen(false)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -232,7 +235,7 @@ const Navbar: React.FC = () => {
         <div className="flex flex-col h-[calc(100%-65px)] overflow-y-auto">
           {/* Nav Links */}
           <nav className="px-3 py-4 flex-1">
-            <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-400 dark:text-gray-500 px-3 mb-2">
+            <p className="text-[10px] uppercase tracking-widest font-semibold dark:text-white px-3 mb-2">
               Navigation
             </p>
             <ul className="space-y-0.5">
@@ -241,7 +244,7 @@ const Navbar: React.FC = () => {
                   <Link
                     to={to}
                     onClick={() => setNavDrawerOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors"
                   >
                     {label}
                   </Link>
@@ -252,7 +255,7 @@ const Navbar: React.FC = () => {
             <div className="my-4 border-t border-gray-100 dark:border-gray-800" />
 
             {/* Quick Actions */}
-            <p className="text-[10px] uppercase tracking-widest font-semibold text-gray-400 dark:text-gray-500 px-3 mb-2">
+            <p className="text-[10px] uppercase tracking-widest font-semibold dark:text-white px-3 mb-2">
               Quick Actions
             </p>
             <ul className="space-y-0.5">
@@ -260,9 +263,9 @@ const Navbar: React.FC = () => {
                 <Link
                   to="/marketplace"
                   onClick={() => setNavDrawerOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-colors"
                 >
-                  <Castle className="w-4 h-4 text-gray-400" />
+                  <Castle className="w-4 h-4 text-primary/80" />
                   MarketPlace
                 </Link>
               </li>
@@ -271,12 +274,12 @@ const Navbar: React.FC = () => {
                 <Link
                   to="/cart"
                   onClick={() => setNavDrawerOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-colors"
                 >
-                  <ShoppingCart className="w-4 h-4 text-gray-400" />
+                  <ShoppingCart className="w-4 h-4 text-primary/80" />
                   Cart
                   {cartCount > 0 && (
-                    <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                    <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-secondary rounded-full">
                       {cartCount}
                     </span>
                   )}
@@ -286,9 +289,9 @@ const Navbar: React.FC = () => {
                 <Link
                   to="/wishlist"
                   onClick={() => setNavDrawerOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 >
-                  <Heart className="w-4 h-4 text-gray-400" />
+                  <Heart className="w-4 h-4 text-red-400/80" />
                   Wishlist
                 </Link>
               </li>
@@ -297,11 +300,11 @@ const Navbar: React.FC = () => {
 
           {/* Auth Section — pinned to bottom */}
           {isAuthenticated ? (
-            <div className="px-4 py-5 border-t border-gray-100 dark:border-gray-800">
+            <div className="px-4 py-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
               {/* User Info */}
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <div className="w-9 h-9 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-primary" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
@@ -319,9 +322,9 @@ const Navbar: React.FC = () => {
                   <Link
                     to="/profile"
                     onClick={() => setNavDrawerOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-colors"
                   >
-                    <User className="w-4 h-4 text-gray-400" />
+                    <User className="w-4 h-4 text-primary/80" />
                     My Profile
                   </Link>
                 </li>
@@ -329,9 +332,9 @@ const Navbar: React.FC = () => {
                   <Link
                     to="/orders"
                     onClick={() => setNavDrawerOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-colors"
                   >
-                    <ShoppingCart className="w-4 h-4 text-gray-400" />
+                    <ShoppingCart className="w-4 h-4 text-primary/80" />
                     My Orders
                   </Link>
                 </li>
@@ -339,9 +342,9 @@ const Navbar: React.FC = () => {
                   <Link
                     to="/settings"
                     onClick={() => setNavDrawerOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/10 transition-colors"
                   >
-                    <Settings className="w-4 h-4 text-gray-400" />
+                    <Settings className="w-4 h-4 text-primary/80" />
                     Settings
                   </Link>
                 </li>
@@ -365,13 +368,13 @@ const Navbar: React.FC = () => {
           ) : (
             <div className="px-4 py-5 border-t border-gray-100 dark:border-gray-800 space-y-2">
               <Link to="/login" onClick={() => setNavDrawerOpen(false)}>
-                <Button variant="outline" className="w-full gap-2">
+                <Button variant="outline" className="w-full gap-2 border-gray-300 hover:border-primary hover:text-primary">
                   <User className="h-4 w-4" />
                   Sign In
                 </Button>
               </Link>
               <Link to="/register" onClick={() => setNavDrawerOpen(false)}>
-                <Button className="w-full">Join Community</Button>
+                <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">Join Community</Button>
               </Link>
             </div>
           )}
