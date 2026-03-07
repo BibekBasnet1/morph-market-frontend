@@ -77,23 +77,25 @@ const {
   /* ---------------- UI ---------------- */
 
  return (
-  <div className="p-10 mx-auto dark:text-white py-10 px-4">
-    <div className="grid lg:grid-cols-3 gap-10">
+  <div className="p-6 sm:p-10 mx-auto max-w-[100vw] dark:text-white py-10 px-4 overflow-x-hidden">
+    <div className="grid lg:grid-cols-3 gap-6 lg:gap-10 min-w-0">
 
       {/* ================= LEFT SIDE ================= */}
-      <div className="lg:col-span-2 space-y-10">
+      <div className="lg:col-span-2 space-y-6 lg:space-y-10 min-w-0">
 
         {/* Image & Thumbnails */}
-        <div>
-          <img
-            src={mainImageUrl ?? "https://placehold.co/800x500"}
-            alt={product.name}
-            className="w-full h-[420px] object-cover rounded-xl"
-          />
+        <div className="min-w-0">
+          <div className="relative w-full overflow-hidden rounded-xl aspect-[4/3] sm:aspect-video lg:h-[420px] lg:aspect-auto bg-muted">
+            <img
+              src={mainImageUrl ?? "https://placehold.co/800x500"}
+              alt={product.name}
+              className="w-full h-full object-cover max-w-full"
+            />
+          </div>
 
           {/* Gallery Thumbnails */}
           {galleryImages && galleryImages.length > 0 && (
-            <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
+            <div className="flex gap-3 mt-4 overflow-x-auto pb-2 min-w-0 max-w-full">
               {galleryImages.map((img: any, i: number) => {
                 const imageUrl = typeof img === "string" ? img : img?.url;
                 return (
