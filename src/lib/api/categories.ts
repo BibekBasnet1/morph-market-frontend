@@ -23,7 +23,12 @@ export const CategoryService = {
   },
 
   async getAllPublic(): Promise<Category[]> {
-    const res = await api.get("/categories");
+    const res = await api.get("/categories", {
+      params: {
+        parent_only: true,
+        per_page: 8,
+      }
+    });
     return res.data.data.data;
   },
 
