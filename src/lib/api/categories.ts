@@ -1,4 +1,4 @@
-import api from "./client"; // axios instance with interceptors
+import api from "./client"; 
 import type { Category } from "../../types";
 
 type GetAllParams = {
@@ -7,8 +7,12 @@ type GetAllParams = {
 
 export const CategoryService = {
   async getAll(): Promise<Category[]> {
-    const res = await api.get("/admin/categories");
-    return res.data.data.data;
+    const res = await api.get("/categories", {
+      params: {
+        all: true,
+      }
+    });
+    return res.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {

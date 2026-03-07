@@ -7,6 +7,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // should have used cookie instead 
   const stored = localStorage.getItem("auth-storage");
   if (stored) {
     const { token } = JSON.parse(stored);

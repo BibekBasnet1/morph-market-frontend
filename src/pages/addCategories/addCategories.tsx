@@ -285,7 +285,7 @@ const AddCategoriesPage = () => {
             <Select
               placeholder="None (Top-level category)"
               options={allCategories
-                .filter((cat: Category) => !(cat as any).parent_id) // Only show top-level categories
+                // .filter((cat: Category) => !(cat as any).parent_id) // Only show top-level categories
                 .map((cat: Category) => ({
                   value: String(cat.id),
                   label: cat.name,
