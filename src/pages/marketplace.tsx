@@ -343,7 +343,7 @@ const products = data?.data ?? [];
 
         <div className="space-y-3 flex-1">
           {/* Image */}
-          <div className="aspect-video bg-muted rounded mb-3 overflow-hidden">
+          <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden ring-1 ring-black/5">
             {imageUrl ? (
               <img
                 src={imageUrl}
@@ -361,19 +361,33 @@ const products = data?.data ?? [];
             )}
           </div>
 
-          {/* Name */}
-          <h3 className="font-medium truncate font-semibold">{product.name}</h3>
-            <div className=" flex justify-between">
+          {/* Name — prominent, link-style */}
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-snug line-clamp-2 hover:text-primary transition-colors">
+            {product.name}
+          </h3>
 
-          <div className="text-sm text-muted-foreground space-y-3">
-            <p>Category: {getStringValue(product.category)}</p>
-            {product.gender && <p>Gender: {getStringValue(product.gender)}</p>}
-            {/* {product.diet && <p>Diet: <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">{product.diet}</span></p>}
-            {product.maturity_level && <p>Maturity: <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800"> {product.maturity_level}</span></p>}
-            {product.tag && <p>Tag: <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-800">{product.tag}</span></p>} */}
+          {/* Category & traits as colored badges */}
+          <div className="flex flex-wrap gap-1.5">
+            {product.category && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300">
+                {getStringValue(product.category)}
+              </span>
+            )}
+            {product.gender && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+                {getStringValue(product.gender)}
+              </span>
+            )}
           </div>
-          <p className="font-semibold">{price ? `$${price}` : ""}</p>
-            </div>
+
+          {/* Price — bold accent like marketplaces */}
+          <div className="mt-auto pt-1">
+            {price != null && price !== "" ? (
+              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                ${Number(price).toLocaleString()}
+              </span>
+            ) : null}
+          </div>
         </div>
 
         {/* CTA */}
