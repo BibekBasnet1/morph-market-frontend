@@ -21,14 +21,11 @@ import {
 
 
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const DAYS_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 
 function formatTime(value?: string) {
   if (!value) return "";
-  // If ISO timestamp, format to HH:MM (24h)
   if (value.includes("T")) {
-    // Parse as UTC and display UTC hours:minutes to avoid local timezone shifts
     const d = new Date(value);
     if (isNaN(d.getTime())) return value;
     const hh = String(d.getUTCHours()).padStart(2, "0");
@@ -84,7 +81,6 @@ function ShippingBadge({ type }: { type: string }) {
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
 function ProductCard({ product, onClick }: { product: { id: number; name: string; price: number | string; image?: string | null; available?: boolean }; onClick?: () => void }) {
   const [liked, setLiked] = useState(false);
   return (
@@ -148,7 +144,6 @@ function ProductCard({ product, onClick }: { product: { id: number; name: string
 //   );
 // }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function StoreDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -361,7 +356,8 @@ export default function StoreDetailsPage() {
                     <AlertCircle className="w-4 h-4 text-amber-500" />
                     <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Store Policy</h3>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{store.policy}</p>
+                  {/* set dangeroouslySetInnerHTML to the store.policy */}
+                  <div dangerouslySetInnerHTML={{ __html: store.policy }} />
                 </div>
               </div>
             )}
