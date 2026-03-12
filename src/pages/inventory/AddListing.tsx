@@ -313,6 +313,7 @@ const AddListingPage = () => {
                 `}
               >
                 <img
+                alt="product image"
                   src={getProductImage(product)}
                   className="h-40 w-full object-cover"
                 />

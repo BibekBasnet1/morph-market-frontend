@@ -8,6 +8,13 @@ import { Button } from "../../components/ui/button";
 import { useAddToCart } from "../../hooks/useAddToCart";
 import { useCart } from "../../hooks/useCart";
 
+const SpecChip = ({ label, value }: { label: string; value: any }) => (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="font-medium mt-1">{value || "N/A"}</p>
+    </div>
+  );
+
 const ProductDetailsImmersivePage = () => {
   const { slug } = useParams<{ slug: string }>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -74,12 +81,6 @@ const ProductDetailsImmersivePage = () => {
     setFullScreenImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
-  const SpecChip = ({ label, value }: { label: string; value: any }) => (
-    <div className="rounded-xl border bg-card p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="font-medium mt-1">{value || "N/A"}</p>
-    </div>
-  );
 
   return (
     <div className="min-h-screen text-foreground dark:bg-gray-900 dark:text-white">
@@ -114,11 +115,11 @@ const ProductDetailsImmersivePage = () => {
                 <p className="text-2xl font-bold">
                   ${pricing?.sale_price ?? pricing?.price}
                 </p>
-                {pricing?.sale_price && (
+                {/* {pricing?.sale_price && (
                   <p className="text-xs line-through text-muted-foreground">
                     ${pricing.price}
                   </p>
-                )}
+                )} */}
               </div>
               {(() => {
                 const inCart = carts.some((c) => c.product_id === product.id);
@@ -282,6 +283,7 @@ const ProductDetailsImmersivePage = () => {
                       className="rounded-2xl overflow-hidden transition-all hover:scale-[1.02] cursor-pointer"
                     >
                       <img
+                        alt="more images"
                         src={imageUrl}
                         className="w-full h-52 object-cover hover:opacity-80 transition"
                       />

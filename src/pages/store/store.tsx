@@ -32,6 +32,11 @@ const DEFAULT_STORE_HOURS = [
   { day: "saturday", open_time: "09:00", close_time: "18:00", is_open: true },
   { day: "sunday", open_time: "09:00", close_time: "18:00", is_open: false },
 ];
+  const ErrorMessage = ({ field, error }: { field: string, error:any }) => {
+    return error[field] ? (
+      <p className="text-red-500 text-xs mt-1">{error[field]}</p>
+    ) : null;
+  };
 
 export default function StoreRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -361,11 +366,6 @@ const stateOptions = useMemo(() => {
   }));
 }, [states]);
 
-  const ErrorMessage = ({ field }: { field: string }) => {
-    return errors[field] ? (
-      <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
-    ) : null;
-  };
 
   if (isStoreLoading) {
     return (
@@ -441,7 +441,7 @@ const stateOptions = useMemo(() => {
                     placeholder="My Awesome Store"
                     className={errors.name ? "border-red-500" : ""}
                   />
-                  <ErrorMessage field="name" />
+                  <ErrorMessage field="name" error={errors}/>
                 </div>
 
                 <div>
@@ -454,7 +454,7 @@ const stateOptions = useMemo(() => {
                     className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-500 mt-1">Auto-generated from store name</p>
-                  <ErrorMessage field="slug" />
+                  <ErrorMessage error={errors} field="slug" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -467,7 +467,7 @@ const stateOptions = useMemo(() => {
                       placeholder="store@example.com"
                       className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                     />
-                    <ErrorMessage field="email" />
+                    <ErrorMessage error={errors} field="email" />
                   </div>
                   <div>
                     <Label>Username *</Label>
@@ -478,7 +478,7 @@ const stateOptions = useMemo(() => {
                       placeholder="mystore123"
                       className="bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
                     />
-                    <ErrorMessage field="username" />
+                    <ErrorMessage error={errors} field="username" />
                   </div>
                 </div>
 
@@ -492,7 +492,7 @@ const stateOptions = useMemo(() => {
                       placeholder="Awesome Brand"
                       className={errors.brand_name ? "border-red-500" : ""}
                     />
-                    <ErrorMessage field="brand_name" />
+                    <ErrorMessage error={errors} field="brand_name" />
                   </div>
                   <div>
                     <Label>Phone</Label>
@@ -503,7 +503,7 @@ const stateOptions = useMemo(() => {
                       placeholder="+1234567890"
                       className={errors.phone ? "border-red-500" : ""}
                     />
-                    <ErrorMessage field="phone" />
+                    <ErrorMessage error={errors} field="phone" />
                   </div>
                 </div>
               </div>
@@ -530,7 +530,7 @@ const stateOptions = useMemo(() => {
                         onChange={(val: any) => handleAddressChange("country_id", val)}
                       />
                     )}
-                    <ErrorMessage field="address.country_id" />
+                    <ErrorMessage error={errors} field="address.country_id" />
                   </div>
                   <div>
                     <Label>State</Label>
@@ -549,7 +549,7 @@ const stateOptions = useMemo(() => {
                         disabled={isStatesLoading}
                       />
                     )}
-                    <ErrorMessage field="address.state_id" />
+                    <ErrorMessage error={errors} field="address.state_id" />
                   </div>
                 </div>
 
@@ -562,7 +562,7 @@ const stateOptions = useMemo(() => {
                     placeholder="123 Main Street"
                     className={errors["address.address_line_1"] ? "border-red-500" : ""}
                   />
-                  <ErrorMessage field="address.address_line_1" />
+                  <ErrorMessage error={errors} field="address.address_line_1" />
                 </div>
 
                 <div>
@@ -585,7 +585,7 @@ const stateOptions = useMemo(() => {
                       placeholder="New York"
                       className={errors["address.city"] ? "border-red-500" : ""}
                     />
-                    <ErrorMessage field="address.city" />
+                    <ErrorMessage error={errors} field="address.city" />
                   </div>
                   <div>
                     <Label>Zip Code</Label>
@@ -596,7 +596,7 @@ const stateOptions = useMemo(() => {
                       placeholder="10001"
                       className={errors["address.zip_code"] ? "border-red-500" : ""}
                     />
-                    <ErrorMessage field="address.zip_code" />
+                    <ErrorMessage error={errors} field="address.zip_code" />
                   </div>
                 </div>
               </div>
@@ -619,7 +619,7 @@ const stateOptions = useMemo(() => {
                     rows={4}
                     className={errors.about ? "border-red-500" : ""}
                   />
-                  <ErrorMessage field="about" />
+                  <ErrorMessage error={errors} field="about" />
                 </div>
 
                 <div>
@@ -631,7 +631,7 @@ const stateOptions = useMemo(() => {
                     rows={4}
                     className={errors.policy ? "border-red-500" : ""}
                   />
-                  <ErrorMessage field="policy" />
+                  <ErrorMessage error={errors} field="policy" />
                 </div>
 
                 <div>
@@ -694,7 +694,7 @@ const stateOptions = useMemo(() => {
                   {!coverPhotoPreview && !formData.cover_photo && (
                     <p className="text-xs text-gray-400 mt-1">No cover photo uploaded yet.</p>
                   )}
-                  <ErrorMessage field="cover_photo" />
+                  <ErrorMessage error={errors} field="cover_photo" />
                 </div>
 
                 <div>
@@ -721,7 +721,7 @@ const stateOptions = useMemo(() => {
                   {!logoPreview && !formData.logo && (
                     <p className="text-xs text-gray-400 mt-1">No logo uploaded yet.</p>
                   )}
-                  <ErrorMessage field="logo" />
+                  <ErrorMessage error={errors} field="logo" />
                 </div>
               </div>
             </div>

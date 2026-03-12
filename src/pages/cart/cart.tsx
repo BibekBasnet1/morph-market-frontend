@@ -164,10 +164,14 @@ if (!carts.length) {
                   key={item.id}
                   className="grid grid-cols-12 gap-4 px-6 py-5 border-b last:border-b-0 items-center"
                 >
-                  {/* Product */}
                   <div className="col-span-9 flex gap-4">
                     <img
-                      src={product?.image ?? "https://placehold.co/100x100"}
+                      src={
+                        product?.image_urls?.thumbnail?.url ||
+                        product?.image_urls?.thumbnail?.preview ||
+                        product?.image ||
+                        "https://placehold.co/100x100"
+                      }
                       alt={product?.name}
                       className="w-20 h-20 rounded object-cover"
                     />
