@@ -7,12 +7,12 @@ type GetAllParams = {
 
 export const GenderService = {
   async getAll(): Promise<Gender[]> {
-    const res = await api.get("/admin/genders");
+    const res = await api.get("/genders");
     return res.data.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {
-    const res = await api.get("/admin/genders", {
+    const res = await api.get("/genders", {
       params: { page },
     });
     return res.data.data;

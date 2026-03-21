@@ -33,6 +33,7 @@ import {
   traitKeysFromProduct,
 } from "../../lib/catalogKeys";
 import { SellerMergedCatalogService } from "../../lib/api/seller/sellerMergedCatalog";
+import Loading from "../../components/common/Loading";
 
 const SKIP_FORM_DATA_KEYS = new Set([
   "tag_key",
@@ -103,7 +104,6 @@ const EditProductPage = () => {
     enabled: productId > 0,
   });
 
-  /* Populate form when product data is loaded */
   useEffect(() => {
     if (product) {
       setForm({
@@ -131,7 +131,6 @@ const EditProductPage = () => {
     }
   }, [product]);
 
-  /* Queries */
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: CategoryService.getAll });
   const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: TagsService.getAll });
   const { data: traits = [] } = useQuery({ queryKey: ["traits"], queryFn: TraitsService.getAll });
@@ -167,6 +166,7 @@ const EditProductPage = () => {
   }, [isSeller, mergedTags, tags]);
 
   const traitsForList = useMemo(() => {
+    console.log('merged' , mergedTraitsPayload);
     if (isSeller && mergedTraitsPayload?.combined?.length) {
       return mergedTraitsPayload.combined;
     }
@@ -179,6 +179,7 @@ const EditProductPage = () => {
       category: null,
     }));
   }, [isSeller, mergedTraitsPayload, traits]);
+
 
   /* Mutation */
   const updateMutation = useMutation({
@@ -516,11 +517,7 @@ const EditProductPage = () => {
 
   if (isLoadingProduct) {
     return (
-      <div className="mx-auto max-w-6xl p-4">
-        <div className="text-center py-12">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading product...</p>
-        </div>
-      </div>
+      <Loading/>
     );
   }
 

@@ -7,12 +7,12 @@ type GetAllParams = {
 
 export const MaturityService = {
   async getAll(): Promise<Maturity[]> {
-    const res = await api.get("/admin/maturity-levels");
+    const res = await api.get("/maturity-levels");
     return res.data.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {
-    const res = await api.get("/admin/maturity-levels", {
+    const res = await api.get("/maturity-levels", {
       params: { page },
     });
     return res.data.data;

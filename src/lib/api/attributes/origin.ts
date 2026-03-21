@@ -7,12 +7,12 @@ type GetAllParams = {
 
 export const OriginService = {
   async getAll(): Promise<Origin[]> {
-    const res = await api.get("/admin/origins");
+    const res = await api.get("/origins");
     return res.data.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {
-    const res = await api.get("/admin/origins", {
+    const res = await api.get("/origins", {
       params: { page },
     });
     return res.data.data;

@@ -94,10 +94,17 @@ const AddProductPage = () => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  /* Queries */
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: CategoryService.getAllPublic });
-  const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: TagsService.getAllPublic });
-  const { data: traits = [] } = useQuery({ queryKey: ["traits"], queryFn: TraitsService.getAllPublic });
+  const { data: tags = [] } = useQuery({
+    queryKey: ["tags"],
+    queryFn: TagsService.getAllPublic,
+    enabled: !isSeller,
+  });
+  const { data: traits = [] } = useQuery({
+    queryKey: ["traits"],
+    queryFn: TraitsService.getAllPublic,
+    enabled: !isSeller,
+  });
   const { data: mergedTags } = useQuery({
     queryKey: ["seller-merged-tags"],
     queryFn: () => SellerMergedCatalogService.getMergedTags(),
@@ -117,8 +124,9 @@ const AddProductPage = () => {
   const { data: genders = [] } = useQuery({ queryKey: ["genders"], queryFn: GenderService.getAllPublic });
 
   const tagSelectOptions = useMemo(() => {
-    if (isSeller && mergedTags?.combined?.length) {
-      return mergedTags.combined.map((t) => ({
+    if (isSeller) {
+      const list = mergedTags?.combined ?? [];
+      return list.map((t) => ({
         value: catalogKey(t.source, t.id),
         label: t.source === "seller" ? `${t.name} (yours)` : t.name,
       }));
@@ -130,8 +138,8 @@ const AddProductPage = () => {
   }, [isSeller, mergedTags, tags]);
 
   const traitsForList = useMemo(() => {
-    if (isSeller && mergedTraitsPayload?.combined?.length) {
-      return mergedTraitsPayload.combined;
+    if (isSeller) {
+      return mergedTraitsPayload?.combined ?? [];
     }
     return traits.map((t) => ({
       source: "public" as const,
@@ -143,7 +151,6 @@ const AddProductPage = () => {
     }));
   }, [isSeller, mergedTraitsPayload, traits]);
 
-  /* Mutation */
   const createMutation = useMutation({
     mutationFn: async () => {
       const fd = new FormData();

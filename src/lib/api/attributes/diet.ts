@@ -7,12 +7,12 @@ type GetAllParams = {
 
 export const DietService = {
   async getAll(): Promise<Diet[]> {
-    const res = await api.get("/admin/diets");
+    const res = await api.get("/diets");
     return res.data.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {
-    const res = await api.get("/admin/diets", {
+    const res = await api.get("/diets", {
       params: { page },
     });
     return res.data.data;

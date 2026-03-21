@@ -29,20 +29,53 @@ export type MergedTraitsPayload = {
   combined: MergedTraitItem[];
 };
 
-function unwrapMergedPayload<T>(res: { data: unknown }): T {
+function isMergedShape(obj: unknown): obj is MergedTagsPayload | MergedTraitsPayload {
+  if (!obj || typeof obj !== "object") return false;
+  const o = obj as Record<string, unknown>;
+  return "combined" in o || "public" in o || "seller" in o;
+}
+
+function unwrapMergedPayload<T extends MergedTagsPayload | MergedTraitsPayload>(
+  res: { data: unknown },
+): T {
   const root = res.data as Record<string, unknown> | null | undefined;
-  if (!root) return {} as T;
+  if (!root) return { public: [], seller: [], combined: [] } as unknown as T;
+
   const inner = root.data;
-  if (inner && typeof inner === "object" && "combined" in (inner as object)) {
+  if (isMergedShape(inner)) {
     return inner as T;
   }
-  return root as T;
+  if (inner && typeof inner === "object" && "data" in inner) {
+    const nested = (inner as Record<string, unknown>).data;
+    if (isMergedShape(nested)) {
+      return nested as T;
+    }
+  }
+  if (isMergedShape(root)) {
+    return root as T;
+  }
+  return { public: [], seller: [], combined: [] } as unknown as T;
+}
+
+/**
+ * `public` may be empty while `seller` / `combined` hold rows. If `combined` is missing
+ * or empty but `public`/`seller` have items, rebuild `combined` (public first, then seller).
+ */
+function ensureCombined<T extends MergedTagsPayload | MergedTraitsPayload>(payload: T): T {
+  const pub = Array.isArray(payload.public) ? payload.public : [];
+  const sel = Array.isArray(payload.seller) ? payload.seller : [];
+  const comb = Array.isArray(payload.combined) ? payload.combined : [];
+  if (comb.length > 0) {
+    return { ...payload, public: pub, seller: sel, combined: comb };
+  }
+  const merged = [...pub, ...sel] as T["combined"];
+  return { ...payload, public: pub, seller: sel, combined: merged };
 }
 
 export const SellerMergedCatalogService = {
   async getMergedTags(): Promise<MergedTagsPayload> {
     const res = await api.get("/seller/merged-tags");
-    return unwrapMergedPayload<MergedTagsPayload>(res);
+    return ensureCombined(unwrapMergedPayload<MergedTagsPayload>(res));
   },
 
   async getMergedTraits(params?: { category_id?: number }): Promise<MergedTraitsPayload> {
@@ -52,6 +85,6 @@ export const SellerMergedCatalogService = {
           ? { category_id: params.category_id }
           : undefined,
     });
-    return unwrapMergedPayload<MergedTraitsPayload>(res);
+    return ensureCombined(unwrapMergedPayload<MergedTraitsPayload>(res));
   },
 };

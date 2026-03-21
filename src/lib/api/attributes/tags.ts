@@ -7,12 +7,12 @@ type GetAllParams = {
 
 export const TagsService = {
   async getAll(): Promise<Tag[]> {
-    const res = await api.get("/admin/tags");
+    const res = await api.get("/tags");
     return res.data.data.data;
   },
 
   async getAllPaginated({ page = 1 }: GetAllParams = {}) {
-    const res = await api.get("/admin/tags", {
+    const res = await api.get("/tags", {
       params: { page },
     });
     return res.data.data;
