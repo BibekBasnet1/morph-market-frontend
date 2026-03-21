@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import { ProtectedRoute } from "./ProtectedRoute";
 import DashboardLayout from "../layout/DashboardLayout";
 import SellerDashboard from "../../pages/dashboards/SellerDashboard";
@@ -9,13 +9,15 @@ import ActivityLogPage from "../../pages/activityLog/activityLog";
 import AllPrivateProductsPage from "../../pages/products/allProducts";
 // import StorePage from "../../pages/store/store";
 
-// Lazy load product pages
 const AddProductPage = lazy(() => import("../../pages/products/addProduct"));
 const EditProductPage = lazy(() => import("../../pages/products/editProduct"));
 
 const StorePage = lazy(() => import("../../pages/store/store"));
 const AddListingPage = lazy(() => import("../../pages/inventory/AddListing"));
-const SellerOrders = lazy(()=>import("../../pages/order/sellerOrders"))
+const SellerOrders = lazy(() => import("../../pages/order/sellerOrders"))
+const MyAttributesLayout = lazy(() => import("../../pages/myAttributes/Layout"));
+const MyTraitsPage = lazy(() => import("../../pages/myAttributes/TraitsPage"));
+const MyTagsPage = lazy(() => import("../../pages/myAttributes/TagsPage"));
 
 const SellerRoutes = () => (
   <Routes>
@@ -37,8 +39,8 @@ const SellerRoutes = () => (
           <ProfilePage />
         </ProtectedRoute>
       } />
-            <Route path="inventory" element={
-        <ProtectedRoute allowedRoles={[ 'buyer', 'seller']}>
+      <Route path="inventory" element={
+        <ProtectedRoute allowedRoles={['buyer', 'seller']}>
           <InventoryPage />
         </ProtectedRoute>
       } />
@@ -47,11 +49,23 @@ const SellerRoutes = () => (
           <AddListingPage />
         </ProtectedRoute>
       } />
-         <Route path="store" element={
-              <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer','seller']}>
-                <StorePage />
-              </ProtectedRoute>
-            } />
+      <Route path="store" element={
+        <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer', 'seller']}>
+          <StorePage />
+        </ProtectedRoute>
+      } />
+      <Route
+        path="my-attributes"
+        element={
+          <ProtectedRoute allowedRoles={["seller"]}>
+            <MyAttributesLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="traits" replace />} />
+        <Route path="traits" element={<MyTraitsPage />} />
+        <Route path="tags" element={<MyTagsPage />} />
+      </Route>
       <Route path="products" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <AllPrivateProductsPage />
@@ -63,19 +77,19 @@ const SellerRoutes = () => (
         </ProtectedRoute>
       } />
 
-            <Route path="activity-logs" element={
+      <Route path="activity-logs" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <ActivityLogPage />
         </ProtectedRoute>
       } />
-      
-            <Route path="seller/orders" element={
+
+      <Route path="seller/orders" element={
         <ProtectedRoute allowedRoles={['seller']}>
           <SellerOrders />
         </ProtectedRoute>
       } />
       <Route path="products/edit/:id" element={
-        <ProtectedRoute allowedRoles={['seller','buyer']}>
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
           <EditProductPage />
         </ProtectedRoute>
       } />

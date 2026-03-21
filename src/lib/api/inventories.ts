@@ -17,9 +17,9 @@ export const InventoryService = {
   },
     async getAllPrivate(): Promise<InventoryItem[]> {
     const res = await api.get(`buyer/inventories/my-products`);
-    console.log("InventoryService.getAllPrivate - FULL res:", res);
-    console.log("InventoryService.getAllPrivate - res.data:", res.data);
-    console.log("InventoryService.getAllPrivate - res.data.data:", res.data.data);
+    // console.log("InventoryService.getAllPrivate - FULL res:", res);
+    // console.log("InventoryService.getAllPrivate - res.data:", res.data);
+    // console.log("InventoryService.getAllPrivate - res.data.data:", res.data.data);
     
     // Handle the response structure
     let data = res.data.data;

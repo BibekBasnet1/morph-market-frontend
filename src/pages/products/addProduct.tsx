@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -25,6 +25,12 @@ import { MaturityService } from "../../lib/api/attributes/maturity";
 import { OriginService } from "../../lib/api/attributes/origin";
 import { GenderService } from "../../lib/api/attributes/gender";
 import { slugify } from "../../lib/slugify";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  catalogKey,
+  appendProductTagAndTraitsFormData,
+} from "../../lib/catalogKeys";
+import { SellerMergedCatalogService } from "../../lib/api/seller/sellerMergedCatalog";
 
 const generateRandomId = () => {
   try {
@@ -39,9 +45,19 @@ const generateRandomId = () => {
 
 const generateSlug = (name: string) => `${slugify(name)}-${generateRandomId()}`;
 
+const SKIP_FORM_DATA_KEYS = new Set([
+  "tag_key",
+  "trait_keys",
+  "tag_ids",
+  "image",
+  "gallery_images",
+]);
+
 const AddProductPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { roles } = useAuth();
+  const isSeller = roles.includes("seller");
 
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -58,9 +74,9 @@ const AddProductPage = () => {
     maturity_level_id: 0,
     origin_id: 0,
     diet_ids: [] as number[],
-    tag_id: 0,
+    tag_key: "",
     tag_ids: [] as number[],
-    trait_ids: [] as number[],
+    trait_keys: [] as string[],
     description: "",
     image: null as File | null,
     gallery_images: [] as File[],
@@ -71,6 +87,10 @@ const AddProductPage = () => {
       setForm((prev) => ({ ...prev, name: value, slug: generateSlug(value) }));
       return;
     }
+    if (key === "category_id") {
+      setForm((prev) => ({ ...prev, category_id: value, trait_keys: [] }));
+      return;
+    }
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -78,10 +98,50 @@ const AddProductPage = () => {
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: CategoryService.getAllPublic });
   const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: TagsService.getAllPublic });
   const { data: traits = [] } = useQuery({ queryKey: ["traits"], queryFn: TraitsService.getAllPublic });
+  const { data: mergedTags } = useQuery({
+    queryKey: ["seller-merged-tags"],
+    queryFn: () => SellerMergedCatalogService.getMergedTags(),
+    enabled: isSeller,
+  });
+  const { data: mergedTraitsPayload } = useQuery({
+    queryKey: ["seller-merged-traits", form.category_id],
+    queryFn: () =>
+      SellerMergedCatalogService.getMergedTraits(
+        form.category_id > 0 ? { category_id: form.category_id } : undefined,
+      ),
+    enabled: isSeller,
+  });
   const { data: diets = [] } = useQuery({ queryKey: ["diets"], queryFn: DietService.getAllPublic });
   const { data: maturities = [] } = useQuery({ queryKey: ["maturities"], queryFn: MaturityService.getAllPublic });
   const { data: origins = [] } = useQuery({ queryKey: ["origins"], queryFn: OriginService.getAllPublic });
   const { data: genders = [] } = useQuery({ queryKey: ["genders"], queryFn: GenderService.getAllPublic });
+
+  const tagSelectOptions = useMemo(() => {
+    if (isSeller && mergedTags?.combined?.length) {
+      return mergedTags.combined.map((t) => ({
+        value: catalogKey(t.source, t.id),
+        label: t.source === "seller" ? `${t.name} (yours)` : t.name,
+      }));
+    }
+    return tags.map((t) => ({
+      value: catalogKey("public", t.id),
+      label: t.name,
+    }));
+  }, [isSeller, mergedTags, tags]);
+
+  const traitsForList = useMemo(() => {
+    if (isSeller && mergedTraitsPayload?.combined?.length) {
+      return mergedTraitsPayload.combined;
+    }
+    return traits.map((t) => ({
+      source: "public" as const,
+      id: t.id,
+      category_id: (t as { category_id?: number }).category_id ?? 0,
+      name: t.name,
+      description: (t as { description?: string | null }).description ?? null,
+      category: null,
+    }));
+  }, [isSeller, mergedTraitsPayload, traits]);
 
   /* Mutation */
   const createMutation = useMutation({
@@ -90,14 +150,14 @@ const AddProductPage = () => {
 
       Object.entries(form).forEach(([key, value]) => {
         if (Array.isArray(value)) return;
+        if (SKIP_FORM_DATA_KEYS.has(key)) return;
         if (value !== null && value !== undefined && value !== 0 && value !== "") {
           fd.append(key, value.toString());
         }
       });
 
       form.diet_ids.forEach((id) => fd.append("diet_ids[]", id.toString()));
-      if (form.tag_id) fd.append("tag_id", form.tag_id.toString());
-      form.trait_ids.forEach((id) => fd.append("trait_ids[]", id.toString()));
+      appendProductTagAndTraitsFormData(fd, form.tag_key, form.trait_keys);
       if (form.image) fd.append("image", form.image);
       
       // Add gallery images
@@ -232,10 +292,10 @@ const AddProductPage = () => {
           <div>
             <Label>Tags</Label>
             <Select
-              value={form.tag_id ? form.tag_id.toString() : ""}
-              options={tags.map((t) => ({ value: t.id.toString(), label: t.name }))}
+              value={form.tag_key}
+              options={tagSelectOptions}
               placeholder="Tags"
-              onChange={(v) => handleChange("tag_id", Number(v))}
+              onChange={(v) => handleChange("tag_key", v)}
               className="dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             />
           </div>
@@ -264,24 +324,27 @@ const AddProductPage = () => {
       icon: Tags,
       content: (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {traits.map((trait) => (
-            <label key={trait.id} className="flex gap-2 items-center dark:text-gray-100">
-              <input
-                type="checkbox"
-                checked={form.trait_ids.includes(trait.id)}
-                onChange={(e) =>
-                  handleChange(
-                    "trait_ids",
-                    e.target.checked
-                      ? [...form.trait_ids, trait.id]
-                      : form.trait_ids.filter((id) => id !== trait.id)
-                  )
-                }
-                className="dark:bg-gray-800 dark:border-gray-700"
-              />
-              {trait.name}
-            </label>
-          ))}
+          {traitsForList.map((trait) => {
+            const tkey = catalogKey(trait.source, trait.id);
+            return (
+              <label key={tkey} className="flex gap-2 items-center dark:text-gray-100">
+                <input
+                  type="checkbox"
+                  checked={form.trait_keys.includes(tkey)}
+                  onChange={(e) =>
+                    handleChange(
+                      "trait_keys",
+                      e.target.checked
+                        ? [...form.trait_keys, tkey]
+                        : form.trait_keys.filter((k) => k !== tkey),
+                    )
+                  }
+                  className="dark:bg-gray-800 dark:border-gray-700"
+                />
+                {trait.source === "seller" ? `${trait.name} (yours)` : trait.name}
+              </label>
+            );
+          })}
         </div>
       ),
     },

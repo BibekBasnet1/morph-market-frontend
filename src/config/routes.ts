@@ -33,6 +33,12 @@ export const ROUTES: RouteConfig[] = [
     icon: 'History',
     roles: ['seller', 'buyer'],
   },
+  {
+    path: '/my-attributes',
+    label: 'My Attributes',
+    icon: 'List',
+    roles: ['seller'],
+  },
 
   {
     path: '/inventory',

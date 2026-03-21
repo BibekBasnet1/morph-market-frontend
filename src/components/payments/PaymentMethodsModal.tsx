@@ -226,12 +226,12 @@ export const PaymentMethodsModal: React.FC<Props> = ({
 
 const isProcessing = flowState === 'processing';
 
-const estimatedTax = (items.reduce((sum, item) => sum + (item.price || 0), 0)) * 0.01;
-const shippingAndHandling = 45.00;
-  /* ---------------- MAIN RENDER ---------------- */
-console.log("item.name", items) ;
+// const estimatedTax = (items.reduce((sum, item) => sum + (item.price || 0), 0)) * 0.01;
+// const shippingAndHandling = 45.00;
+
+// console.log("item.name", items) ;
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-5xl w-full">
       <div className="min-h-[500px] dark:bg-[#0d1f1a] text-gray-800 dark:text-white p-10 rounded-xl">
         
         {/* ADDRESS STEP */}

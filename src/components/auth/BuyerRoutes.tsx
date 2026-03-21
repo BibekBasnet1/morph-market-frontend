@@ -26,11 +26,11 @@ const BuyerRoutes = () => (
         </ProtectedRoute>
       }
     >
-        <Route path="dashboard/*" element={
+      <Route path="dashboard/*" element={
         <ProtectedRoute allowedRoles={['buyer']}>
-            <BuyerDashboard />
+          <BuyerDashboard />
         </ProtectedRoute>
-        } />
+      } />
       <Route path="profile" element={
         <ProtectedRoute allowedRoles={['superadmin', 'admin', 'buyer', 'seller']}>
           <ProfilePage />
@@ -61,36 +61,36 @@ const BuyerRoutes = () => (
           <InventoryPage />
         </ProtectedRoute>
       } />
-            <Route path="add-listing" element={
-              <ProtectedRoute allowedRoles={['seller','buyer']}>
-                <AddListingPage />
-              </ProtectedRoute>
-            } />
-                  <Route path="products" element={
-                    <ProtectedRoute allowedRoles={['seller','buyer']}>
-                      <AllPrivateProductsPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="products/add" element={
-                    <ProtectedRoute allowedRoles={['seller','buyer']}>
-                      <AddProductPage />
-                    </ProtectedRoute>
-                  } />
-                        <Route path="products/edit/:id" element={
-                          <ProtectedRoute allowedRoles={['seller','buyer']}>
-                            <EditProductPage />
-                          </ProtectedRoute>
-                        } />
-                                          <Route path="activity-logs" element={
-                    <ProtectedRoute allowedRoles={['seller','buyer']}>
-                      <ActivityLogsPage />
-                    </ProtectedRoute>
-                  } />
-<Route path="orders" element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <BuyerOrders />
-                    </ProtectedRoute>
-                  } />
+      <Route path="add-listing" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <AddListingPage />
+        </ProtectedRoute>
+      } />
+      <Route path="products" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <AllPrivateProductsPage />
+        </ProtectedRoute>
+      } />
+      <Route path="products/add" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <AddProductPage />
+        </ProtectedRoute>
+      } />
+      <Route path="products/edit/:id" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <EditProductPage />
+        </ProtectedRoute>
+      } />
+      <Route path="activity-logs" element={
+        <ProtectedRoute allowedRoles={['seller', 'buyer']}>
+          <ActivityLogsPage />
+        </ProtectedRoute>
+      } />
+      <Route path="orders" element={
+        <ProtectedRoute allowedRoles={['buyer']}>
+          <BuyerOrders />
+        </ProtectedRoute>
+      } />
     </Route>
   </Routes>
 );

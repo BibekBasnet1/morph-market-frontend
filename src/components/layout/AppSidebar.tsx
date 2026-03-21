@@ -11,7 +11,7 @@ import {
   Ellipsis,
   Store,
   Warehouse,
-  ActivityIcon,
+  Pencil,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -36,16 +36,16 @@ const navItems: NavItem[] = [
   {
     icon: <LayoutDashboard size={20} />,
     name: "Dashboard",
-    roles: ["admin", "seller","buyer"],
+    roles: ["admin", "seller", "buyer"],
     path: "/dashboard",
   },
-    {
+  {
     icon: <List size={20} />,
     name: "Buyers List",
     roles: ["admin"],
     path: "/buyers",
   },
-      {
+  {
     icon: <List size={20} />,
     name: "Sellers List",
     roles: ["admin"],
@@ -54,16 +54,25 @@ const navItems: NavItem[] = [
   {
     name: "Products",
     icon: <ShoppingCart size={20} />,
-    roles: ["seller","buyer"],
+    roles: ["seller", "buyer"],
     subItems: [
-      { name: "All Products", path: "/products", roles: ["seller","buyer"] },
-      { name: "Add Product", path: "/products/add", roles: ["seller","buyer"] },
+      { name: "All Products", path: "/products", roles: ["seller", "buyer"] },
+      { name: "Add Product", path: "/products/add", roles: ["seller", "buyer"] },
     ],
   },
-    {
+  {
+    name: "My Attributes",
+    icon: <Pencil size={20} />,
+    roles: ["seller"],
+    subItems: [
+      { name: "My Traits", path: "/my-attributes/traits", roles: ["seller"] },
+      { name: "My Tags", path: "/my-attributes/tags", roles: ["seller"] },
+    ],
+  },
+  {
     name: "Inventory",
     icon: <Warehouse size={20} />,
-    roles: ["seller","buyer"],
+    roles: ["seller", "buyer"],
     path: "/inventory",
   },
   //     {
@@ -104,11 +113,11 @@ const navItems: NavItem[] = [
 const supportItems: NavItem[] = [
   {
     icon: <Store />,
-    roles:['admin','seller','buyer'],
+    roles: ['admin', 'seller', 'buyer'],
     name: "Store",
     path: "/store",
   },
-   {
+  {
     name: "Add Attributes",
     icon: <FileText size={20} />,
     roles: ["admin"],
@@ -123,12 +132,12 @@ const supportItems: NavItem[] = [
 
     ],
   },
- 
+
 ];
 
 const AppSidebar: React.FC = () => {
 
-  const {user} = useAuth();
+  const { user } = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =
     useSidebar();
   const location = useLocation();
@@ -211,10 +220,10 @@ const AppSidebar: React.FC = () => {
   };
 
   const userRoleNames: RoleName[] =
-  user?.roles?.map((r) => r.name as RoleName) ?? [];
+    user?.roles?.map((r) => r.name as RoleName) ?? [];
 
-const hasAccess = (allowedRoles: RoleName[]) =>
-  allowedRoles.some((role) => userRoleNames.includes(role));
+  const hasAccess = (allowedRoles: RoleName[]) =>
+    allowedRoles.some((role) => userRoleNames.includes(role));
 
   // Modify navItems to set dynamic dashboard path based on role
   const modifiedNavItems = navItems.map(item => {
@@ -233,82 +242,44 @@ const hasAccess = (allowedRoles: RoleName[]) =>
   });
 
   const renderMenuItems = (
-  items: NavItem[],
-  menuType: "main" | "support"
-) => (
-  <ul className="flex flex-col gap-1">
-    {items
-      // ✅ filter parent menus by role
-      .filter((nav) => hasAccess(nav.roles))
-      .map((nav, index) => {
-        // ✅ filter sub-items by role
-        const visibleSubItems = nav.subItems
-          ? nav.subItems.filter((sub) => hasAccess(sub.roles))
-          : [];
+    items: NavItem[],
+    menuType: "main" | "support"
+  ) => (
+    <ul className="flex flex-col gap-1">
+      {items
+        // ✅ filter parent menus by role
+        .filter((nav) => hasAccess(nav.roles))
+        .map((nav, index) => {
+          // ✅ filter sub-items by role
+          const visibleSubItems = nav.subItems
+            ? nav.subItems.filter((sub) => hasAccess(sub.roles))
+            : [];
 
-        // ❌ do not render menu if it has subItems but none are visible
-        if (nav.subItems && visibleSubItems.length === 0) {
-          return null;
-        }
+          // ❌ do not render menu if it has subItems but none are visible
+          if (nav.subItems && visibleSubItems.length === 0) {
+            return null;
+          }
 
-        return (
-          <li key={nav.name}>
-            {nav.subItems ? (
-              <button
-                onClick={() => handleSubmenuToggle(index, menuType)}
-                className={`menu-item group ${
-                  openSubmenu?.type === menuType &&
-                  openSubmenu?.index === index
-                    ? "menu-item-active text-green-600"
-                    : "menu-item-inactive"
-                } cursor-pointer ${
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "xl:justify-start"
-                }`}
-              >
-                <span
-                  className={`menu-item-icon-size ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
-                  }`}
-                >
-                  {nav.icon}
-                </span>
-
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
-                )}
-
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <ChevronDown
-                    className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                      openSubmenu?.type === menuType &&
+          return (
+            <li key={nav.name}>
+              {nav.subItems ? (
+                <button
+                  onClick={() => handleSubmenuToggle(index, menuType)}
+                  className={`menu-item group ${openSubmenu?.type === menuType &&
                       openSubmenu?.index === index
-                        ? "rotate-180 text-green-500"
-                        : ""
-                    }`}
-                  />
-                )}
-              </button>
-            ) : (
-              nav.path && (
-                <Link
-                  to={nav.path}
-                  className={`menu-item group ${
-                    isActive(nav.path)
-                      ? "menu-item-active"
+                      ? "menu-item-active text-green-600"
                       : "menu-item-inactive"
-                  }`}
+                    } cursor-pointer ${!isExpanded && !isHovered
+                      ? "xl:justify-center"
+                      : "xl:justify-start"
+                    }`}
                 >
                   <span
-                    className={`menu-item-icon-size ${
-                      isActive(nav.path)
+                    className={`menu-item-icon-size ${openSubmenu?.type === menuType &&
+                        openSubmenu?.index === index
                         ? "menu-item-icon-active"
                         : "menu-item-icon-inactive"
-                    }`}
+                      }`}
                   >
                     {nav.icon}
                   </span>
@@ -316,70 +287,99 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                   {(isExpanded || isHovered || isMobileOpen) && (
                     <span className="menu-item-text">{nav.name}</span>
                   )}
-                </Link>
-              )
-            )}
 
-            {/* ✅ Render filtered submenus */}
-            {nav.subItems &&
-              visibleSubItems.length > 0 &&
-              (isExpanded || isHovered || isMobileOpen) && (
-                <div
-                  ref={(el) => {
-                    subMenuRefs.current[`${menuType}-${index}`] = el;
-                  }}
-                  className="overflow-hidden transition-all duration-300"
-                  style={{
-                    height:
-                      openSubmenu?.type === menuType &&
-                      openSubmenu?.index === index
-                        ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                        : "0px",
-                  }}
-                >
-                  <ul className="mt-2 space-y-1 ml-9">
-                    {visibleSubItems.map((subItem) => (
-                      <li key={subItem.name}>
-                        <Link
-                          to={subItem.path}
-                          className={`menu-dropdown-item ${
-                            isActive(subItem.path)
-                              ? "menu-dropdown-item-active"
-                              : "menu-dropdown-item-inactive"
-                          }`}
-                        >
-                          {subItem.name}
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <ChevronDown
+                      className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
+                          openSubmenu?.index === index
+                          ? "rotate-180 text-green-500"
+                          : ""
+                        }`}
+                    />
+                  )}
+                </button>
+              ) : (
+                nav.path && (
+                  <Link
+                    to={nav.path}
+                    className={`menu-item group ${isActive(nav.path)
+                        ? "menu-item-active"
+                        : "menu-item-inactive"
+                      }`}
+                  >
+                    <span
+                      className={`menu-item-icon-size ${isActive(nav.path)
+                          ? "menu-item-icon-active"
+                          : "menu-item-icon-inactive"
+                        }`}
+                    >
+                      {nav.icon}
+                    </span>
 
-                          {subItem.pro && (
-                            <span
-                              className={`ml-auto ${
-                                isActive(subItem.path)
-                                  ? "menu-dropdown-badge-pro-active"
-                                  : "menu-dropdown-badge-pro-inactive"
-                              } menu-dropdown-badge-pro`}
-                            >
-                              pro
-                            </span>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                    {(isExpanded || isHovered || isMobileOpen) && (
+                      <span className="menu-item-text">{nav.name}</span>
+                    )}
+                  </Link>
+                )
               )}
-          </li>
-        );
-      })}
-  </ul>
-);
+
+              {/* ✅ Render filtered submenus */}
+              {nav.subItems &&
+                visibleSubItems.length > 0 &&
+                (isExpanded || isHovered || isMobileOpen) && (
+                  <div
+                    ref={(el) => {
+                      subMenuRefs.current[`${menuType}-${index}`] = el;
+                    }}
+                    className="overflow-hidden transition-all duration-300"
+                    style={{
+                      height:
+                        openSubmenu?.type === menuType &&
+                          openSubmenu?.index === index
+                          ? `${subMenuHeight[`${menuType}-${index}`]}px`
+                          : "0px",
+                    }}
+                  >
+                    <ul className="mt-2 space-y-1 ml-9">
+                      {visibleSubItems.map((subItem) => (
+                        <li key={subItem.name}>
+                          <Link
+                            to={subItem.path}
+                            className={`menu-dropdown-item ${isActive(subItem.path)
+                                ? "menu-dropdown-item-active"
+                                : "menu-dropdown-item-inactive"
+                              }`}
+                          >
+                            {subItem.name}
+
+                            {subItem.pro && (
+                              <span
+                                className={`ml-auto ${isActive(subItem.path)
+                                    ? "menu-dropdown-badge-pro-active"
+                                    : "menu-dropdown-badge-pro-inactive"
+                                  } menu-dropdown-badge-pro`}
+                              >
+                                pro
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+            </li>
+          );
+        })}
+    </ul>
+  );
 
   return (
     <aside
       className={`fixed dark:bg-black bg-white flex flex-col  top-0 px-5 left-0  h-screen transition-all duration-300 ease-in-out z-50 border-r dark:border-gray-700 border-gray-200 
-        ${
-          isExpanded || isMobileOpen
-            ? "w-[260px]"
-            : isHovered
+        ${isExpanded || isMobileOpen
+          ? "w-[260px]"
+          : isHovered
             ? "w-[260px]"
             : "w-[80px]"
         }
@@ -389,9 +389,8 @@ const hasAccess = (allowedRoles: RoleName[]) =>
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 px-2 flex flex-shrink-0 items-center gap-2 w-full mt-[45px] xl:mt-0 ${
-          !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
-        }`}
+        className={`py-8 px-2 flex flex-shrink-0 items-center gap-2 w-full mt-[45px] xl:mt-0 ${!isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
+          }`}
       >
         <Link to="/" className="flex items-center gap-2 w-full">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -410,14 +409,14 @@ const hasAccess = (allowedRoles: RoleName[]) =>
                 width={150}
                 height={40}
               /> */}
-                  
-             <span className="text-2xl flex-shrink-0">🐍</span>
-             <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">
-               ExoticPetsMarket
-             </span>
+
+              <span className="text-2xl flex-shrink-0">🐍</span>
+              <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">
+                ExoticPetsMarket
+              </span>
             </>
           ) : (
-           <span className="text-2xl">🐍</span>
+            <span className="text-2xl">🐍</span>
           )}
         </Link>
       </div>
@@ -426,11 +425,10 @@ const hasAccess = (allowedRoles: RoleName[]) =>
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                     ? "xl:justify-center"
                     : "justify-start"
-                }`}
+                  }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Menu"
@@ -442,11 +440,10 @@ const hasAccess = (allowedRoles: RoleName[]) =>
             </div>
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                     ? "xl:justify-center"
                     : "justify-start"
-                }`}
+                  }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Support"

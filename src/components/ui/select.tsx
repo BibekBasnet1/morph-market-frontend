@@ -85,6 +85,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       <button
+        type="button"
         onClick={() => {
           if (!disabled) {
             setIsOpen(!isOpen);

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import { ProtectedRoute } from "./ProtectedRoute";
 import DashboardLayout from "../layout/DashboardLayout";
 import AdminDashboard from "../../pages/dashboards/AdminDashboard";
@@ -18,6 +18,9 @@ const AddDietPage = lazy(() => import("../../pages/addDiet/addDiet"));
 const AddMaturityPage = lazy(() => import("../../pages/addMaturity/addMaturity"));
 const AddOriginPage = lazy(() => import("../../pages/addOrigin/addOrigin"));
 const AddTagsPage = lazy(() => import("../../pages/addTags/addTags"));
+const MyAttributesLayout = lazy(() => import("../../pages/myAttributes/Layout"));
+const MyTraitsPage = lazy(() => import("../../pages/myAttributes/TraitsPage"));
+const MyTagsPage = lazy(() => import("../../pages/myAttributes/TagsPage"));
 
 const AdminRoutes = () => (
   <Routes>
@@ -100,6 +103,18 @@ const AdminRoutes = () => (
           <AddOriginPage />
         </ProtectedRoute>
       } />
+      <Route
+        path="my-attributes"
+        element={
+          <ProtectedRoute allowedRoles={["seller"]}>
+            <MyAttributesLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="traits" replace />} />
+        <Route path="traits" element={<MyTraitsPage />} />
+        <Route path="tags" element={<MyTagsPage />} />
+      </Route>
     </Route>
   </Routes>
 );
