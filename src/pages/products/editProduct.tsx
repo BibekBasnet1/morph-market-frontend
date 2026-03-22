@@ -112,7 +112,7 @@ const EditProductPage = () => {
         location: product.location || "",
         breeder: product.breeder || "",
         gender_id: getId(product.gender),
-        weight: product.specifications?.weight?.toString() || "",
+        weight: product?.weight?.toString() || "",
         age: "",
         maturity_level_id: getId(product.maturity_level),
         origin_id: getId(product.origin),

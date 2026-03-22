@@ -136,9 +136,9 @@ const Navbar: React.FC = () => {
               <Search className="h-5 w-5" />
             </Button>
 
-            <Button variant="ghost" size="icon" className="hidden xl:flex text-gray-600 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+            {/* <Button variant="ghost" size="icon" className="hidden xl:flex text-gray-600 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
               <Heart className="h-5 w-5" />
-            </Button>
+            </Button> */}
 
             <Link to="/cart" className="hidden xl:block relative">
               <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/10">
@@ -285,7 +285,7 @@ const Navbar: React.FC = () => {
                   )}
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="/wishlist"
                   onClick={() => setNavDrawerOpen(false)}
@@ -294,7 +294,7 @@ const Navbar: React.FC = () => {
                   <Heart className="w-4 h-4 text-red-400/80" />
                   Wishlist
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </nav>
 
