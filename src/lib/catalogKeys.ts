@@ -1,6 +1,5 @@
 export type CatalogSource = "public" | "seller";
 
-/** Stable key for tags/traits when public and seller tables can share numeric ids. */
 export function catalogKey(source: CatalogSource, id: number): string {
   return `${source}:${id}`;
 }
@@ -46,12 +45,18 @@ export function tagKeyFromProductTag(
   getId: (v: unknown) => number,
 ): string {
   if (!tag) return "";
-  if (typeof tag === "object" && tag !== null && "source" in tag) {
-    const s = (tag as { source: string }).source;
-    const id = getId(tag);
+
+  const item = Array.isArray(tag) ? (tag as unknown[])[0] : tag;
+
+  if (!item) return "";
+
+  if (typeof item === "object" && item !== null && "source" in item) {
+    const s = (item as { source: string }).source;
+    const id = getId(item);
     if (s === "seller" || s === "public") return catalogKey(s, id);
   }
-  return catalogKey("public", getId(tag));
+
+  return catalogKey("public", getId(item));
 }
 
 /**
@@ -97,29 +102,41 @@ export function traitKeysFromProduct(
   return [];
 }
 
+function dedupeKeys(keys: string[]): string[] {
+  return [...new Set(keys)];
+}
+
 /**
- * Build trait keys from nested `traits` and/or flat `trait_ids` + `seller_trait_ids`.
+ * Build trait keys from nested `traits`, `seller_traits` (Laravel relation), and/or
+ * flat `trait_ids` + `seller_trait_ids`.
  */
 export function traitKeysFromProductResponse(
   product: Record<string, unknown>,
   getId: (v: unknown) => number,
 ): string[] {
-  const traits = product.traits;
+  const traits = product.traits as unknown[] | undefined;
+  const sellerTraits = product.seller_traits as unknown[] | undefined;
   const traitIds = product.trait_ids as number[] | undefined;
   const sellerTraitIds = product.seller_trait_ids as number[] | undefined;
 
-  if (Array.isArray(traits) && traits.length) {
-    return traitKeysFromProduct(traits, traitIds, getId);
-  }
-
   const keys: string[] = [];
-  if (Array.isArray(traitIds)) {
+
+  if (Array.isArray(traits) && traits.length) {
+    keys.push(...traitKeysFromProduct(traits, traitIds, getId));
+  } else if (Array.isArray(traitIds) && traitIds.length) {
     traitIds.forEach((id) => keys.push(catalogKey("public", id)));
   }
-  if (Array.isArray(sellerTraitIds)) {
+
+  if (Array.isArray(sellerTraitIds) && sellerTraitIds.length) {
     sellerTraitIds.forEach((id) => keys.push(catalogKey("seller", id)));
   }
-  return keys;
+  if (Array.isArray(sellerTraits) && sellerTraits.length) {
+    sellerTraits.forEach((st) => {
+      keys.push(catalogKey("seller", getId(st)));
+    });
+  }
+
+  return dedupeKeys(keys);
 }
 
 /** Row shape from merged-tags / merged-traits `combined` (or public/seller arrays). */
@@ -129,10 +146,6 @@ export type CatalogRowForResolve = {
   name?: string;
   slug?: string;
 };
-
-function dedupeKeys(keys: string[]): string[] {
-  return [...new Set(keys)];
-}
 
 function disambiguateIdToKey(
   id: number,
@@ -236,11 +249,14 @@ export function resolveTraitKeysWithMergedCatalog(
 
   const sellerTraitIds = product.seller_trait_ids as number[] | undefined;
   const traitIds = product.trait_ids as number[] | undefined;
-  const traits = product.traits;
+  const traits = product.traits as unknown[] | undefined;
+  const sellerTraits = product.seller_traits as unknown[] | undefined;
+
+  const keys: string[] = [];
 
   if (Array.isArray(traits) && traits.length) {
-    return dedupeKeys(
-      traits.map((t: unknown) => {
+    keys.push(
+      ...traits.map((t: unknown) => {
         if (typeof t === "object" && t !== null && "source" in (t as object)) {
           const s = (t as { source: string }).source;
           const id = getId(t);
@@ -259,16 +275,20 @@ export function resolveTraitKeysWithMergedCatalog(
         );
       }),
     );
-  }
-
-  const keys: string[] = [];
-  if (Array.isArray(traitIds)) {
+  } else if (Array.isArray(traitIds) && traitIds.length) {
     traitIds.forEach((tid) => {
       keys.push(disambiguateIdToKey(tid, combined, undefined));
     });
   }
-  if (Array.isArray(sellerTraitIds)) {
+
+  if (Array.isArray(sellerTraits) && sellerTraits.length) {
+    sellerTraits.forEach((st) => {
+      keys.push(catalogKey("seller", getId(st)));
+    });
+  }
+  if (Array.isArray(sellerTraitIds) && sellerTraitIds.length) {
     sellerTraitIds.forEach((id) => keys.push(catalogKey("seller", id)));
   }
+
   return dedupeKeys(keys);
 }

@@ -15,7 +15,6 @@ import { Textarea } from "../../components/ui/textArea";
 import Select from "../../components/ui/select";
 import MultiStepForm, { type Step } from "../../components/ui/multiStepForm/MultiStepForm";
 import MultiSelect from "../../components/ui/dropdown/MultiSelect";
-
 import { ProductService } from "../../lib/api/products";
 import { CategoryService } from "../../lib/api/categories";
 import { TagsService } from "../../lib/api/attributes/tags";
@@ -97,7 +96,6 @@ const EditProductPage = () => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  /* Fetch existing product data */
   const { data: product, isLoading: isLoadingProduct } = useQuery({
     queryKey: ["product", productId],
     queryFn: () => ProductService.getById(productId),
@@ -166,7 +164,6 @@ const EditProductPage = () => {
   }, [isSeller, mergedTags, tags]);
 
   const traitsForList = useMemo(() => {
-    console.log('merged' , mergedTraitsPayload);
     if (isSeller && mergedTraitsPayload?.combined?.length) {
       return mergedTraitsPayload.combined;
     }
