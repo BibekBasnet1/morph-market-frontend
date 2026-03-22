@@ -389,8 +389,8 @@ const isProcessing = flowState === 'processing';
                     </svg>
                     <p className="text-xs text-gray-400 leading-relaxed">
                       By clicking "Place Order & Pay," you agree to ExoticPetsMarket's{' '}
-                      <a href="#" className="text-green-400 underline">Terms of Service</a> and{' '}
-                      <a href="#" className="text-green-400 underline">Privacy Notice</a>.
+                      <a href="/" className="text-green-400 underline">Terms of Service</a> and{' '}
+                      <a href="/" className="text-green-400 underline">Privacy Notice</a>.
                     </p>
                   </div>
                 </div>

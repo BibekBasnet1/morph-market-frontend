@@ -1,3 +1,5 @@
+import type { Product } from "./index";
+
 export type Cart = {
   id: number;
   user_id: number;
@@ -8,6 +10,7 @@ export type Cart = {
   status: "active" | "ordered";
   created_at: string;
   updated_at: string;
+  product?: Product;
 };
 
 export type AddToCartPayload = {
