@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { StoreService } from "../../lib/api/stores";
@@ -18,8 +18,6 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-
-
 
 const DAYS_ORDER = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 
@@ -55,27 +53,100 @@ function StarRow({ rating, size = 14 }: { rating: number; size?: number }) {
         <Star
           key={n}
           width={size} height={size}
-          fill={n <= Math.round(rating) ? "#f59e0b" : "none"}
-          stroke={n <= Math.round(rating) ? "#f59e0b" : "#d1d5db"}
+          className={
+            n <= Math.round(rating)
+              ? "fill-amber-500 stroke-amber-500"
+              : "fill-none stroke-gray-300 dark:stroke-gray-600"
+          }
         />
       ))}
     </div>
   );
 }
 
-function ShippingBadge({ type }: { type: string }) {
-  const map: Record<string, { label: string; color: string; bg: string }> = {
-    international: { label: "🌍 International", color: "#1a4a32", bg: "#e6f4ea" },
-    national:      { label: "🇺🇸 National",      color: "#1e3a8a", bg: "#eff6ff" },
-    regional:      { label: "📍 Regional",       color: "#713f12", bg: "#fef9c3" },
-    local_pickup:  { label: "🏠 Local Pickup",   color: "#4b1d96", bg: "#f5f3ff" },
+const POLICY_COLLAPSED_MAX_PX = 200;
+
+function ExpandableStorePolicy({ html }: { html?: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [showToggle, setShowToggle] = useState(false);
+
+  const updateToggle = () => {
+    const el = innerRef.current;
+    if (!el) {
+      setShowToggle(false);
+      return;
+    }
+    setShowToggle(el.scrollHeight > POLICY_COLLAPSED_MAX_PX);
   };
-  const info = map[type] ?? { label: type, color: "#374151", bg: "#f3f4f6" };
+
+  useLayoutEffect(() => {
+    setExpanded(false);
+  }, [html]);
+
+  useLayoutEffect(() => {
+    updateToggle();
+    const el = innerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(updateToggle);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [html]);
+
+  if (!html?.trim()) {
+    return <p className="text-sm text-gray-400 dark:text-gray-500">No policy provided.</p>;
+  }
+
   return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-      style={{ color: info.color, background: info.bg }}
-    >
+    <div className="space-y-2">
+      <div className={expanded ? "" : "relative overflow-hidden"} style={expanded ? undefined : { maxHeight: POLICY_COLLAPSED_MAX_PX }}>
+        <div
+          ref={innerRef}
+          className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed [&_a]:text-primary [&_a]:underline [&_strong]:text-gray-800 dark:[&_strong]:text-gray-200"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        {!expanded && showToggle && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white to-transparent dark:from-gray-900" aria-hidden />
+        )}
+      </div>
+      {showToggle && (
+        <button
+          type="button"
+          onClick={() => setExpanded(e => !e)}
+          className="text-sm font-semibold text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded"
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ShippingBadge({ type }: { type: string }) {
+  const map: Record<string, { label: string; className: string }> = {
+    international: {
+      label: "🌍 International",
+      className: "text-emerald-900 bg-emerald-100 dark:text-emerald-200 dark:bg-emerald-950/55",
+    },
+    national: {
+      label: "🇺🇸 National",
+      className: "text-blue-900 bg-blue-50 dark:text-blue-200 dark:bg-blue-950/55",
+    },
+    regional: {
+      label: "📍 Regional",
+      className: "text-amber-900 bg-amber-100 dark:text-amber-200 dark:bg-amber-950/55",
+    },
+    local_pickup: {
+      label: "🏠 Local Pickup",
+      className: "text-violet-900 bg-violet-100 dark:text-violet-200 dark:bg-violet-950/55",
+    },
+  };
+  const info = map[type] ?? {
+    label: type,
+    className: "text-gray-800 bg-gray-100 dark:text-gray-200 dark:bg-gray-800",
+  };
+  return (
+    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${info.className}`}>
       {info.label}
     </span>
   );
@@ -86,16 +157,15 @@ function ProductCard({ product, onClick }: { product: { id: number; name: string
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-2xl overflow-hidden group cursor-pointer"
+      className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl overflow-hidden group cursor-pointer"
       style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.07)" }}
     >
       <div
-        className="h-36 relative overflow-hidden"
-        style={{
-          background: product.image
-            ? undefined
-            : "linear-gradient(135deg, #c8d8c8 0%, #e8f0e8 100%)",
-        }}
+        className={`h-36 relative overflow-hidden ${
+          product.image
+            ? ""
+            : "bg-gradient-to-br from-[#c8d8c8] to-[#e8f0e8] dark:from-gray-800 dark:to-gray-900"
+        }`}
       >
         {product.image && (
           <img
@@ -115,14 +185,12 @@ function ProductCard({ product, onClick }: { product: { id: number; name: string
           style={{ backdropFilter: "blur(4px)" }}
         >
           <Heart
-            className="w-3.5 h-3.5 transition-colors"
-            fill={liked ? "#ef4444" : "none"}
-            stroke={liked ? "#ef4444" : "#6b7280"}
+            className={`w-3.5 h-3.5 transition-colors ${liked ? "stroke-red-500 fill-red-500" : "stroke-gray-500 dark:stroke-gray-400 fill-none"}`}
           />
         </button>
       </div>
       <div className="p-3">
-        <p className="text-sm font-semibold text-gray-800 leading-snug mb-1">{product.name}</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-snug mb-1">{product.name}</p>
         <p className="text-base font-bold text-primary">${product.price}</p>
       </div>
     </div>
@@ -157,7 +225,9 @@ export default function StoreDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">Loading store...</div>
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground dark:bg-black">
+        Loading store...
+      </div>
     );
   }
 
@@ -172,7 +242,7 @@ export default function StoreDetailsPage() {
   ] as const;
 
   return (
-    <div className="min-h-screen text-foreground">
+    <div className="min-h-screen text-foreground bg-gray-50 dark:bg-black">
       {/* Back nav */}
       <div className="mx-auto px-4 sm:px-6">
         <div
@@ -233,18 +303,18 @@ export default function StoreDetailsPage() {
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap text-sm">
               <div className="flex items-center gap-1.5">
                 <StarRow rating={Number(store.rating) || 0} size={13} />
-                <span className="text-sm font-semibold text-gray-700">{(Number(store.rating) || 0).toFixed(2)}</span>
-                <span className="text-xs text-gray-400">({store.total_reviews ?? store.review_count ?? 0} reviews)</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{(Number(store.rating) || 0).toFixed(2)}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">({store.total_reviews ?? store.review_count ?? 0} reviews)</span>
               </div>
-              <span className="text-gray-300">·</span>
+              <span className="text-gray-300 dark:text-gray-600">·</span>
               <span
-                className={`flex items-center gap-1 text-xs font-medium ${todayStatus.open ? "text-emerald-600" : "text-red-500"}`}
+                className={`flex items-center gap-1 text-xs font-medium ${todayStatus.open ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}
               >
                 {todayStatus.open ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                 {todayStatus.label}
               </span>
-              <span className="text-gray-300">·</span>
-              <span className="text-xs text-gray-500 flex items-center gap-1">
+              <span className="text-gray-300 dark:text-gray-600">·</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <Package className="w-3.5 h-3.5" />
                 {inventoryCount} items available
               </span>
@@ -276,15 +346,15 @@ export default function StoreDetailsPage() {
           {/* Left column — tabs content */}
           <div className="lg:col-span-2 space-y-4">
             {/* Tabs */}
-            <div className="flex gap-1 p-1 rounded-xl bg-white/60 backdrop-blur-md">
+            <div className="flex gap-1 p-1 rounded-xl bg-white/60 dark:bg-gray-900/80 backdrop-blur-md border border-transparent dark:border-gray-800">
               {tabs.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
                     activeTab === tab.key
-                      ? "bg-white text-primary shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-white dark:bg-gray-800 text-primary shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                   }`}
                 >
                   {tab.label}
@@ -347,17 +417,16 @@ export default function StoreDetailsPage() {
             {/* About */}
             {activeTab === "about" && (
               <div className="space-y-4">
-                <div className="bg-white rounded-2xl p-5 shadow-sm">
-                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">About the Store</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{store.about}</p>
+                <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+                  <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider mb-3">About the Store</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{store.about}</p>
                 </div>
-                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
-                    <AlertCircle className="w-4 h-4 text-amber-500" />
-                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Store Policy</h3>
+                    <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Store Policy</h3>
                   </div>
-                  {/* set dangeroouslySetInnerHTML to the store.policy */}
-                  <div dangerouslySetInnerHTML={{ __html: store.policy }} />
+                  <ExpandableStorePolicy html={store.policy} />
                 </div>
               </div>
             )}
@@ -368,14 +437,14 @@ export default function StoreDetailsPage() {
 
             {/* Contact */}
             {store.contact_visible && (
-              <div className="bg-white rounded-2xl p-4 space-y-3 shadow-sm">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</h3>
+              <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-4 space-y-3 shadow-sm">
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</h3>
                 {store.phone && (
                   <a
                     href={`tel:${store.phone}`}
-                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-primary transition-colors"
+                    className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10 dark:bg-primary/20">
                       <Phone className="w-3.5 h-3.5 text-primary" />
                     </div>
                     {store.phone}
@@ -384,9 +453,9 @@ export default function StoreDetailsPage() {
                 {store.email && (
                   <a
                     href={`mailto:${store.email}`}
-                    className="flex items-center gap-2.5 text-sm text-gray-700 hover:text-primary transition-colors"
+                    className="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-primary/10 dark:bg-primary/20">
                       <Mail className="w-3.5 h-3.5 text-primary" />
                     </div>
                     {store.email}
@@ -396,14 +465,14 @@ export default function StoreDetailsPage() {
             )}
 
             {/* Address */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Location</h3>
+            <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-4 shadow-sm">
+              <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Location</h3>
               <div className="flex gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10 dark:bg-primary/20">
                   <MapPin className="w-3.5 h-3.5 text-primary" />
                 </div>
                 {store.address ? (
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     {store.address.address_line_1}
                     {store.address.address_line_2 && `, ${store.address.address_line_2}`}
                     <br />
@@ -412,16 +481,16 @@ export default function StoreDetailsPage() {
                     {store.address.country}
                   </p>
                 ) : (
-                  <p className="text-sm text-gray-600 leading-relaxed">Address not provided</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Address not provided</p>
                 )}
               </div>
             </div>
 
             {/* Hours */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-3">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Store Hours</h3>
-                <Clock className="w-3.5 h-3.5 text-gray-400" />
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Store Hours</h3>
+                <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
               </div>
               <div className="space-y-1.5">
                 {DAYS_ORDER.map(day => {
@@ -430,15 +499,15 @@ export default function StoreDetailsPage() {
                   return (
                     <div
                       key={day}
-                      className={`flex justify-between items-center text-xs py-0.5 rounded-md px-1 -mx-1 ${isToday ? "bg-primary/5 font-semibold" : ""}`}
+                      className={`flex justify-between items-center text-xs py-0.5 rounded-md px-1 -mx-1 ${isToday ? "bg-primary/5 dark:bg-primary/15 font-semibold" : ""}`}
                     >
-                      <span className="text-gray-600 capitalize">{day}</span>
+                      <span className="text-gray-600 dark:text-gray-400 capitalize">{day}</span>
                             {hour?.is_open ? (
-                              <span className="text-primary">
+                              <span className="text-primary dark:text-emerald-400">
                                 {formatTime(hour.open_time)} – {formatTime(hour.close_time)}
                               </span>
                             ) : (
-                              <span className="text-gray-400">Closed</span>
+                              <span className="text-gray-400 dark:text-gray-500">Closed</span>
                             )}
                     </div>
                   );
@@ -447,27 +516,27 @@ export default function StoreDetailsPage() {
             </div>
 
             {/* Shipping */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Shipping</h3>
+            <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-4 shadow-sm">
+              <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Shipping</h3>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-primary/10 dark:bg-primary/20">
                   <Truck className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div>
                   <ShippingBadge type={store.shipping_type} />
-                  <p className="text-xs text-gray-400 mt-1">Live arrival guaranteed</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Live arrival guaranteed</p>
                 </div>
               </div>
             </div>
 
             {/* Owner */}
-            <div className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 dark:border dark:border-gray-800 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-primary-foreground font-bold flex-shrink-0 bg-primary">
                 {(store.owner?.name || store.owner?.username || "").charAt(0)}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">{store.owner?.name ?? store.owner?.username ?? "Store Owner"}</p>
-                <p className="text-xs text-gray-400">Store owner · Member since {store.owner?.joined ?? (store.owner?.created_at ? new Date(store.owner.created_at).getFullYear() : "—")}</p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{store.owner?.name ?? store.owner?.username ?? "Store Owner"}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Store owner · Member since {store.owner?.joined ?? (store.owner?.created_at ? new Date(store.owner.created_at).getFullYear() : "—")}</p>
               </div>
             </div>
 

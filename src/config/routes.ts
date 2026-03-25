@@ -26,7 +26,11 @@ export const ROUTES: RouteConfig[] = [
   //   icon: 'Activity',
   //   roles: ['admin', 'seller', 'buyer', 'superadmin'],
   // },
-
+  {
+    path: 'policy',
+    label: 'Policy',
+    roles: ['admin', 'seller', 'buyer', 'superadmin'],
+  },
   {
     path: '/activity-logs',
     label: 'Activity Logs',

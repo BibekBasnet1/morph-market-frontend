@@ -395,28 +395,11 @@ const AppSidebar: React.FC = () => {
         <Link to="/" className="flex items-center gap-2 w-full">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              {/* <img
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <img
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              /> */}
-
-              <span className="text-2xl flex-shrink-0">🐍</span>
-              <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">
-                ExoticPetsMarket
-              </span>
+                <img src="/log.webp" alt="Logo" width={50} height={90} />
+                <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">ExoticPetsMarket</span>
             </>
           ) : (
-            <span className="text-2xl">🐍</span>
+            <img src="/log.webp" alt="Logo" width={90} height={90} />
           )}
         </Link>
       </div>

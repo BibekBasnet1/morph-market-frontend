@@ -29,6 +29,7 @@ const NotFound = lazy(() => import("./pages/not-found/notFound"));
 const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
 const CartPage = lazy(()=> import("./pages/cart/cart"))
 const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
+const PrivacyPolicyPage = lazy(() => import("./pages/policy/PrivacyPolicyPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,8 +64,7 @@ const AppRoutes = () => {
     { path: "/store", load: StoreRegistrationForm },
     { path: "/stores/:id/products", load: StoreDetailsPage },
     { path: "/store-directory", load: Shops },
-
-
+    { path: "/privacy", load: PrivacyPolicyPage },
   ];
 
 
