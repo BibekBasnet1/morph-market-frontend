@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { Heart, ShoppingCart, User, Search, X, Menu, Settings, LogOut, Castle } from "lucide-react";
+import { ShoppingCart, User, Search, X, Menu, Settings, LogOut, Castle } from "lucide-react";
 import { useCart } from "../../hooks/useCart";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* CENTER: Search */}
-          <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm xl:max-w-md mx-4 xl:mx-8">
+          {/* <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm xl:max-w-md mx-4 xl:mx-8">
             <div className="relative w-full flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-gray-50 dark:bg-gray-800/50">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
@@ -122,7 +122,7 @@ const Navbar: React.FC = () => {
                 Search
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
@@ -185,7 +185,7 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile search bar */}
-        {mobileSearchOpen && (
+        {/* {mobileSearchOpen && (
           <div className="md:hidden px-3 pb-3">
             <div className="relative flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 bg-gray-50 dark:bg-gray-800/50">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -196,7 +196,7 @@ const Navbar: React.FC = () => {
               />
             </div>
           </div>
-        )}
+        )} */}
       </header>
 
       {/* Backdrop */}

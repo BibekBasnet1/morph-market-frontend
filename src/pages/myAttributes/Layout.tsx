@@ -9,7 +9,7 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
 
 const MyAttributesLayout = () => {
   return (
-    <div className="space-y-6 p-1 sm:p-10 mx-auto text-gray-900 dark:text-gray-100 ">
+    <div className="space-y-6 p-1 mx-auto text-gray-900 dark:text-gray-100 ">
       <div>
         <h1 className="text-xl font-semibold">My Attributes</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
