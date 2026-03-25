@@ -3,6 +3,7 @@ import { useState, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { StoreService } from "../../lib/api/stores";
+import { StoreRatingWidget } from "../../components/store/StoreRatingWidget";
 import {
   Star,
   ShieldCheck,
@@ -197,21 +198,6 @@ function ProductCard({ product, onClick }: { product: { id: number; name: string
   );
 }
 
-// function ReviewCard({ review }: { review: { id: number; author: string; rating: number; date: string; comment: string } }) {
-//   return (
-//     <div className="bg-white rounded-2xl p-4" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-//       <div className="flex items-start justify-between mb-2">
-//         <div>
-//           <p className="text-sm font-semibold text-gray-800">{review.author}</p>
-//           <p className="text-xs text-gray-400">{review.date}</p>
-//         </div>
-//         <StarRow rating={review.rating} size={12} />
-//       </div>
-//       <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
-//     </div>
-//   );
-// }
-
 export default function StoreDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -219,7 +205,7 @@ export default function StoreDetailsPage() {
 
   const { data: storeData, isLoading } = useQuery<any>({
     queryKey: ["store-products", id],
-    queryFn: () => StoreService.getStoresById(id),
+    queryFn: () => StoreService.getStoresById(id as string),
     enabled: !!id,
   });
 
@@ -434,6 +420,18 @@ export default function StoreDetailsPage() {
 
           {/* Right column — sidebar */}
           <div className="space-y-4">
+            <StoreRatingWidget
+              key={id}
+              storeId={id}
+              ownerUserId={store.owner?.id != null ? Number(store.owner.id) : null}
+              initialUserRating={
+                store.user_rating ??
+                store.my_rating ??
+                store.rating_from_user ??
+                store.current_user_rating ??
+                null
+              }
+            />
 
             {/* Contact */}
             {store.contact_visible && (

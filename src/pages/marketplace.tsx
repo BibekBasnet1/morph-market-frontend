@@ -55,31 +55,31 @@ const AllProductsPage = () => {
 
   /* ----------------------------- Queries ----------------------------- */
 
-const {
-  data,
-  isLoading,
-} = useQuery({
-  queryKey: ["products", page, { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice }],
-  queryFn: () =>
-    ProductService.getAllPublic({
-      page,
-       filters: { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice },
-    }),
+  const {
+    data,
+    isLoading,
+  } = useQuery({
+    queryKey: ["products", page, { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice }],
+    queryFn: () =>
+      ProductService.getAllPublic({
+        page,
+        filters: { ...filters, search: debouncedSearch, min_price: debouncedMinPrice, max_price: debouncedMaxPrice },
+      }),
     // placeholderData: (prev) => prev,
-      enabled: ready,
-});
+    enabled: ready,
+  });
 
 
 
-const products = data?.data ?? [];
-// const lastPage = data?.last_page ?? 1;
+  const products = data?.data ?? [];
+  // const lastPage = data?.last_page ?? 1;
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: CategoryService.getAllPublic,
   });
 
-  
+
 
   // Auto-filter by category from URL params
   useEffect(() => {
@@ -125,7 +125,6 @@ const products = data?.data ?? [];
   return (
     <div className="p-10 mx-auto space-y-6 py-12 text-gray-900 dark:text-gray-100">
 
-      {/* Page Title */}
       <div>
         <h1 className="text-2xl font-semibold">Marketplace</h1>
         <p className="text-sm text-muted-foreground">
@@ -133,11 +132,9 @@ const products = data?.data ?? [];
         </p>
       </div>
 
-      {/* Filters */}
       <Card className="dark:border-none">
         <CardContent className="p-4 space-y-4">
 
-          {/* Primary Filters */}
           <div className="flex flex-wrap gap-3 items-center">
             <Input
               placeholder="Search products..."
@@ -148,15 +145,15 @@ const products = data?.data ?? [];
               }
             />
 
-<Select
-  placeholder="Category"
-  options={categories.map((c: any) => ({
-    value: c.id.toString(),
-    label: c.name,
-  }))}
-  value={filters.category_id?.toString() ?? ""}
-  onChange={(v) => updateFilters({ category_id: Number(v) })}
-/>
+            <Select
+              placeholder="Category"
+              options={categories.map((c: any) => ({
+                value: c.id.toString(),
+                label: c.name,
+              }))}
+              value={filters.category_id?.toString() ?? ""}
+              onChange={(v) => updateFilters({ category_id: Number(v) })}
+            />
 
 
             <div className="flex gap-2">
@@ -202,26 +199,26 @@ const products = data?.data ?? [];
           {/* Advanced Filters */}
           {showMoreFilters && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 border-t pt-4">
-<Select
-  placeholder="Gender"
-  options={genders.map((g: any) => ({
-    value: g.id.toString(),
-    label: g.name,
-  }))}
-  value={filters.gender_id?.toString() ?? ""}
-  onChange={(v) => updateFilters({ gender_id: Number(v) })}
-/>
+              <Select
+                placeholder="Gender"
+                options={genders.map((g: any) => ({
+                  value: g.id.toString(),
+                  label: g.name,
+                }))}
+                value={filters.gender_id?.toString() ?? ""}
+                onChange={(v) => updateFilters({ gender_id: Number(v) })}
+              />
 
 
-<Select
-  placeholder="Maturity"
-  options={maturities.map((m: any) => ({
-    value: m.id.toString(),
-    label: m.name,
-  }))}
-  value={filters.maturity_level_id?.toString() ?? ""}
-  onChange={(v) => updateFilters({ maturity_level_id: Number(v) })}
-/>
+              <Select
+                placeholder="Maturity"
+                options={maturities.map((m: any) => ({
+                  value: m.id.toString(),
+                  label: m.name,
+                }))}
+                value={filters.maturity_level_id?.toString() ?? ""}
+                onChange={(v) => updateFilters({ maturity_level_id: Number(v) })}
+              />
 
               <Select
                 placeholder="Origin"
@@ -279,131 +276,131 @@ const products = data?.data ?? [];
         </div>
       )} */}
       {/* Active Filters */}
-{activeFiltersCount > 0 && (
-  <div className="flex flex-wrap gap-2">
-    {Object.entries(filters).map(([key, value]) => {
-      if (!value) return null;
+      {activeFiltersCount > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(filters).map(([key, value]) => {
+            if (!value) return null;
 
-      let displayValue = value;
+            let displayValue = value;
 
-      // Map filter keys to corresponding options arrays
-      switch (key) {
-        case "category_id":
-          displayValue = categories.find(c => c.id === value)?.name ?? value;
-          break;
-        case "gender_id":
-          displayValue = genders.find(g => g.id === value)?.name ?? value;
-          break;
-        case "maturity_level_id":
-          displayValue = maturities.find(m => m.id === value)?.name ?? value;
-          break;
-        case "origin_id":
-          displayValue = origins.find(o => o.id === value)?.name ?? value;
-          break;
-        case "diet_id":
-          displayValue = diets.find(d => d.id === value)?.name ?? value;
-          break;
-        default:
-          displayValue = value;
-      }
+            // Map filter keys to corresponding options arrays
+            switch (key) {
+              case "category_id":
+                displayValue = categories.find(c => c.id === value)?.name ?? value;
+                break;
+              case "gender_id":
+                displayValue = genders.find(g => g.id === value)?.name ?? value;
+                break;
+              case "maturity_level_id":
+                displayValue = maturities.find(m => m.id === value)?.name ?? value;
+                break;
+              case "origin_id":
+                displayValue = origins.find(o => o.id === value)?.name ?? value;
+                break;
+              case "diet_id":
+                displayValue = diets.find(d => d.id === value)?.name ?? value;
+                break;
+              default:
+                displayValue = value;
+            }
 
-      return (
-        <span
-          key={key}
-          className="flex items-center text-white bg-gray-600 gap-1 px-3 py-1 text-xs rounded-full bg-muted"
-        >
-          {displayValue}
-          <button onClick={() => updateFilters({ [key]: undefined })}>
-            <X className="h-3 w-3" />
-          </button>
-        </span>
-      );
-    })}
-  </div>
-)}
-
-
-{/* Loading skeletons */}
-      {isLoading && (
-        <SkeletonCards/>
+            return (
+              <span
+                key={key}
+                className="flex items-center text-white bg-gray-600 gap-1 px-3 py-1 text-xs rounded-full bg-muted"
+              >
+                {displayValue}
+                <button onClick={() => updateFilters({ [key]: undefined })}>
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            );
+          })}
+        </div>
       )}
 
-<div className="grid gap-4 grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-  {products.map((product: any) => {
-    const imageUrl = product.image_urls?.thumbnail?.url || product.image;
-    const price = product.availability?.[0]?.pricing?.price || product.price;
-    
-    return (
-    <Card
-      key={product.slug}
-      className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[250px] flex flex-col"
-      onClick={() => navigate(`/product/${product.slug}`)}
-    >
-      <CardContent className="p-4 flex flex-col h-full">
 
-        <div className="space-y-3 flex-1">
-          {/* Image */}
-          <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden ring-1 ring-black/5">
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm">
-                <img
-                  src="https://placehold.co/600x400"
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-          </div>
+      {/* Loading skeletons */}
+      {isLoading && (
+        <SkeletonCards />
+      )}
 
-          {/* Name — prominent, link-style */}
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-snug line-clamp-2 hover:text-primary transition-colors">
-            {product.name}
-          </h3>
+      <div className="grid gap-4 grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {products.map((product: any) => {
+          const imageUrl = product.image_urls?.thumbnail?.url || product.image;
+          const price = product.availability?.[0]?.pricing?.price || product.price;
 
-          {/* Category & traits as colored badges */}
-          <div className="flex flex-wrap gap-1.5">
-            {product.category && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300">
-                {getStringValue(product.category)}
-              </span>
-            )}
-            {product.gender && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
-                {getStringValue(product.gender)}
-              </span>
-            )}
-          </div>
+          return (
+            <Card
+              key={product.slug}
+              className="hover:shadow-md transition cursor-pointer dark:border-gray-600 min-h-[250px] flex flex-col"
+              onClick={() => navigate(`/product/${product.slug}`)}
+            >
+              <CardContent className="p-4 flex flex-col h-full">
 
-          {/* Price — bold accent like marketplaces */}
-          <div className="mt-auto pt-1">
-            {price != null && price !== "" ? (
-              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                ${Number(price).toLocaleString()}
-              </span>
-            ) : null}
-          </div>
-        </div>
+                <div className="space-y-3 flex-1">
+                  {/* Image */}
+                  <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden ring-1 ring-black/5">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-sm">
+                        <img
+                          src="https://placehold.co/600x400"
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-        {/* CTA */}
-        <Button
-          size="sm"
-          className="w-full mt-2"
-          onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }}
-        >
-          See details
-        </Button>
+                  {/* Name — prominent, link-style */}
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-snug line-clamp-2 hover:text-primary transition-colors">
+                    {product.name}
+                  </h3>
 
-      </CardContent>
-    </Card>
-    );
-  })}
-</div>
+                  {/* Category & traits as colored badges */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.category && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300">
+                        {getStringValue(product.category)}
+                      </span>
+                    )}
+                    {product.gender && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+                        {getStringValue(product.gender)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Price — bold accent like marketplaces */}
+                  <div className="mt-auto pt-1">
+                    {price != null && price !== "" ? (
+                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        ${Number(price).toLocaleString()}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <Button
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.slug}`); }}
+                >
+                  See details
+                </Button>
+
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
 
     </div>

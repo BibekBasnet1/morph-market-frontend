@@ -10,11 +10,6 @@ import QuickNav from "./components/common/QuickNav";
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import ActivityLogsPage from "./pages/activityLog/activityLog";
-// import StoreDetails from "./pages/store/storeDetails";
-import StoreDetailsPage from "./pages/store/storeDetails";
-import StoreRegistrationForm from "./pages/store/store";
-import Shops from "./pages/store/storePage";
 
 const AdminRoutes = lazy(() => import("./components/auth/AdminRoutes"));
 const SellerRoutes = lazy(() => import("./components/auth/SellerRoutes"));
@@ -30,6 +25,10 @@ const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
 const CartPage = lazy(()=> import("./pages/cart/cart"))
 const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
 const PrivacyPolicyPage = lazy(() => import("./pages/policy/PrivacyPolicyPage"));
+const ActivityLogsPage = lazy(() => import("./pages/activityLog/activityLog"));
+const StoreDetailsPage = lazy(() => import("./pages/store/storeDetails"));
+const StoreRegistrationForm = lazy(() => import("./pages/store/store"));
+const Shops = lazy(() => import("./pages/store/storePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
