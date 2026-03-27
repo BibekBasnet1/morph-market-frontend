@@ -12,6 +12,7 @@ import {
   Store,
   Warehouse,
   Pencil,
+  Package,
 } from "lucide-react";
 
 import { useSidebar } from "../../contexts/SidebarContext";
@@ -53,7 +54,7 @@ const navItems: NavItem[] = [
   },
   {
     name: "Products",
-    icon: <ShoppingCart size={20} />,
+    icon: <Package size={20} />,
     roles: ["seller", "buyer"],
     subItems: [
       { name: "All Products", path: "/products", roles: ["seller", "buyer"] },
@@ -67,6 +68,17 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "My Traits", path: "/my-attributes/traits", roles: ["seller"] },
       { name: "My Tags", path: "/my-attributes/tags", roles: ["seller"] },
+    ],
+  },
+  {
+    name: "Orders",
+    icon: <ShoppingCart size={20} />,
+    roles: ["seller", "admin", "superadmin", "buyer"],
+    subItems: [
+      // show only if user is seller or admin
+      { name: "All Orders", path: "/seller/orders", roles: ["seller", "admin"] },
+
+      { name: "My Orders", path: "/seller/customer-orders", roles: ["seller", "admin", "superadmin", "buyer"] },
     ],
   },
   {
@@ -88,27 +100,6 @@ const navItems: NavItem[] = [
     roles: ["admin", "seller", "buyer"],
   },
 ];
-
-
-// const othersItems: NavItem[] = [
-//   {
-//     icon: <PieChart size={20} />,
-//     name: "Charts",
-//     roles:["admin"],
-//     subItems: [
-//       { name: "Line Chart", path: "/line-chart", roles:[],pro: true },
-//       { name: "Bar Chart", path: "/bar-chart",roles:['admin'], pro: true },
-//     ],
-//   },
-//   //   {
-//   //   name: "Administration",
-//   //   icon: <FileText size={20} />,
-//   //   roles: ["admin", "seller","buyer"],
-//   //   subItems: [
-//   //     { name: "Add Categories", path: "/add-categories", roles: ["admin", "seller","buyer"], pro: false },
-//   //   ],
-//   // },
-// ];
 
 const supportItems: NavItem[] = [
   {
@@ -247,10 +238,10 @@ const AppSidebar: React.FC = () => {
   ) => (
     <ul className="flex flex-col gap-1">
       {items
-        // ✅ filter parent menus by role
+        // ilter parent menus by role
         .filter((nav) => hasAccess(nav.roles))
         .map((nav, index) => {
-          // ✅ filter sub-items by role
+          // filter sub-items by role
           const visibleSubItems = nav.subItems
             ? nav.subItems.filter((sub) => hasAccess(sub.roles))
             : [];

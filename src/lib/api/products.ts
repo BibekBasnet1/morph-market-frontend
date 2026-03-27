@@ -32,7 +32,7 @@ export const ProductService = {
 
   getAllPrivate: async (): Promise<Product[]> => {
     const res = await api.get(`/seller/my-products`);
-    return res.data.data;
+    return res.data.data?.data ?? [];
   },
   async getById(id: number): Promise<Product> {
     const res = await api.get(`/seller/products/${id}`);

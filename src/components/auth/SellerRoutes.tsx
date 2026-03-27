@@ -7,6 +7,7 @@ import { lazy } from "react";
 import InventoryPage from "../../pages/inventory/Inventory";
 import ActivityLogPage from "../../pages/activityLog/activityLog";
 import AllPrivateProductsPage from "../../pages/products/allProducts";
+import MyOrder from "../../pages/orders/MyOrder";
 // import StorePage from "../../pages/store/store";
 
 const AddProductPage = lazy(() => import("../../pages/products/addProduct"));
@@ -18,6 +19,7 @@ const SellerOrders = lazy(() => import("../../pages/order/sellerOrders"))
 const MyAttributesLayout = lazy(() => import("../../pages/myAttributes/Layout"));
 const MyTraitsPage = lazy(() => import("../../pages/myAttributes/TraitsPage"));
 const MyTagsPage = lazy(() => import("../../pages/myAttributes/TagsPage"));
+const SellerOrder = lazy(() => import("../../pages/orders/SellerOrder"));
 
 const SellerRoutes = () => (
   <Routes>
@@ -42,6 +44,16 @@ const SellerRoutes = () => (
       <Route path="inventory" element={
         <ProtectedRoute allowedRoles={['buyer', 'seller']}>
           <InventoryPage />
+        </ProtectedRoute>
+      } />
+      <Route path="seller/orders" element={
+        <ProtectedRoute allowedRoles={['seller', 'superadmin', 'admin']}>
+          <SellerOrder />
+        </ProtectedRoute>
+      } />
+      <Route path="seller/customer-orders" element={
+        <ProtectedRoute allowedRoles={['seller', 'superadmin', 'admin', 'buyer']}>
+          <MyOrder />
         </ProtectedRoute>
       } />
       <Route path="add-listing" element={

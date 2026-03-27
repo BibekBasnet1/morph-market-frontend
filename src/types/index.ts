@@ -271,6 +271,7 @@ export interface Product {
   trait_ids?: number[];
   traits?: string[];
   availability?: any[];
+  in_inventory?: boolean;
 
   image_urls?: {
     thumbnail?: {

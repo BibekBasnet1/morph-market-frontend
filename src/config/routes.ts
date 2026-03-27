@@ -43,7 +43,6 @@ export const ROUTES: RouteConfig[] = [
     icon: 'List',
     roles: ['seller'],
   },
-
   {
     path: '/inventory',
     label: 'Inventory',
@@ -129,11 +128,17 @@ export const ROUTES: RouteConfig[] = [
     icon: 'ShoppingCart',
     roles: ['admin','buyer'],
   },
-    {
+  {
     path: '/seller/orders',
     label: 'Seller Orders',
     icon: 'ShoppingCart',
     roles: ['admin','seller'],
+  },
+  {
+    path: '/seller/customer-orders',
+    label: 'My Orders',
+    icon: '',
+    roles: ['buyer', 'seller'],
   },
   {
     path: '/analytics',

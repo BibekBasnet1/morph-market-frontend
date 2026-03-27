@@ -74,7 +74,7 @@ const ProfilePage = () => {
               <nav className="flex flex-col gap-1">
                 {[
                   { id: 'profile', label: 'Overview', icon: User },
-                  { id: 'settings', label: 'Settings', icon: Settings },
+                  // { id: 'settings', label: 'Settings', icon: Settings },
                 ].map((tab) => (
                   <button
                     key={tab.id}

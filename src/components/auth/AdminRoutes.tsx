@@ -12,7 +12,6 @@ import AddGenderPage from "../../pages/addGenders/addGenders";
 import BuyerReviewPage from "../../pages/user/buyer-review";
 import SellerReviewPage from "../../pages/user/sellerReview";
 
-// Lazy load pages
 const AddTraitsPage = lazy(() => import("../../pages/addTraits/addTraits"));
 const AddDietPage = lazy(() => import("../../pages/addDiet/addDiet"));
 const AddMaturityPage = lazy(() => import("../../pages/addMaturity/addMaturity"));
