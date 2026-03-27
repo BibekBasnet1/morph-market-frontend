@@ -112,11 +112,11 @@ const AddListingPage = () => {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen p-6 bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start justify-between mb-7 flex-wrap gap-3">
           <div>
-            <h2 className="text-[22px] font-extrabold tracking-[-0.02em] m-0">Add Inventory</h2>
+            <h2 className="text-[22px] font-extrabold tracking-[-0.02em] m-0">Add To Inventory</h2>
             <p className="text-[13px] text-slate-600 dark:text-slate-400 mt-1">
               {products.length} products ·{" "}
               <span className="text-emerald-600 dark:text-emerald-400">
@@ -125,7 +125,6 @@ const AddListingPage = () => {
             </p>
           </div>
 
-          {/* Mode toggle */}
         <div className="flex items-center gap-1 bg-white dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700/30 rounded-lg p-1 shadow-sm dark:shadow-none">
             {(["single", "bulk"] as const).map((m) => (
               <button
@@ -141,24 +140,7 @@ const AddListingPage = () => {
             ))}
           </div>
         </div>
-
-        {/* ── Legend ── */}
-      <div className="flex gap-5 mb-5 text-sm text-slate-500 dark:text-gray-400">
-          <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm border border-emerald-600/25 bg-emerald-500/10" />
-            Already in inventory
-          </div>
-          <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm border border-emerald-600 bg-emerald-500/15" />
-            Selected
-          </div>
-          <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm border border-slate-300 dark:border-white/10 bg-white dark:bg-transparent" />
-            Available
-          </div>
-        </div>
-
-        {/* ── Product Grid ── */}
+     
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product: any) => (
             <ProductCard
@@ -172,7 +154,6 @@ const AddListingPage = () => {
           ))}
         </div>
 
-        {/* ── Bulk inline forms ── */}
         {mode === "bulk" && selectedProducts.map((id) => {
           const product = products.find((p: any) => p.id === id);
           const item = inventoryData[id];
@@ -234,7 +215,6 @@ const AddListingPage = () => {
           );
         })}
 
-        {/* ── Bulk submit ── */}
         {mode === "bulk" && selectedProducts.length > 0 && (
           <div className="mt-5 flex justify-end">
             <button
