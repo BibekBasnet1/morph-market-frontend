@@ -162,7 +162,7 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
                 <Link to="/register" className="hidden xl:block">
-                  <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm">
+                  <Button size="sm" className="bg-secondary text-white hover:bg-secondary/90 shadow-sm">
                     Join Community
                   </Button>
                 </Link>
@@ -374,7 +374,7 @@ const Navbar: React.FC = () => {
                 </Button>
               </Link>
               <Link to="/register" onClick={() => setNavDrawerOpen(false)}>
-                <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">Join Community</Button>
+                <Button className="w-full bg-secondary text-white hover:bg-secondary/90 mt-2">Join Community</Button>
               </Link>
             </div>
           )}

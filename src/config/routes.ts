@@ -27,7 +27,7 @@ export const ROUTES: RouteConfig[] = [
   //   roles: ['admin', 'seller', 'buyer', 'superadmin'],
   // },
   {
-    path: 'policy',
+    path: '/policy',
     label: 'Policy',
     roles: ['admin', 'seller', 'buyer', 'superadmin'],
   },

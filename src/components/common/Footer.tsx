@@ -27,31 +27,23 @@ const Footer = () => {
                   to="/marketplace"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Browse All
+                  Browse Marketplace
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/products?category=ball-python"
+                  to="/cart"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Ball Pythons
+                  Cart
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/products?category=corn-snake"
+                  to="/login"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Corn Snakes
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/products?category=boa"
-                  className="hover:text-foreground dark:hover:text-white transition-colors"
-                >
-                  Boas
+                  Sign In
                 </Link>
               </li>
             </ul>
@@ -63,36 +55,28 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/seller-agreement"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Start Selling
-                </a>
+                  Seller Agreement
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/animal-liability-waiver"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Seller Guidelines
-                </a>
+                  Liability Waiver
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/terms"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
-                  Shipping Info
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-foreground dark:hover:text-white transition-colors"
-                >
-                  Pricing
-                </a>
+                  Terms for Sellers
+                </Link>
               </li>
             </ul>
           </div>
@@ -103,36 +87,36 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
               <li>
-                <a
-                  href="#"
-                  className="hover:text-foreground dark:hover:text-white transition-colors"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-foreground dark:hover:text-white transition-colors"
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
+                <Link
+                  to="/terms"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/privacy"
                   className="hover:text-foreground dark:hover:text-white transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/seller-agreement"
+                  className="hover:text-foreground dark:hover:text-white transition-colors"
+                >
+                  Seller Agreement
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/animal-liability-waiver"
+                  className="hover:text-foreground dark:hover:text-white transition-colors"
+                >
+                  Liability Waiver
+                </Link>
               </li>
             </ul>
           </div>

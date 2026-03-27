@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -17,10 +18,12 @@ import {
 import { loginSchema, type LoginSchema } from "../../../validation/LoginSchema";
 import { getDefaultPathForRoles } from "../../../config/routes";
 import { AuthService } from "../../../lib/api";
+import { LegalDocumentModal } from "../../../components/legal/LegalDocumentModal";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [sellerAgreementOpen, setSellerAgreementOpen] = useState(false);
 
   const {
     register,
@@ -32,15 +35,17 @@ const LoginPage = () => {
     defaultValues: { email: "", password: "" },
   });
 
+  type RoleLike = string | { name: string };
+
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
   login(data.data.user, data.data.token);
-  const apiRoles = data?.data?.user?.roles ?? [];
+  const apiRoles: RoleLike[] = data?.data?.user?.roles ?? [];
   const roles =
     apiRoles.length && typeof apiRoles[0] === 'string'
       ? apiRoles
-      : apiRoles.map((r: any) => r.name);
+      : apiRoles.map((r) => (typeof r === "string" ? r : r.name));
   navigate(getDefaultPathForRoles(roles), { replace: true });
 },
     onError: () => {
@@ -225,7 +230,22 @@ const LoginPage = () => {
           <a href="/privacy" className="text-green-600 dark:text-green-400 hover:underline">
             Privacy Policy
           </a>
+          {" "}, and{" "}
+          <button
+            type="button"
+            onClick={() => setSellerAgreementOpen(true)}
+            className="text-green-600 dark:text-green-400 hover:underline"
+          >
+            Seller Agreement
+          </button>
         </p>
+        <LegalDocumentModal
+          isOpen={sellerAgreementOpen}
+          onClose={() => setSellerAgreementOpen(false)}
+          title="Seller Agreement"
+          fileName="seller-agreement.html"
+          fullPagePath="/seller-agreement"
+        />
       </div>
     </div>
   );

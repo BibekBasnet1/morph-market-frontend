@@ -12,11 +12,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
-
 import { registerSchema, type RegisterSchema } from "../../../validation/RegisterSchema";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { AuthService } from "../../../lib/api";
+import { LegalDocumentModal } from "../../../components/legal/LegalDocumentModal";
 
 type ApiErrorResponse = {
   message?: string;
@@ -26,6 +26,7 @@ type ApiErrorResponse = {
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [sellerAgreementOpen, setSellerAgreementOpen] = useState(false);
 
   const {
     register,
@@ -49,8 +50,16 @@ const RegisterPage = () => {
       localStorage.setItem("email", variables.email);
       navigate("/verifyOtp");
     },
-    onError: (error: any) => {
-      const data = error?.response?.data as ApiErrorResponse;
+    onError: (error: unknown) => {
+      const data =
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response
+          ? (error.response.data as ApiErrorResponse)
+          : undefined;
       
       if (data?.errors) {
         // Show first validation error
@@ -63,15 +72,14 @@ const RegisterPage = () => {
     },
   });
 
-  const roleNames = user?.roles?.map(r => r.name) ?? [];
-
   useEffect(() => {
+    const roleNames = user?.roles?.map((r) => r.name) ?? [];
     if (roleNames.includes("admin")) {
       navigate("/admin/dashboard");
     } else if (roleNames.includes("buyer")) {
       navigate("/");
     }
-  }, [roleNames]);
+  }, [user, navigate]);
 
   const onSubmit = (data: RegisterSchema) => {
     mutation.mutate(data);
@@ -80,32 +88,25 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       
-      {/* Left Section - Full Background Image with Overlay */}
       <div className="md:w-1/2 hidden md:flex flex-col justify-center items-center relative overflow-hidden p-12">
         
-        {/* Background Image */}
         <div className="absolute inset-0">
           <img
             src="/login-bg.jpg"
             alt="Reptile Marketplace"
             className="w-full h-full object-cover"
           />
-          {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-green-900/95 via-green-900/90 to-teal-900/95"></div>
-          {/* Additional dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black/30"></div>
         </div>
 
-        {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
         </div>
 
-        {/* Content */}
         <div className="relative z-10 max-w-lg text-center space-y-8">
 
-          {/* Headline */}
           <div className="space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight drop-shadow-lg">
               Join the Community
@@ -315,7 +316,6 @@ const RegisterPage = () => {
           </CardContent>
         </Card>
 
-        {/* Footer */}
         <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 text-center max-w-md">
           By creating an account, you agree to our{" "}
           <a href="/terms" className="text-green-600 dark:text-green-400 hover:underline">
@@ -325,7 +325,22 @@ const RegisterPage = () => {
           <a href="/privacy" className="text-green-600 dark:text-green-400 hover:underline">
             Privacy Policy
           </a>
+          {" "}, and{" "}
+          <button
+            type="button"
+            onClick={() => setSellerAgreementOpen(true)}
+            className="text-green-600 dark:text-green-400 hover:underline"
+          >
+            Seller Agreement
+          </button>
         </p>
+        <LegalDocumentModal
+          isOpen={sellerAgreementOpen}
+          onClose={() => setSellerAgreementOpen(false)}
+          title="Seller Agreement"
+          fileName="seller-agreement.html"
+          fullPagePath="/seller-agreement"
+        />
       </div>
     </div>
   );

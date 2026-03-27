@@ -25,6 +25,9 @@ const ProductDetail = lazy(() => import("./pages/products/ProductDetail"));
 const CartPage = lazy(()=> import("./pages/cart/cart"))
 const ProductDetailsImmersive = lazy(() => import("./pages/products/ProductDetailsImmersive"));
 const PrivacyPolicyPage = lazy(() => import("./pages/policy/PrivacyPolicyPage"));
+const SellerAgreementPage = lazy(() => import("./pages/policy/SellerAgreementPage"));
+const TermsOfServicePage = lazy(() => import("./pages/policy/TermsOfServicePage"));
+const AnimalLiabilityWaiverPage = lazy(() => import("./pages/policy/AnimalLiabilityWaiverPage"));
 const ActivityLogsPage = lazy(() => import("./pages/activityLog/activityLog"));
 const StoreDetailsPage = lazy(() => import("./pages/store/storeDetails"));
 const StoreRegistrationForm = lazy(() => import("./pages/store/store"));
@@ -64,6 +67,9 @@ const AppRoutes = () => {
     { path: "/stores/:id/products", load: StoreDetailsPage },
     { path: "/store-directory", load: Shops },
     { path: "/privacy", load: PrivacyPolicyPage },
+    { path: "/seller-agreement", load: SellerAgreementPage },
+    { path: "/terms", load: TermsOfServicePage },
+    { path: "/animal-liability-waiver", load: AnimalLiabilityWaiverPage },
   ];
 
 
