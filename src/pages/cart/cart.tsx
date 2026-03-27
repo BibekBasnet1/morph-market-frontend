@@ -9,7 +9,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
 import PaymentMethodsModal from "../../components/payments/PaymentMethodsModal";
 
-/* ---------------- Local cart helpers ---------------- */
 const loadLocalCarts = (): Cart[] => {
   try {
     return JSON.parse(localStorage.getItem("cart-products") || "[]");
@@ -27,7 +26,6 @@ const CartPage = () => {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
 
-  /* ---------------- Local cart state ---------------- */
   const [localCarts, setLocalCarts] = useState<Cart[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -35,25 +33,22 @@ const CartPage = () => {
     setLocalCarts(loadLocalCarts());
   }, []);
 
-  /* ---------------- API carts ---------------- */
   const { data: apiCarts = [] } = useQuery<Cart[]>({
     queryKey: ["carts"],
     queryFn: CartService.list,
     enabled: isAuthenticated,
   });
 
-  /* ---------------- Merge carts ---------------- */
   const carts = useMemo<Cart[]>(() => {
     return isAuthenticated ? [...apiCarts, ...localCarts] : localCarts;
     
   }, [apiCarts, localCarts, isAuthenticated]);
-console.log("Carts:", carts);
-  /* ---------------- API mutations ---------------- */
-  const updateMutation = useMutation({
-    mutationFn: ({ id, quantity }: { id: number; quantity: number }) =>
-      CartService.update(id, { quantity } as any),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["carts"] }),
-  });
+
+  // const updateMutation = useMutation({
+  //   mutationFn: ({ id, quantity }: { id: number; quantity: number }) =>
+  //     CartService.update(id, { quantity } as any),
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: ["carts"] }),
+  // });
 
   const removeMutation = useMutation({
     mutationFn: (id: number) => CartService.remove(id),
@@ -63,24 +58,22 @@ console.log("Carts:", carts);
     },
   });
 
-  /* ---------------- Handlers ---------------- */
-  const updateQuantity = (item: Cart, quantity: number) => {
-    if (quantity < 1) return;
+  // const updateQuantity = (item: Cart, quantity: number) => {
+  //   if (quantity < 1) return;
 
-    // Guest cart
-    if (!isAuthenticated || !item.user_id) {
-      const updated = localCarts.map((c) =>
-        c.id === item.id ? { ...c, quantity } : c
-      );
-      setLocalCarts(updated);
-      saveLocalCarts(updated);
-      window.dispatchEvent(new Event("cart-updated"));
-      return;
-    }
+  //   // Guest cart
+  //   if (!isAuthenticated || !item.user_id) {
+  //     const updated = localCarts.map((c) =>
+  //       c.id === item.id ? { ...c, quantity } : c
+  //     );
+  //     setLocalCarts(updated);
+  //     saveLocalCarts(updated);
+  //     window.dispatchEvent(new Event("cart-updated"));
+  //     return;
+  //   }
 
-    // API cart
-    updateMutation.mutate({ id: item.id, quantity });
-  };
+  //   updateMutation.mutate({ id: item.id, quantity });
+  // };
 
   const removeItem = (item: Cart) => {
     const confirmed = window.confirm(
@@ -104,36 +97,35 @@ console.log("Carts:", carts);
   };
 
   const totalAmount = carts.reduce(
-    (sum, item) => sum + Number(item.price),
+    (sum, item) => sum + Number((item as any).sale_price),
     0
   );
+
   // const estimatedTax = totalAmount * 0.01;
   // const shippingFee = 45;
 
+  if (!carts.length) {
+    return (
+      <div className="flex flex-col dark:text-white items-center justify-center py-16 px-6 text-center">
+        <div className="mb-4 text-6xl">🛒</div>
 
-if (!carts.length) {
-  return (
-    <div className="flex flex-col dark:text-white items-center justify-center py-16 px-6 text-center">
-      <div className="mb-4 text-6xl">🛒</div>
+        <h2 className="text-xl font-semibold mb-2">
+          Your cart is empty
+        </h2>
 
-      <h2 className="text-xl font-semibold mb-2">
-        Your cart is empty
-      </h2>
+        <p className="text-muted-foreground mb-6 max-w-sm">
+          Looks like you haven’t added anything yet. Start shopping and add items you love.
+        </p>
 
-      <p className="text-muted-foreground mb-6 max-w-sm">
-        Looks like you haven’t added anything yet. Start exploring and add items you love.
-      </p>
-
-      <Button
-        onClick={() => navigate("/marketplace")}
-        className="px-6"
-      >
-        Browse Products
-      </Button>
-    </div>
-  );
-}
-
+        <Button
+          onClick={() => navigate("/marketplace")}
+          className="px-6"
+        >
+          Browse Products
+        </Button>
+      </div>
+    );
+  }
 
   return (
   <div className="dark:text-white mx-auto py-10 px-4">
@@ -194,9 +186,8 @@ if (!carts.length) {
                     </div>
                   </div>
 
-                  {/* Price */}
                   <div className="col-span-3 text-right font-semibold">
-                    ${Number(item.price).toFixed(2)}
+                     ${Number(item.sale_price).toFixed(2)}
                   </div>
                 </div>
               );
@@ -204,44 +195,6 @@ if (!carts.length) {
           </CardContent>
         </Card>
 
-        {/* ---------------- Shipping & Estimates ---------------- */}
-        {/* <Card>
-          <CardContent className="p-6 space-y-4">
-            <h2 className="font-semibold flex items-center gap-2">
-              Shipping & Estimates
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">
-                  Zip / Postal Code
-                </label>
-                <div className="flex gap-2 mt-2">
-                  <input
-                    type="text"
-                    placeholder="90210"
-                    className="w-full border rounded px-3 py-2 text-sm"
-                  />
-                  <Button size="sm">Calculate</Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Live animals require priority shipping.
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium">
-                  Notes to Breeder
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Specific handling instructions or delivery dates..."
-                  className="w-full border rounded px-3 py-2 text-sm mt-2"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
 
       {/* ---------------- RIGHT: ORDER SUMMARY ---------------- */}
@@ -306,7 +259,7 @@ if (!carts.length) {
           product_name: product?.name || "Unknown Product",
           store_id: product?.store_id || 1,
           quantity: cart.quantity,
-          price: Number(cart.price),
+          price: Number((cart as any).sale_price),
         };
       })}
       onSuccess={() => {

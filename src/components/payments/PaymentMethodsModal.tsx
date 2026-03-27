@@ -75,7 +75,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
 
   const [sameAsBilling, setSameAsBilling] = useState(true);
 
-  /* ---------------- RESET ---------------- */
   useEffect(() => {
     if (!isOpen) {
       setFlowState('address');
@@ -95,7 +94,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
     }
   }, [shippingAddress, sameAsBilling]);
 
-  /* ---------------- MUTATIONS ---------------- */
 
   const placeOrderMutation = useMutation({
     mutationFn: (payload: any) => PaymentService.placeOrder(payload),
@@ -132,8 +130,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
     },
   });
 
-  /* ---------------- VALIDATION ---------------- */
-
   const validateAddresses = useCallback(() => {
     if (!shippingAddress.line1 || !shippingAddress.city) {
       toast.error('Please fill in your shipping address');
@@ -147,8 +143,6 @@ export const PaymentMethodsModal: React.FC<Props> = ({
 
     return true;
   }, [shippingAddress, billingAddress, sameAsBilling]);
-
-  /* ---------------- HANDLERS ---------------- */
 
   const handlePlaceOrder = useCallback(() => {
     if (!validateAddresses()) return;
@@ -199,16 +193,16 @@ export const PaymentMethodsModal: React.FC<Props> = ({
         }
 
         if (paymentIntent?.status === 'succeeded') {
-  // Stripe has already confirmed the payment; go straight to confirmed state
-  // (backend should verify via webhooks, not re-confirm)
-  setFlowState('confirmed');
-  setTimeout(() => {
-    onSuccess?.();
-    onClose();
-  }, 1200);
-} else {
-  setFlowState('failed');
-}
+          // Stripe has already confirmed the payment; go straight to confirmed state
+          // (backend should verify via webhooks, not re-confirm)
+          setFlowState('confirmed');
+          setTimeout(() => {
+            onSuccess?.();
+            onClose();
+          }, 1200);
+        } else {
+          setFlowState('failed');
+        }
       } catch (err: any) {
         setIsSubmitting(false);
         setCardError(err?.message || 'Payment failed');
@@ -224,12 +218,13 @@ export const PaymentMethodsModal: React.FC<Props> = ({
     }
   }, [flowState, orderId]);
 
-const isProcessing = flowState === 'processing';
+  const isProcessing = flowState === 'processing';
 
-// const estimatedTax = (items.reduce((sum, item) => sum + (item.price || 0), 0)) * 0.01;
-// const shippingAndHandling = 45.00;
+  // const estimatedTax = (items.reduce((sum, item) => sum + (item.price || 0), 0)) * 0.01;
+  // const shippingAndHandling = 45.00;
 
-// console.log("item.name", items) ;
+  // console.log("item.name", items) ;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-5xl w-full">
       <div className="min-h-[500px] dark:bg-[#0d1f1a] text-gray-800 dark:text-white p-10 rounded-xl">

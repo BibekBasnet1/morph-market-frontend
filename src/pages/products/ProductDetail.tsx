@@ -19,41 +19,34 @@ const ProductDetailsPage = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  /* ---------------- Product Query ---------------- */
-const {
-  data: product,
-  isLoading,
-  isError,
-} = useQuery<ProductDetails>({
-  queryKey: ["product", slug],
-  queryFn: () => ProductService.getBySlug(slug!),
-  enabled: !!slug,
-});
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useQuery<ProductDetails>({
+    queryKey: ["product", slug],
+    queryFn: () => ProductService.getBySlug(slug!),
+    enabled: !!slug,
+  });
 
   const renderValue = (value: any) => {
-  if (value === null || value === undefined || value === "") return "N/A";
-  return value;
-};
-
-  // Helper function to safely get string value from object or string
-  const getStringValue = (value: any): string => {
-    if (!value) return "N/A";
-    if (typeof value === "string") return value;
-    if (typeof value === "object" && value.name) return value.name;
-    return "N/A";
+    if (value === null || value === undefined || value === "") return "N/A";
+    return value;
   };
 
+
   const getFinalPrice = (pricing: any): number => {
-  if (pricing.sale_price && pricing.sale_price > 0) {
-    return pricing.sale_price;
-  }
+    // If the user hasn't set the price of the product we will use the default cp price
+    if (pricing.sale_price && pricing.sale_price > 0) {
+      return pricing.sale_price;
+    }
 
-  if (pricing.discount_price && pricing.discount_price > 0) {
-    return pricing.discount_price;
-  }
+    // if (pricing.discount_price && pricing.discount_price > 0) {
+    //   return pricing.discount_price;
+    // }
 
-  return pricing.price;
-};
+    return pricing.price;
+  };
 
   if (isLoading) {
     return <p className="p-6">Loading product...</p>;
@@ -63,7 +56,6 @@ const {
     return <p className="p-6">Product not found</p>;
   }
 
-  /* ---------------- Helpers ---------------- */
 
   const modalItems = product?.availability?.[0]
     ? [{ product_id: product.id, store_id: product.availability[0].store.id, quantity: 1, product_name: product.name, price: getFinalPrice(product.availability[0].pricing) }]
@@ -73,51 +65,47 @@ const {
   const galleryImages = product?.image_urls?.gallery || product?.gallery || [];
 
 
+  return (
+    <div className="p-6 sm:p-10 mx-auto max-w-[100vw] dark:text-white py-10 px-4 overflow-x-hidden">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-10 min-w-0">
 
-  /* ---------------- UI ---------------- */
+        {/* ================= LEFT SIDE ================= */}
+        <div className="lg:col-span-2 space-y-6 lg:space-y-10 min-w-0">
 
- return (
-  <div className="p-6 sm:p-10 mx-auto max-w-[100vw] dark:text-white py-10 px-4 overflow-x-hidden">
-    <div className="grid lg:grid-cols-3 gap-6 lg:gap-10 min-w-0">
-
-      {/* ================= LEFT SIDE ================= */}
-      <div className="lg:col-span-2 space-y-6 lg:space-y-10 min-w-0">
-
-        {/* Image & Thumbnails */}
-        <div className="min-w-0">
-          <div className="relative w-full overflow-hidden rounded-xl aspect-[4/3] sm:aspect-video lg:h-[420px] lg:aspect-auto bg-muted">
-            <img
-              src={mainImageUrl ?? "https://placehold.co/800x500"}
-              alt={product.name}
-              className="w-full h-full object-cover max-w-full"
-            />
-          </div>
-
-          {/* Gallery Thumbnails */}
-          {galleryImages && galleryImages.length > 0 && (
-            <div className="flex gap-3 mt-4 overflow-x-auto pb-2 min-w-0 max-w-full">
-              {galleryImages.map((img: any, i: number) => {
-                const imageUrl = typeof img === "string" ? img : img?.url;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(imageUrl)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
-                      selectedImage === imageUrl ? "ring-2 ring-blue-500" : ""
-                    }`}
-                  >
-                    <img
-                      src={imageUrl}
-                      alt={`Gallery ${i}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                );
-              })}
+          {/* Image & Thumbnails */}
+          <div className="min-w-0">
+            <div className="relative w-full overflow-hidden rounded-xl aspect-[4/3] sm:aspect-video lg:h-[420px] lg:aspect-auto bg-muted">
+              <img
+                src={mainImageUrl ?? "https://placehold.co/800x500"}
+                alt={product.name}
+                className="w-full h-full object-cover max-w-full"
+              />
             </div>
-          )}
 
-          {/* <div className="flex gap-3 mt-4">
+            {/* Gallery Thumbnails */}
+            {galleryImages && galleryImages.length > 0 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-2 min-w-0 max-w-full">
+                {galleryImages.map((img: any, i: number) => {
+                  const imageUrl = typeof img === "string" ? img : img?.url;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(imageUrl)}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${selectedImage === imageUrl ? "ring-2 ring-blue-500" : ""
+                        }`}
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={`Gallery ${i}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* <div className="flex gap-3 mt-4">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
@@ -125,29 +113,29 @@ const {
               />
             ))}
           </div> */}
-        </div>
-
-        {/* Overview */}
-        <section>
-          <div className="flex justify-between flex-col space-y-3">
-          <h2 className="text-lg font-semibold">Overview</h2>
-          <p className="text-sm text-gray-500 italic">
-            "{renderValue(product.description)}"
-          </p>
           </div>
-          <div>
-            <Link
-            to={`/products/${product.slug}/details`}
-            className="text-sm text-primary font-medium hover:underline"
-          >
-            View more details →
-          </Link>
 
-          </div>
-        </section>
+          {/* Overview */}
+          <section>
+            <div className="flex justify-between flex-col space-y-3">
+              <h2 className="text-lg font-semibold">Overview</h2>
+              <p className="text-sm text-gray-500 italic">
+                "{renderValue(product.description)}"
+              </p>
+            </div>
+            <div>
+              <Link
+                to={`/products/${product.slug}/details`}
+                className="text-sm text-primary font-medium hover:underline"
+              >
+                View more details →
+              </Link>
 
-        {/* Technical Specifications */}
-        {/* <section className="border-t pt-6">
+            </div>
+          </section>
+
+          {/* Technical Specifications */}
+          {/* <section className="border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Technical Specifications</h2>
           </div>
@@ -181,8 +169,8 @@ const {
           </div>
         </section> */}
 
-        {/* Lineage & Origin */}
-        {/* <section className="bg-emerald-50 rounded-xl p-6">
+          {/* Lineage & Origin */}
+          {/* <section className="bg-emerald-50 rounded-xl p-6">
           <h3 className="font-semibold mb-4 text-lg text-primary ">Lineage & Origin</h3>
 
           <div className="grid sm:grid-cols-2 gap-6 text-sm">
@@ -205,142 +193,142 @@ const {
           </div>
         </section> */}
 
-      </div>
-
-      {/* ================= RIGHT SIDE ================= */}
-      <div className="space-y-6">
-
-        {/* Purchase Box */}
-        {product.availability?.[0] && (() => {
-          const item = product.availability[0];
-          const price = getFinalPrice(item.pricing);
-
-          return (
-            <div className="border rounded-xl p-6 space-y-5">
-              <div className="flex justify-between items-start">
-
-              <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                Recently Listed
-              </span>
-
-              {(() => {
-                const inCart = carts.some((c) => c.product_id === product.id);
-                return (
-                  <Button
-                    variant={inCart ? "destructive" : "primary"}
-                    onClick={() =>
-                      inCart
-                        ? removeFromCart(product.id)
-                        : handleAddToCart({ product, price })
-                    }
-                    disabled={
-                      addToCartMutation.isPending ||
-                      (removing && inCart)
-                    }
-                  >
-                    {addToCartMutation.isPending
-                      ? "Adding..."
-                      : removing && inCart
-                      ? "Removing..."
-                      : inCart
-                      ? "Remove from Cart"
-                      : "Add to Cart"}
-                  </Button>
-                );
-              })()}
-
-              </div>
-
-              <h1 className="text-2xl font-semibold">{product.name}</h1>
-
-              <p className="text-xs text-muted-foreground">
-                Ref: {product.sku}
-              </p>
-
-              <div>
-                <p className="text-3xl font-bold">${price}</p>
-
-                {item.pricing.has_discount && (
-                  <p className="text-sm text-green-600">
-                    Discount valid until{" "}
-                    {item.pricing.discount_period?.end}
-                  </p>
-                )}
-              </div>
-
-              <Button className="w-full" onClick={() => {
-                if (!isAuthenticated) {
-                  navigate('/login');
-                } else {
-                  setShowPayment(true);
-                }
-              }}>Purchase Now</Button>
-              {/* <Button variant="outline" className="w-full">
-                Contact Breeder
-              </Button> */}
-            </div>
-          );
-        })()}
-
-        <PaymentMethodsModal
-          isOpen={Boolean(showPayment)}
-          onClose={() => setShowPayment(false)}
-          items={modalItems}
-        />
-
-        {/* Breeder Info */}
-        <div className="border rounded-xl p-6 space-y-6">
-          <p className="text-xs text-muted-foreground">
-            BREEDER INFORMATION
-          </p>
-
-          {/* Store Name */}
-          <div>
-            <p className="font-semibold text-lg">
-              {product.availability?.[0]?.store?.name}
-            </p>
-            {product.availability?.[0]?.store?.brand_name && (
-              <p className="text-sm text-muted-foreground">
-                {product.availability?.[0]?.store?.brand_name}
-              </p>
-            )}
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold">
-              {product.availability?.[0]?.store?.rating || 0} rating
-            </span>
-          </div>
-
-          {/* Verified Badge */}
-          {product.availability?.[0]?.store?.verified && (
-            <div className="flex items-center gap-2 text-green-600">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">Verified Seller</span>
-            </div>
-          )}
-
-          {/* Response Time */}
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <p className="text-xs text-muted-foreground">Response Time</p>
-              <p className="font-medium">~2 Hours</p>
-            </div>
-          </div>
-
-          {/* Store Link */}
-          <a href={`/stores/${product.availability?.[0]?.store?.id}/products`} className="block text-center bg-primary text-white font-medium py-2 rounded-lg hover:bg-primary/90 transition">
-            Visit Store Profile →
-          </a>
         </div>
 
+        {/* ================= RIGHT SIDE ================= */}
+        <div className="space-y-6">
+
+          {/* Purchase Box */}
+          {product.availability?.[0] && (() => {
+            const item = product.availability[0];
+            const price = getFinalPrice(item.pricing);
+
+            return (
+              <div className="border rounded-xl p-6 space-y-5">
+                <div className="flex justify-between items-start">
+
+                  <span className="inline-block px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                    Recently Listed
+                  </span>
+
+                  {(() => {
+                    const inCart = carts.some((c) => c.product_id === product.id);
+                    return (
+                      <Button
+                        variant={inCart ? "destructive" : "primary"}
+                        onClick={() =>
+                          inCart
+                            ? removeFromCart(product.id)
+                            : handleAddToCart({ product, price })
+                        }
+                        disabled={
+                          addToCartMutation.isPending ||
+                          (removing && inCart)
+                        }
+                      >
+                        {addToCartMutation.isPending
+                          ? "Adding..."
+                          : removing && inCart
+                            ? "Removing..."
+                            : inCart
+                              ? "Remove from Cart"
+                              : "Add to Cart"}
+                      </Button>
+                    );
+                  })()}
+
+                </div>
+
+                <h1 className="text-2xl font-semibold">{product.name}</h1>
+
+                <p className="text-xs text-muted-foreground">
+                  Ref: {product.sku}
+                </p>
+
+                <div>
+                  <p className="text-3xl font-bold">${price}</p>
+
+                  {item.pricing.has_discount && (
+                    <p className="text-sm text-green-600">
+                      Discount valid until{" "}
+                      {item.pricing.discount_period?.end}
+                    </p>
+                  )}
+                </div>
+
+                <Button className="w-full" onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate('/login');
+                  } else {
+                    setShowPayment(true);
+                  }
+                }}>Purchase Now</Button>
+                {/* <Button variant="outline" className="w-full">
+                Contact Breeder
+              </Button> */}
+              </div>
+            );
+          })()}
+
+          <PaymentMethodsModal
+            isOpen={Boolean(showPayment)}
+            onClose={() => setShowPayment(false)}
+            items={modalItems}
+          />
+
+          {/* Breeder Info */}
+          <div className="border rounded-xl p-6 space-y-6">
+            <p className="text-xs text-muted-foreground">
+              BREEDER INFORMATION
+            </p>
+
+            {/* Store Name */}
+            <div>
+              <p className="font-semibold text-lg">
+                {product.availability?.[0]?.store?.name}
+              </p>
+              {product.availability?.[0]?.store?.brand_name && (
+                <p className="text-sm text-muted-foreground">
+                  {product.availability?.[0]?.store?.brand_name}
+                </p>
+              )}
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold">
+                {product.availability?.[0]?.store?.rating || 0} rating
+              </span>
+            </div>
+
+            {/* Verified Badge */}
+            {product.availability?.[0]?.store?.verified && (
+              <div className="flex items-center gap-2 text-green-600">
+                <Shield className="w-4 h-4" />
+                <span className="text-sm font-medium">Verified Seller</span>
+              </div>
+            )}
+
+            {/* Response Time */}
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-xs text-muted-foreground">Response Time</p>
+                <p className="font-medium">~2 Hours</p>
+              </div>
+            </div>
+
+            {/* Store Link */}
+            <a href={`/stores/${product.availability?.[0]?.store?.id}/products`} className="block text-center bg-primary text-white font-medium py-2 rounded-lg hover:bg-primary/90 transition">
+              Visit Store Profile →
+            </a>
+          </div>
+
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 };
 

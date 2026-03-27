@@ -328,7 +328,7 @@ const AllProductsPage = () => {
       <div className="grid gap-4 grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {products.map((product: any) => {
           const imageUrl = product.image_urls?.thumbnail?.url || product.image;
-          const price = product.availability?.[0]?.pricing?.price || product.price;
+          const price = product.availability?.[0]?.pricing?.sale_price || product.sale_price;
 
           return (
             <Card
