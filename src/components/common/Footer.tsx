@@ -9,7 +9,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🐍</span>
               <span className="font-serif text-lg font-bold text-foreground dark:text-white">
-                ExoticPetsMarket
+                Huskey Exotics
               </span>
             </div>
             <p className="text-sm text-muted-foreground dark:text-gray-400">
@@ -123,7 +123,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border dark:border-gray-700 mt-8 pt-8 text-center text-sm text-muted-foreground dark:text-gray-400">
-          © 2026 ExoticPetsMarket. All rights reserved.
+          © 2026 Huskey Exotics. All rights reserved.
         </div>
       </div>
     </footer>

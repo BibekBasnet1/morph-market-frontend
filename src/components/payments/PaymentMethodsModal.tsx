@@ -383,7 +383,7 @@ export const PaymentMethodsModal: React.FC<Props> = ({
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <p className="text-xs text-gray-400 leading-relaxed">
-                      By clicking "Place Order & Pay," you agree to ExoticPetsMarket's{' '}
+                      By clicking "Place Order & Pay," you agree to Huskey Exotics's{' '}
                       <a href="/" className="text-green-400 underline">Terms of Service</a> and{' '}
                       <a href="/" className="text-green-400 underline">Privacy Notice</a>.
                     </p>

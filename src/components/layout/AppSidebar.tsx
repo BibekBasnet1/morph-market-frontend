@@ -387,7 +387,7 @@ const AppSidebar: React.FC = () => {
           {isExpanded || isHovered || isMobileOpen ? (
             <>
                 <img src="/log.webp" alt="Logo" width={50} height={90} />
-                <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">ExoticPetsMarket</span>
+                <span className="font-serif text-lg font-bold text-black dark:text-white whitespace-nowrap">Huskey Exotics</span>
             </>
           ) : (
             <img src="/log.webp" alt="Logo" width={90} height={90} />

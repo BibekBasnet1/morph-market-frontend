@@ -17,7 +17,7 @@ import { Input } from "../../components/ui/input";
 import Switch from "../../components/ui/switch";
 import Select from "../../components/ui/select";
 import { Card, CardContent } from "../../components/ui/card";
-import { MoreVertical, Plus, Filter, X } from "lucide-react";
+import { Plus, Filter, X } from "lucide-react";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -69,7 +69,6 @@ const InventoryPage = () => {
     // enabled: !!storeSlug,
   });
 
-  // The API can return either an array or a pagination wrapper: { data: [...] }
   let inventoryList: InventoryItem[] = [];
 
   if (Array.isArray(inventoriesRaw)) {
@@ -78,7 +77,6 @@ const InventoryPage = () => {
     inventoryList = (inventoriesRaw as any).data as InventoryItem[];
   }
 
-  // Ensure `id` is a string for keying and consistency
   const normalized = inventoryList.map((it) => ({ ...(it as any), id: String((it as any).id) } as any));
 
   const { data: categories = [] } = useQuery({
@@ -106,6 +104,12 @@ const InventoryPage = () => {
     queryFn: DietService.getAllPublic,
   });
 
+  const [optimisticActive, setOptimisticActive] = useState<Record<string, boolean>>({});
+  const [pendingSwitches, setPendingSwitches] = useState<Record<string, boolean>>({});
+
+  const activeForItem = (item: InventoryItem) =>
+    optimisticActive[String(item.id)] ?? Boolean((item as any).active);
+
   const updateProductMutation = useMutation({
     mutationFn: async ({ item, active }: { item: InventoryItem; active: boolean }) => {
       const formData = new FormData();
@@ -119,7 +123,26 @@ const InventoryPage = () => {
 
       return InventoryService.update(item.id, formData);
     },
-    onSuccess: () => {
+    onMutate: ({ item, active }) => {
+      const id = String(item.id);
+      setOptimisticActive((prev) => ({ ...prev, [id]: active }));
+      setPendingSwitches((prev) => ({ ...prev, [id]: true }));
+    },
+    onError: (_error, { item }) => {
+      const id = String(item.id);
+      setOptimisticActive((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+    },
+    onSettled: (_data, _error, { item }) => {
+      const id = String(item.id);
+      setPendingSwitches((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       queryClient.invalidateQueries({ queryKey: ["inventories", "my-products"] });
     },
   });
@@ -470,13 +493,10 @@ const InventoryPage = () => {
                 key: "status",
                 header: "Status",
                 render: (item: InventoryItem) => (
-                  <Badge variant={(item as any).active ? "default" : "destructive"}>{(item as any).active ? "Available" : "Unavailable"}</Badge>
+                  <Badge variant={activeForItem(item) ? "default" : "destructive"}>
+                    {activeForItem(item) ? "Available" : "Unavailable"}
+                  </Badge>
                 ),
-              },
-              {
-                key: "visibility",
-                header: "Visibility",
-                render: (item: InventoryItem) => ((item as any).visibility ? (item as any).visibility : "private"),
               },
             ] as ColumnDef<InventoryItem>[]
           )} />
@@ -509,11 +529,14 @@ const InventoryPage = () => {
                       <div className="flex sm:flex-col items-center justify-between sm:text-right gap-2 sm:gap-1">
                         <p className="font-semibold text-sm sm:text-base">{getPrice(item) ? `$${Number(getPrice(item)).toLocaleString()}` : '—'}</p>
                         <div className="flex items-center gap-2 sm:gap-3 justify-end flex-wrap">
-                          <Badge variant={(item as any).active ? 'default' : 'destructive'} className="text-xs">{(item as any).active ? 'AVAILABLE' : 'SOLD'}</Badge>
+                          <Badge variant={activeForItem(item) ? 'default' : 'destructive'} className="text-xs">
+                            {activeForItem(item) ? 'AVAILABLE' : 'SOLD'}
+                          </Badge>
                           {!isBuyer && (
                             <Switch
-                              defaultChecked={Boolean((item as any).active)}
-                              disabled={updateProductMutation.isPending}
+                              key={`${item.id}-${activeForItem(item) ? "on" : "off"}`}
+                              defaultChecked={activeForItem(item)}
+                              disabled={Boolean(pendingSwitches[String(item.id)])}
                               onChange={(checked: boolean) => {
                                 updateProductMutation.mutate({
                                   item: item,

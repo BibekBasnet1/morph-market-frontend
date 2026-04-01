@@ -100,7 +100,7 @@ const Navbar: React.FC = () => {
             >
               <span className="text-xl sm:text-2xl">🐍</span>
               <span className="font-semibold text-base hidden sm:block sm:text-lg text-primary whitespace-nowrap group-hover:text-primary/90 transition-colors dark:text-primary">
-                ExoticPetsMarket
+                Huskey Exotics
               </span>
             </Link>
           </div>
@@ -219,7 +219,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-xl">🐍</span>
             <span className="font-semibold dark:text-white">
-              ExoticPetsMarket
+              Huskey Exotics
             </span>
           </div>
           <button
