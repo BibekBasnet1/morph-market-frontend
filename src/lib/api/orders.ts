@@ -3,12 +3,16 @@ import api from "./client";
 export interface OrderItem {
   id: number;
   product_id: number;
-  store_id: number;
+  store_id?: number;
   quantity: number;
   price: string | number;
   subtotal: string | number;
-  tax: string | number;
+  tax?: string | number;
   total: string | number;
+  product_name?: string;
+  price_formatted?: string;
+  subtotal_formatted?: string;
+  total_formatted?: string;
 }
 
 export interface Order {
@@ -16,9 +20,11 @@ export interface Order {
   order_number: string;
   status: string;
   order_date: string;
-  items: OrderItem[];
+  items?: OrderItem[];
   total?: number;
   total_formatted?: string;
+  order_total?: number;
+  order_total_formatted?: string;
   item_count?: number;
   customer?: OrderCustomer;
 }
@@ -126,7 +132,10 @@ export const OrderService = {
     });
     return res.data;
   },
-  async getCustomerOrders(page: number = 1, query: Omit<SellerOrdersQuery, "page"> = {}) : Promise<OrderResponse> {
+  async getCustomerOrders(
+    page: number = 1,
+    query: Omit<SellerOrdersQuery, "page"> = {}
+  ): Promise<OrderResponse> {
     return await api.get("/seller/orders", {
       params: { page, per_page: 10, ...query },
     });

@@ -33,7 +33,7 @@ const AllPrivateProductsPage = () => {
     // enabled: !!storeSlug,
   });
 
-  const products = data?.data ?? [];
+  const products = data ?? [];
 
   const deleteMutation = useMutation({
     mutationFn: ProductService.remove,

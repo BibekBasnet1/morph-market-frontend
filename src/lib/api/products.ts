@@ -32,7 +32,12 @@ export const ProductService = {
 
   getAllPrivate: async (): Promise<Product[]> => {
     const res = await api.get(`/seller/my-products`);
-    return res.data.data?.data ?? [];
+    const inner = res.data.data;
+    if (Array.isArray(inner)) return inner;
+    if (inner && typeof inner === "object" && Array.isArray((inner as { data?: Product[] }).data)) {
+      return (inner as { data: Product[] }).data;
+    }
+    return [];
   },
   async getById(id: number): Promise<Product> {
     const res = await api.get(`/seller/products/${id}`);

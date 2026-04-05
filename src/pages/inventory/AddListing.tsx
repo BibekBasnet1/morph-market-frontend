@@ -10,6 +10,7 @@ import InInventoryBadge from "../../components/inventory/InInventoryBadge";
 import InventoryModal from "../../components/inventory/InventoryModal";
 import ProductCard from "../../components/inventory/ProductCard";
 import SelectionSidebar from "../../components/inventory/SelectionSidebar";
+import Spinner from "../../components/ui/spinner";
 
 const AddListingPage = () => {
   const navigate = useNavigate();
@@ -106,7 +107,7 @@ const AddListingPage = () => {
     return (
       <div className="p-10 text-slate-500 dark:text-slate-400 flex items-center gap-3">
         <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-700 border-t-emerald-500 animate-spin" />
-        Loading products…
+          <Spinner/>
       </div>
     );
   }

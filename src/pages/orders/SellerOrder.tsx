@@ -6,15 +6,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../../components/ui/button";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Badge } from "../../components/ui/badge";
-import { ChevronLeft, ChevronRight, PackageOpen, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, PackageOpen, Search, X } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import Select from "../../components/ui/select";
 import { useDebounce } from "../../hooks/useDebounce";
+import { Modal } from "../../components/ui/modal";
 
 const SellerOrder = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [viewOrder, setViewOrder] = useState<Order | null>(null);
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -96,6 +98,9 @@ const SellerOrder = () => {
       </Badge>
     );
   };
+
+  const orderDisplayTotal = (o: Order) =>
+    o.order_total_formatted ?? o.total_formatted ?? "—";
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black px-4 sm:px-6 py-8">
@@ -180,6 +185,7 @@ const SellerOrder = () => {
                     <TableHead className="text-right whitespace-nowrap">Total</TableHead>
                     <TableHead className="hidden lg:table-cell whitespace-nowrap">Order Date</TableHead>
                     <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="text-right whitespace-nowrap w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -193,11 +199,12 @@ const SellerOrder = () => {
                         <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
                         <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-40" /></TableCell>
                         <TableCell><Skeleton className="h-6 w-28" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
                       </TableRow>
                     ))
                   ) : error ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="py-10 text-center">
+                      <TableCell colSpan={8} className="py-10 text-center">
                         <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Failed to load orders</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                           Try refreshing the page.
@@ -206,7 +213,7 @@ const SellerOrder = () => {
                     </TableRow>
                   ) : ordersData.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="py-12">
+                      <TableCell colSpan={8} className="py-12">
                         <div className="flex flex-col items-center justify-center text-center">
                           <div className="w-12 h-12 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mb-3">
                             <PackageOpen className="w-6 h-6 text-primary" />
@@ -242,12 +249,24 @@ const SellerOrder = () => {
                           {o.item_count ?? "—"}
                         </TableCell>
                         <TableCell className="text-right font-semibold text-gray-900 dark:text-gray-100">
-                          {o.total_formatted ?? "—"}
+                          {orderDisplayTotal(o)}
                         </TableCell>
                         <TableCell className="hidden lg:table-cell text-gray-600 dark:text-gray-400 whitespace-nowrap">
                           {formatDate(o.order_date)}
                         </TableCell>
                         <TableCell>{statusBadge(o.status)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5"
+                            onClick={() => setViewOrder(o)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            View
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -286,6 +305,86 @@ const SellerOrder = () => {
             </div>
           </CardContent>
         </Card>
+
+        <Modal
+          isOpen={viewOrder != null}
+          onClose={() => setViewOrder(null)}
+          className="max-w-2xl rounded-2xl"
+        >
+          {viewOrder && (
+            <div className="p-6 sm:p-8 pt-12 sm:pt-14">
+              <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Order details
+                </p>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-1 font-mono">
+                  {viewOrder.order_number}
+                </h2>
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  {statusBadge(viewOrder.status)}
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {formatDate(viewOrder.order_date)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-950/40 p-4 mb-6">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                  Customer
+                </p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">{viewOrder.customer?.name ?? "—"}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{viewOrder.customer?.email ?? "—"}</p>
+                <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2 pt-3 border-t border-gray-200 dark:border-gray-800">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Order total</span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    {orderDisplayTotal(viewOrder)}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Items</p>
+              {viewOrder.items && viewOrder.items.length > 0 ? (
+                <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50/80 dark:bg-gray-900 hover:bg-gray-50/80 dark:hover:bg-gray-900">
+                        <TableHead>Product</TableHead>
+                        <TableHead className="text-right w-20">Qty</TableHead>
+                        <TableHead className="text-right hidden sm:table-cell">Unit</TableHead>
+                        <TableHead className="text-right">Total</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {viewOrder.items.map((line) => (
+                        <TableRow key={line.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                          <TableCell className="font-medium text-gray-900 dark:text-gray-100">
+                            <div className="min-w-0">
+                              <div className="truncate">{line.product_name ?? `Product #${line.product_id}`}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                                ID {line.product_id}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">{line.quantity}</TableCell>
+                          <TableCell className="text-right hidden sm:table-cell text-gray-700 dark:text-gray-300 tabular-nums">
+                            {line.price_formatted ?? "—"}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
+                            {line.total_formatted ?? line.subtotal_formatted ?? "—"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-400 py-6 text-center rounded-xl border border-dashed border-gray-200 dark:border-gray-800">
+                  No line items in this response.
+                </p>
+              )}
+            </div>
+          )}
+        </Modal>
       </div>
     </div>
   );
