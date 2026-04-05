@@ -76,7 +76,7 @@ const RegisterPage = () => {
     const roleNames = user?.roles?.map((r) => r.name) ?? [];
     if (roleNames.includes("admin")) {
       navigate("/admin/dashboard");
-    } else if (roleNames.includes("buyer")) {
+    } else if (roleNames.includes("buyer") || roleNames.includes("seller")) {
       navigate("/");
     }
   }, [user, navigate]);

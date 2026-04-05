@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -17,13 +17,26 @@ import {
 
 import { loginSchema, type LoginSchema } from "../../../validation/LoginSchema";
 import { getDefaultPathForRoles } from "../../../config/routes";
+import type { RoleName } from "../../../types";
 import { AuthService } from "../../../lib/api";
 import { LegalDocumentModal } from "../../../components/legal/LegalDocumentModal";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login , user} = useAuth();
   const [sellerAgreementOpen, setSellerAgreementOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const roleNames = user.roles?.map((r) => r.name) ?? [];
+      if (roleNames.includes("admin")) {
+        navigate("/admin/dashboard");
+      } else if (roleNames.includes("buyer") || roleNames.includes("seller")) {
+        navigate("/");
+      }
+    }
+  }, [user]);
 
   const {
     register,
@@ -40,14 +53,26 @@ const LoginPage = () => {
   const mutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-  login(data.data.user, data.data.token);
-  const apiRoles: RoleLike[] = data?.data?.user?.roles ?? [];
-  const roles =
-    apiRoles.length && typeof apiRoles[0] === 'string'
-      ? apiRoles
-      : apiRoles.map((r) => (typeof r === "string" ? r : r.name));
-  navigate(getDefaultPathForRoles(roles), { replace: true });
-},
+      login(data.data.user, data.data.token);
+      const apiRoles: RoleLike[] = data?.data?.user?.roles ?? [];
+      const roles =
+        apiRoles.length && typeof apiRoles[0] === 'string'
+          ? apiRoles
+          : apiRoles.map((r) => (typeof r === "string" ? r : r.name));
+      const from = (location.state as { from?: string } | null)?.from;
+      const safeFrom =
+        typeof from === "string" &&
+        from.startsWith("/") &&
+        !from.startsWith("//") &&
+        !from.includes("://")
+          ? from
+          : null;
+      if (safeFrom) {
+        navigate(safeFrom, { replace: true });
+        return;
+      }
+      navigate(getDefaultPathForRoles(roles as RoleName[]), { replace: true });
+    },
     onError: () => {
       toast.error("Invalid Credentials");
     },
@@ -57,10 +82,10 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      
+
       {/* Left Section - Full Background Image with Overlay */}
       <div className="md:w-1/2 hidden md:flex flex-col justify-center items-center relative overflow-hidden p-12">
-        
+
         {/* Background Image */}
         <div className="absolute inset-0">
           <img

@@ -1,4 +1,4 @@
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ProductService } from "../../lib/api/products";
 import type { ProductDetails } from "../../types/ProductDetailsType";
@@ -13,6 +13,7 @@ import { useCart } from "../../hooks/useCart";
 const ProductDetailsPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const { handleAddToCart, addToCartMutation } = useAddToCart();
   const { carts, removeFromCart, removing } = useCart();
@@ -69,7 +70,6 @@ const ProductDetailsPage = () => {
     <div className="p-6 sm:p-10 mx-auto max-w-[100vw] dark:text-white py-10 px-4 overflow-x-hidden">
       <div className="grid lg:grid-cols-3 gap-6 lg:gap-10 min-w-0">
 
-        {/* ================= LEFT SIDE ================= */}
         <div className="lg:col-span-2 space-y-6 lg:space-y-10 min-w-0">
 
           {/* Image & Thumbnails */}
@@ -115,7 +115,6 @@ const ProductDetailsPage = () => {
           </div> */}
           </div>
 
-          {/* Overview */}
           <section>
             <div className="flex justify-between flex-col space-y-3">
               <h2 className="text-lg font-semibold">Overview</h2>
@@ -195,7 +194,6 @@ const ProductDetailsPage = () => {
 
         </div>
 
-        {/* ================= RIGHT SIDE ================= */}
         <div className="space-y-6">
 
           {/* Purchase Box */}
@@ -216,11 +214,21 @@ const ProductDetailsPage = () => {
                     return (
                       <Button
                         variant={inCart ? "destructive" : "primary"}
-                        onClick={() =>
-                          inCart
-                            ? removeFromCart(product.id)
-                            : handleAddToCart({ product, price })
-                        }
+                        onClick={() => {
+                          if (inCart) {
+                            removeFromCart(product.id);
+                            return;
+                          }
+                          if (!isAuthenticated) {
+                            navigate("/login", {
+                              state: {
+                                from: `${location.pathname}${location.search}`,
+                              },
+                            });
+                            return;
+                          }
+                          handleAddToCart({ product, price });
+                        }}
                         disabled={
                           addToCartMutation.isPending ||
                           (removing && inCart)

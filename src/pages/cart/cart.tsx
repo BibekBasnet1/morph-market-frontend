@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/button";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
 import PaymentMethodsModal from "../../components/payments/PaymentMethodsModal";
+import { Modal } from "../../components/ui/modal";
 
 const loadLocalCarts = (): Cart[] => {
   try {
@@ -28,6 +29,7 @@ const CartPage = () => {
 
   const [localCarts, setLocalCarts] = useState<Cart[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [itemPendingRemove, setItemPendingRemove] = useState<Cart | null>(null);
 
   useEffect(() => {
     setLocalCarts(loadLocalCarts());
@@ -75,14 +77,7 @@ const CartPage = () => {
   //   updateMutation.mutate({ id: item.id, quantity });
   // };
 
-  const removeItem = (item: Cart) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to remove this item from your cart?"
-    );
-
-    if (!confirmed) return;
-
-    // Guest cart
+  const performRemove = (item: Cart) => {
     if (!isAuthenticated || !item.user_id) {
       const updated = localCarts.filter((c) => c.id !== item.id);
       setLocalCarts(updated);
@@ -91,8 +86,6 @@ const CartPage = () => {
       toast.success("Item removed");
       return;
     }
-
-    // API cart
     removeMutation.mutate(item.id);
   };
 
@@ -138,11 +131,9 @@ const CartPage = () => {
     </div>
 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* ---------------- LEFT: CART ITEMS ---------------- */}
       <div className="lg:col-span-2 space-y-6">
         <Card>
           <CardContent className="p-0">
-            {/* Table Header */}
             <div className="grid grid-cols-12 px-6 py-4 text-xs font-semibold text-muted-foreground border-b">
               <div className="col-span-9">PRODUCT DETAILS</div>
               <div className="col-span-3 text-right">PRICE</div>
@@ -178,8 +169,9 @@ const CartPage = () => {
                       </p>
 
                       <button
-                        onClick={() => removeItem(item)}
-                        className="text-xs text-red-600 hover:underline mt-2"
+                        type="button"
+                        onClick={() => setItemPendingRemove(item)}
+                        className="text-xs text-red-600 hover:underline mt-2 dark:text-red-400"
                       >
                         Remove from cart
                       </button>
@@ -197,7 +189,6 @@ const CartPage = () => {
 
       </div>
 
-      {/* ---------------- RIGHT: ORDER SUMMARY ---------------- */}
       <div className="space-y-4">
         <Card className="sticky top-6">
           <CardContent className="p-6 space-y-4">
@@ -248,6 +239,49 @@ const CartPage = () => {
         </Card>
       </div>
     </div>
+
+    <Modal
+      isOpen={itemPendingRemove != null}
+      onClose={() => setItemPendingRemove(null)}
+      className="max-w-md rounded-2xl"
+    >
+      {itemPendingRemove && (
+        <div className="p-6 pt-12 sm:p-8 sm:pt-14">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 pr-8">
+            Remove from cart?
+          </h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to remove{" "}
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {(itemPendingRemove as any).product?.name ?? `this item`}
+            </span>{" "}
+            from your cart?
+          </p>
+          <div className="mt-6 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => setItemPendingRemove(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-full sm:w-auto"
+              disabled={removeMutation.isPending}
+              onClick={() => {
+                performRemove(itemPendingRemove);
+                setItemPendingRemove(null);
+              }}
+            >
+              {removeMutation.isPending ? "Removing…" : "Remove"}
+            </Button>
+          </div>
+        </div>
+      )}
+    </Modal>
 
     <PaymentMethodsModal
       isOpen={isPaymentModalOpen}
