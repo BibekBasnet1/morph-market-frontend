@@ -99,6 +99,31 @@ const SellerOrder = () => {
     );
   };
 
+  const qtyBadge = (qty?: number | string) => {
+    const n = Number(qty);
+    if (qty == null || isNaN(n)) return <span className="text-gray-400">—</span>;
+
+    if (n <= 2) {
+      return (
+        <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300 tabular-nums min-w-[2rem] justify-center">
+          {n}
+        </Badge>
+      );
+    }
+    if (n <= 5) {
+      return (
+        <Badge className="border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300 tabular-nums min-w-[2rem] justify-center">
+          {n}
+        </Badge>
+      );
+    }
+    return (
+      <Badge className="border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-300 tabular-nums min-w-[2rem] justify-center">
+        {n}
+      </Badge>
+    );
+  };
+
   const orderDisplayTotal = (o: Order) =>
     o.order_total_formatted ?? o.total_formatted ?? "—";
 
@@ -220,7 +245,7 @@ const SellerOrder = () => {
                           </div>
                           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">No orders yet</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-md">
-                            When customers place orders for your products, they’ll show up here.
+                            When customers place orders for your products, they'll show up here.
                           </p>
                         </div>
                       </TableCell>
@@ -245,9 +270,13 @@ const SellerOrder = () => {
                         <TableCell className="hidden md:table-cell text-gray-600 dark:text-gray-400">
                           {o.customer?.email ?? "—"}
                         </TableCell>
-                        <TableCell className="text-right text-gray-700 dark:text-gray-300">
-                          {o.item_count ?? "—"}
+
+                        <TableCell className="text-right">
+                          <div className="flex justify-end">
+                            {qtyBadge(o.item_count)}
+                          </div>
                         </TableCell>
+
                         <TableCell className="text-right font-semibold text-gray-900 dark:text-gray-100">
                           {orderDisplayTotal(o)}
                         </TableCell>
@@ -348,10 +377,10 @@ const SellerOrder = () => {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50/80 dark:bg-gray-900 hover:bg-gray-50/80 dark:hover:bg-gray-900">
-                        <TableHead>Product</TableHead>
-                        <TableHead className="text-right w-20">Qty</TableHead>
-                        <TableHead className="text-right hidden sm:table-cell">Unit</TableHead>
-                        <TableHead className="text-right">Total</TableHead>
+                        <TableHead className="text-white">Product</TableHead>
+                        <TableHead className="text-right w-20 text-white">Qty</TableHead>
+                        <TableHead className="text-right hidden sm:table-cell text-white">Unit</TableHead>
+                        <TableHead className="text-right text-white">Total</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -360,12 +389,15 @@ const SellerOrder = () => {
                           <TableCell className="font-medium text-gray-900 dark:text-gray-100">
                             <div className="min-w-0">
                               <div className="truncate">{line.product_name ?? `Product #${line.product_id}`}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
-                                ID {line.product_id}
-                              </div>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right tabular-nums">{line.quantity}</TableCell>
+
+                          <TableCell className="text-right">
+                            <div className="flex justify-end">
+                              {qtyBadge(line.quantity)}
+                            </div>
+                          </TableCell>
+
                           <TableCell className="text-right hidden sm:table-cell text-gray-700 dark:text-gray-300 tabular-nums">
                             {line.price_formatted ?? "—"}
                           </TableCell>
@@ -379,7 +411,7 @@ const SellerOrder = () => {
                 </div>
               ) : (
                 <p className="text-sm text-gray-600 dark:text-gray-400 py-6 text-center rounded-xl border border-dashed border-gray-200 dark:border-gray-800">
-                  No line items in this response.
+                  No items in this response.
                 </p>
               )}
             </div>
